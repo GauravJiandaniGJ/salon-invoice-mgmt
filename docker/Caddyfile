@@ -1,0 +1,6 @@
+# Automatic HTTPS via Let's Encrypt for the domain in APP_DOMAIN (.env).
+# For local testing set APP_DOMAIN=localhost → Caddy serves a self-signed cert.
+{$APP_DOMAIN} {
+    encode gzip zstd
+    reverse_proxy app:8080
+}

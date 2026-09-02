@@ -1,0 +1,50 @@
+# Production stack: app (Nginx + PHP-FPM), scheduler (backups), caddy (HTTPS).
+# Usage on the server:  cp .env.production.example .env  →  edit  →  docker compose up -d
+services:
+  app:
+    image: ${APP_IMAGE:-ghcr.io/gauravjiandanigj/saloon-invoice-mgmt:latest}
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - app_database:/var/www/html/database
+      - app_storage:/var/www/html/storage
+    expose:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  scheduler:
+    image: ${APP_IMAGE:-ghcr.io/gauravjiandanigj/saloon-invoice-mgmt:latest}
+    restart: unless-stopped
+    env_file: .env
+    command: ["php", "/var/www/html/artisan", "schedule:work"]
+    volumes:
+      - app_database:/var/www/html/database
+      - app_storage:/var/www/html/storage
+    depends_on:
+      app:
+        condition: service_healthy
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:-localhost}
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  app_database:
+  app_storage:
+  caddy_data:
+  caddy_config:

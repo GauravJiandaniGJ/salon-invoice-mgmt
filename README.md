@@ -37,6 +37,10 @@ vendor/bin/pint      # code style
 npm run build        # production assets
 ```
 
+## Deploy
+
+One Docker image; see `docs/DEPLOY.md`. Pushes to `main` build and publish the image automatically (GitHub Actions → `deploy`).
+
 ## WhatsApp prerequisite
 
 The salon laptop must have **WhatsApp Web** (`web.whatsapp.com`) logged in with the salon's phone (one-time QR scan). Keep that tab open all day. The **Send on WhatsApp** button opens WhatsApp Web with the customer and message pre-filled; the receptionist presses Enter.
