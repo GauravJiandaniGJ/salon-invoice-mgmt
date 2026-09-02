@@ -50,6 +50,8 @@ final class InvoiceTotals
 
     public static function round2(float $value): float
     {
-        return round($value, 2);
+        // Deterministic half-up rounding to the paisa, identical to resources/js/lib/invoiceTotals.ts.
+        // The epsilon absorbs binary noise (e.g. 99.99 * 1.5 = 149.98499999…) so PHP 8.3, 8.4 and JS agree.
+        return round($value * 100 + ($value >= 0 ? 1e-7 : -1e-7)) / 100;
     }
 }
