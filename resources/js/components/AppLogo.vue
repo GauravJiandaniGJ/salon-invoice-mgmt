@@ -13,6 +13,6 @@ const logo = computed(() => page.props.salon.logo_url || '/brand/wow-logo.png');
     </div>
     <div class="ml-1 grid flex-1 text-left">
         <span class="truncate font-display text-[15px] font-semibold tracking-wide text-sidebar-foreground">{{ page.props.salon.name }}</span>
-        <span class="truncate text-[10px] uppercase tracking-[0.18em] text-sidebar-primary">Billing</span>
+        <span class="truncate text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Billing</span>
     </div>
 </template>
