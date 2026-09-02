@@ -1,17 +1,18 @@
 # syntax=docker/dockerfile:1
-# ---------- 1. Frontend assets ----------
+# ---------- 1. PHP dependencies ----------
+FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-interaction --no-scripts --prefer-dist --optimize-autoloader --ignore-platform-reqs
+
+# ---------- 2. Frontend assets (needs vendor/tightenco/ziggy for the Ziggy import) ----------
 FROM node:22-alpine AS assets
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .
+COPY --from=vendor /app/vendor/tightenco ./vendor/tightenco
 RUN npm run build
-
-# ---------- 2. PHP dependencies ----------
-FROM composer:2 AS vendor
-WORKDIR /app
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --no-scripts --prefer-dist --optimize-autoloader --ignore-platform-reqs
 
 # ---------- 3. Runtime: Nginx + PHP-FPM in one container ----------
 FROM serversideup/php:8.3-fpm-nginx AS app
