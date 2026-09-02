@@ -47,6 +47,25 @@ return [
             'report' => false,
         ],
 
+        // Local backup target (spatie/laravel-backup). Kept outside storage/app so it is never backed up into itself.
+        'backups' => [
+            'driver' => 'local',
+            'root' => storage_path('backups'),
+            'throw' => false,
+        ],
+
+        // S3-compatible off-site backup target (DigitalOcean Spaces). Enabled via BACKUP_SPACES_ENABLED=true.
+        'spaces' => [
+            'driver' => 's3',
+            'key' => env('SPACES_KEY'),
+            'secret' => env('SPACES_SECRET'),
+            'region' => env('SPACES_REGION', 'blr1'),
+            'bucket' => env('SPACES_BUCKET'),
+            'endpoint' => env('SPACES_ENDPOINT', 'https://blr1.digitaloceanspaces.com'),
+            'use_path_style_endpoint' => false,
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

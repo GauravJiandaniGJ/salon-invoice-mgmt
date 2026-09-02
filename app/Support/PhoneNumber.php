@@ -55,15 +55,21 @@ final class PhoneNumber
         return '+91 '.substr($normalised, 2, 5).' '.substr($normalised, 7);
     }
 
-    /** "919876543210" → "98XXXX3210" */
+    /** "919876543210" → "98XXXX3210". Never returns more than the last 4 digits for unexpected input. */
     public static function masked(?string $normalised): string
     {
-        if (! $normalised || strlen($normalised) !== 12) {
-            return (string) $normalised;
+        $digits = preg_replace('/\D+/', '', (string) $normalised) ?? '';
+
+        if ($digits === '') {
+            return '';
         }
 
-        $local = substr($normalised, 2);
+        if (strlen($digits) === 12) {
+            $local = substr($digits, 2);
 
-        return substr($local, 0, 2).'XXXX'.substr($local, -4);
+            return substr($local, 0, 2).'XXXX'.substr($local, -4);
+        }
+
+        return str_repeat('X', max(strlen($digits) - 4, 0)).substr($digits, -4);
     }
 }

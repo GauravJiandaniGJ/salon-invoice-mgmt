@@ -12,7 +12,7 @@ class CustomerFactory extends Factory
     {
         return [
             'name' => fake()->firstName().' '.fake()->lastName(),
-            'phone' => '91'.fake()->unique()->numerify('9########'),
+            'phone' => '91'.fake()->unique()->numerify('9#########'),
             'gender' => fake()->randomElement(['female', 'male', null]),
             'notes' => null,
             'last_visit_at' => null,
