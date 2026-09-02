@@ -174,7 +174,7 @@ const renameStaff = (s: SettingsStaffRow) => {
                 <p class="text-sm text-muted-foreground">Salon details, invoice options, WhatsApp message and the people who use this app.</p>
             </div>
 
-            <nav class="flex gap-1 overflow-x-auto rounded-lg border bg-muted/40 p-1 text-sm">
+            <nav class="flex gap-1 overflow-x-auto rounded-xl border bg-card p-1 shadow-sm text-sm">
                 <a
                     v-for="s in sections"
                     :key="s.id"
@@ -187,7 +187,7 @@ const renameStaff = (s: SettingsStaffRow) => {
 
             <form class="flex flex-col gap-5" @submit.prevent="save">
                 <!-- ================= Salon ================= -->
-                <section id="salon" class="scroll-mt-20 rounded-lg border bg-card p-4">
+                <section id="salon" class="scroll-mt-20 rounded-xl border bg-card shadow-sm p-4">
                     <h2 class="text-base font-semibold">Salon details</h2>
                     <p class="mb-4 text-sm text-muted-foreground">Shown on invoices, the public invoice page and the PDF.</p>
 
@@ -225,7 +225,7 @@ const renameStaff = (s: SettingsStaffRow) => {
                         </div>
                         <div class="grid gap-1">
                             <Label for="footer_text">Invoice footer</Label>
-                            <Input id="footer_text" v-model="form.footer_text" placeholder="Powered by 2iT" />
+                            <Input id="footer_text" v-model="form.footer_text" placeholder="Powered by TodoIT" />
                             <p v-if="form.errors.footer_text" class="text-xs text-destructive">{{ form.errors.footer_text }}</p>
                         </div>
                         <div class="grid gap-1">
@@ -261,7 +261,7 @@ const renameStaff = (s: SettingsStaffRow) => {
                 </section>
 
                 <!-- ================= Invoice ================= -->
-                <section id="invoice" class="scroll-mt-20 rounded-lg border bg-card p-4">
+                <section id="invoice" class="scroll-mt-20 rounded-xl border bg-card shadow-sm p-4">
                     <h2 class="text-base font-semibold">Invoice</h2>
                     <p class="mb-4 text-sm text-muted-foreground">Numbering and tax.</p>
                     <div class="grid gap-4 md:grid-cols-3">
@@ -285,7 +285,7 @@ const renameStaff = (s: SettingsStaffRow) => {
                 </section>
 
                 <!-- ================= WhatsApp ================= -->
-                <section id="whatsapp" class="scroll-mt-20 rounded-lg border bg-card p-4">
+                <section id="whatsapp" class="scroll-mt-20 rounded-xl border bg-card shadow-sm p-4">
                     <h2 class="text-base font-semibold">WhatsApp message</h2>
                     <p class="mb-4 text-sm text-muted-foreground">
                         This text is pre-filled when you press “Send on WhatsApp”. Keep it under ~700 characters.
@@ -332,7 +332,7 @@ const renameStaff = (s: SettingsStaffRow) => {
             </form>
 
             <!-- ================= Users ================= -->
-            <section id="users" class="scroll-mt-20 rounded-lg border bg-card">
+            <section id="users" class="scroll-mt-20 rounded-xl border bg-card shadow-sm">
                 <header class="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3">
                     <div>
                         <h2 class="text-base font-semibold">Users</h2>
@@ -373,7 +373,7 @@ const renameStaff = (s: SettingsStaffRow) => {
                 <EmptyState v-if="users.length === 0" title="No users" :icon="Users" class="m-4" />
                 <div v-else class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="text-left text-xs uppercase text-muted-foreground">
+                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             <tr>
                                 <th class="px-4 py-2 font-medium">Name</th>
                                 <th class="px-4 py-2 font-medium">Email</th>
@@ -420,7 +420,7 @@ const renameStaff = (s: SettingsStaffRow) => {
             </section>
 
             <!-- ================= Staff members ================= -->
-            <section id="staff" class="scroll-mt-20 rounded-lg border bg-card">
+            <section id="staff" class="scroll-mt-20 rounded-xl border bg-card shadow-sm">
                 <header class="border-b px-4 py-3">
                     <h2 class="text-base font-semibold">Staff members</h2>
                     <p class="text-sm text-muted-foreground">

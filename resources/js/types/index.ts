@@ -113,6 +113,7 @@ export interface CustomerLookupResponse {
     customer: CustomerLookup | null;
     normalised_phone: string | null;
     error: string | null; // set when the phone is invalid
+    matches?: CustomerLookup[]; // only for ?q= suggestion searches
 }
 
 export interface CustomerRow {

@@ -44,7 +44,7 @@ const todayModes = computed(() => byModeRows(props.today.by_mode));
             </div>
 
             <div class="grid gap-4 lg:grid-cols-3">
-                <div class="rounded-lg border bg-card p-4">
+                <div class="rounded-xl border bg-card shadow-sm p-4">
                     <h2 class="text-sm font-semibold">Earnings by payment mode</h2>
                     <ul class="mt-2 divide-y text-sm">
                         <li v-for="row in todayModes" :key="row.mode" class="flex items-center justify-between py-1.5">
@@ -54,7 +54,7 @@ const todayModes = computed(() => byModeRows(props.today.by_mode));
                     </ul>
                 </div>
 
-                <div v-if="isOwner && month" class="rounded-lg border bg-card p-4">
+                <div v-if="isOwner && month" class="rounded-xl border bg-card shadow-sm p-4">
                     <h2 class="text-sm font-semibold">This month · {{ formatMonth(currentMonth()) }}</h2>
                     <dl class="mt-2 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                         <dt class="text-muted-foreground">Invoices</dt>
@@ -73,7 +73,7 @@ const todayModes = computed(() => byModeRows(props.today.by_mode));
                     >
                 </div>
 
-                <div class="rounded-lg border bg-card p-4">
+                <div class="rounded-xl border bg-card shadow-sm p-4">
                     <h2 class="text-sm font-semibold">Quick links</h2>
                     <div class="mt-2 flex flex-col gap-1 text-sm">
                         <Link href="/reports/daily" class="text-primary underline-offset-4 hover:underline">Daily statement</Link>
@@ -83,7 +83,7 @@ const todayModes = computed(() => byModeRows(props.today.by_mode));
                 </div>
             </div>
 
-            <section class="rounded-lg border bg-card">
+            <section class="rounded-xl border bg-card shadow-sm">
                 <header class="flex items-center justify-between border-b px-4 py-3">
                     <h2 class="text-sm font-semibold">Recent invoices</h2>
                     <Link href="/invoices" class="text-xs text-primary underline-offset-4 hover:underline">View all</Link>
@@ -101,7 +101,7 @@ const todayModes = computed(() => byModeRows(props.today.by_mode));
 
                 <div v-else class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="text-left text-xs uppercase text-muted-foreground">
+                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             <tr>
                                 <th class="px-4 py-2 font-medium">Invoice</th>
                                 <th class="px-4 py-2 font-medium">Customer</th>

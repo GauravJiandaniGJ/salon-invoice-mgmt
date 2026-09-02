@@ -65,7 +65,7 @@ const printPage = () => window.print();
                 </div>
             </div>
 
-            <form class="flex flex-wrap items-end gap-2 rounded-lg border bg-card p-3 print:hidden" @submit.prevent="apply">
+            <form class="flex flex-wrap items-end gap-2 rounded-xl border bg-card shadow-sm p-3 print:hidden" @submit.prevent="apply">
                 <div class="grid gap-1">
                     <label class="text-xs font-medium" for="svc-from">From</label>
                     <DateInput id="svc-from" v-model="from" :max="to" class="h-9" />
@@ -87,11 +87,11 @@ const printPage = () => window.print();
                 <StatCard label="Revenue" :value="formatMoney(report.totals.revenue)" tone="positive" />
             </div>
 
-            <section class="rounded-lg border bg-card">
+            <section class="rounded-xl border bg-card shadow-sm">
                 <EmptyState v-if="report.rows.length === 0" title="No services billed in this range" class="m-4" />
                 <div v-else class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="text-left text-xs uppercase text-muted-foreground">
+                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             <tr>
                                 <th class="px-4 py-2 font-medium">#</th>
                                 <th class="px-4 py-2 font-medium">Service</th>

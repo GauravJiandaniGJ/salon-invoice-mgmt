@@ -60,12 +60,12 @@ const printPage = () => window.print();
                 <StatCard label="Net" :value="formatMoney(report.totals.net)" :tone="report.totals.net < 0 ? 'negative' : 'default'" />
             </div>
 
-            <section class="rounded-lg border bg-card">
+            <section class="rounded-xl border bg-card shadow-sm">
                 <header class="border-b px-4 py-3"><h2 class="text-sm font-semibold">Day by day</h2></header>
                 <EmptyState v-if="report.days.length === 0" title="Nothing recorded this month" class="m-4" />
                 <div v-else class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="text-left text-xs uppercase text-muted-foreground">
+                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             <tr>
                                 <th class="px-4 py-2 font-medium">Date</th>
                                 <th class="px-4 py-2 text-right font-medium">Invoices</th>
@@ -106,7 +106,7 @@ const printPage = () => window.print();
             </section>
 
             <div class="grid gap-4 md:grid-cols-2">
-                <section class="rounded-lg border bg-card p-4">
+                <section class="rounded-xl border bg-card shadow-sm p-4">
                     <h2 class="text-sm font-semibold">Earnings by payment mode</h2>
                     <table class="mt-2 w-full text-sm">
                         <tbody>
@@ -117,7 +117,7 @@ const printPage = () => window.print();
                         </tbody>
                     </table>
                 </section>
-                <section class="rounded-lg border bg-card p-4">
+                <section class="rounded-xl border bg-card shadow-sm p-4">
                     <h2 class="text-sm font-semibold">Expenses by payment mode</h2>
                     <table class="mt-2 w-full text-sm">
                         <tbody>
@@ -131,11 +131,11 @@ const printPage = () => window.print();
             </div>
 
             <div class="grid gap-4 md:grid-cols-2">
-                <section class="rounded-lg border bg-card">
+                <section class="rounded-xl border bg-card shadow-sm">
                     <header class="border-b px-4 py-3"><h2 class="text-sm font-semibold">Top 10 services by revenue</h2></header>
                     <EmptyState v-if="report.top_services.length === 0" title="No services billed" class="m-4" />
                     <table v-else class="w-full text-sm">
-                        <thead class="text-left text-xs uppercase text-muted-foreground">
+                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             <tr>
                                 <th class="px-4 py-2 font-medium">Service</th>
                                 <th class="px-4 py-2 text-right font-medium">Count</th>
@@ -152,7 +152,7 @@ const printPage = () => window.print();
                     </table>
                 </section>
 
-                <section class="rounded-lg border bg-card">
+                <section class="rounded-xl border bg-card shadow-sm">
                     <header class="border-b px-4 py-3"><h2 class="text-sm font-semibold">Earnings per staff member</h2></header>
                     <EmptyState
                         v-if="report.by_staff.length === 0"
@@ -161,7 +161,7 @@ const printPage = () => window.print();
                         class="m-4"
                     />
                     <table v-else class="w-full text-sm">
-                        <thead class="text-left text-xs uppercase text-muted-foreground">
+                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             <tr>
                                 <th class="px-4 py-2 font-medium">Staff</th>
                                 <th class="px-4 py-2 text-right font-medium">Invoices</th>

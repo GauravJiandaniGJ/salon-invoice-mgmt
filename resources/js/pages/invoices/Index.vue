@@ -70,7 +70,7 @@ const exportUrl = computed(() => {
                 </div>
             </div>
 
-            <div class="grid gap-2 rounded-lg border bg-card p-3 md:grid-cols-[1fr_auto_auto_auto_auto_auto_auto]">
+            <div class="grid gap-2 rounded-xl border bg-card shadow-sm p-3 md:grid-cols-[1fr_auto_auto_auto_auto_auto_auto]">
                 <div class="relative">
                     <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input v-model="filters.q" placeholder="Search customer, phone or invoice no." class="h-10 pl-9" />
@@ -97,9 +97,9 @@ const exportUrl = computed(() => {
                 <Button variant="ghost" class="h-10" @click="reset"><X /> Reset</Button>
             </div>
 
-            <div class="overflow-x-auto rounded-lg border bg-card" :class="{ 'opacity-60': loading }">
+            <div class="overflow-x-auto rounded-xl border bg-card shadow-sm" :class="{ 'opacity-60': loading }">
                 <table class="w-full text-sm">
-                    <thead class="text-left text-xs uppercase text-muted-foreground">
+                    <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         <tr>
                             <th class="px-3 py-2 font-medium">Invoice</th>
                             <th class="px-3 py-2 font-medium">Date</th>

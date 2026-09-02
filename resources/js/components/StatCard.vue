@@ -18,7 +18,7 @@ const toneClass: Record<string, string> = {
 </script>
 
 <template>
-    <div class="rounded-lg border bg-card p-4">
+    <div class="rounded-xl border bg-card shadow-sm p-4">
         <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">{{ label }}</p>
         <p class="mt-1 text-2xl font-semibold tabular-nums" :class="toneClass[tone]">{{ value }}</p>
         <p v-if="hint" class="mt-1 text-xs text-muted-foreground">{{ hint }}</p>

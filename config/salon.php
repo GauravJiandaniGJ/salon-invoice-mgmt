@@ -24,7 +24,7 @@ return [
         'salon_whatsapp_number' => '',
         'invoice_prefix' => 'WS',
         'tax_rate' => '0',
-        'footer_text' => 'Powered by 2iT',
+        'footer_text' => 'Powered by TodoIT',
         'logo_path' => '',
         'app_url' => env('APP_URL', 'http://localhost'),
         'whatsapp_template' => "{greeting} {customer_name}! 🙏\nThank you for visiting {salon_name}.\n\nYour invoice {invoice_number} for ₹{total} is here:\n{invoice_link}\n\nWe look forward to seeing you again!",

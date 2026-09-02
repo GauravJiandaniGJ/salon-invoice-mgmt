@@ -62,6 +62,7 @@ const discountValue = ref<number | string>(props.prefill?.discount_value ?? 0);
 const paymentMode = ref<PaymentMode>(props.prefill?.payment_mode ?? 'cash');
 const paymentStatus = ref<PaymentStatus>('paid');
 const notes = ref(props.prefill?.notes ?? '');
+const showNotes = ref(Boolean(props.prefill?.notes));
 const audience = ref<Audience>(customer.gender === 'female' ? 'women' : customer.gender === 'male' ? 'men' : 'all');
 
 const errors = ref<Record<string, string>>({});
@@ -176,46 +177,52 @@ const lineError = (index: number) =>
                 <ServicePicker ref="picker" v-model:audience="audience" :catalog="catalog" class="lg:min-h-0" @add="addService" @add-custom="addCustom" />
             </div>
 
-            <!-- RIGHT: the bill -->
-            <aside class="flex w-full flex-col rounded-lg border bg-card lg:w-[420px] lg:shrink-0 lg:overflow-y-auto" data-error-anchor="items">
-                <div class="border-b p-4">
+            <!-- RIGHT: the bill — header / scrollable lines / fixed footer with totals + save -->
+            <aside
+                class="flex w-full flex-col rounded-xl border bg-card shadow-sm lg:sticky lg:top-4 lg:max-h-[calc(100vh-6rem)] lg:w-[420px] lg:shrink-0"
+                data-error-anchor="items"
+            >
+                <div class="flex shrink-0 items-center justify-between border-b px-4 py-3">
                     <h2 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Bill</h2>
+                    <span v-if="lines.length" class="text-xs text-muted-foreground">{{ lines.length }} line{{ lines.length === 1 ? '' : 's' }}</span>
                 </div>
 
-                <div v-if="lines.length === 0" class="m-4 rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
-                    No services yet. Click a service on the left to add it.
-                </div>
-                <p v-if="itemsError" class="px-4 pt-2 text-xs text-destructive">{{ itemsError }}</p>
+                <div class="min-h-0 flex-1 overflow-y-auto">
+                    <div v-if="lines.length === 0" class="m-4 rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground">
+                        No services yet. Click a service on the left to add it.
+                    </div>
+                    <p v-if="itemsError" class="px-4 pt-2 text-xs text-destructive">{{ itemsError }}</p>
 
-                <ul v-if="lines.length" class="divide-y">
-                    <li v-for="(line, index) in lines" :key="line.uid" class="p-3">
-                        <div class="flex items-start gap-2">
-                            <input
-                                v-model="line.description"
-                                class="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-1 py-0.5 text-sm font-medium hover:border-input focus:border-input focus:outline-none"
-                                aria-label="Description"
-                            />
-                            <button type="button" class="rounded p-1 text-muted-foreground hover:bg-accent hover:text-destructive" aria-label="Remove line" @click="removeLine(line.uid)">
-                                <Trash2 class="h-4 w-4" />
-                            </button>
-                        </div>
-                        <div class="mt-1.5 flex items-center gap-2">
-                            <span class="text-xs text-muted-foreground">₹</span>
-                            <Input v-model="line.unit_price" type="number" min="0" step="any" inputmode="decimal" class="h-9 w-24 text-right" aria-label="Unit price" />
-                            <span class="text-xs text-muted-foreground">×</span>
-                            <div class="flex items-center rounded-md border">
-                                <button type="button" class="h-9 w-8 hover:bg-accent" aria-label="Decrease quantity" @click="bumpQty(line, -1)"><Minus class="mx-auto h-3.5 w-3.5" /></button>
-                                <input v-model="line.quantity" type="number" min="0.01" step="any" inputmode="decimal" class="h-9 w-12 border-x bg-transparent text-center text-sm focus:outline-none" aria-label="Quantity" />
-                                <button type="button" class="h-9 w-8 hover:bg-accent" aria-label="Increase quantity" @click="bumpQty(line, 1)"><Plus class="mx-auto h-3.5 w-3.5" /></button>
+                    <ul v-if="lines.length" class="divide-y">
+                        <li v-for="(line, index) in lines" :key="line.uid" class="p-3">
+                            <div class="flex items-start gap-2">
+                                <input
+                                    v-model="line.description"
+                                    class="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-1 py-0.5 text-sm font-medium hover:border-input focus:border-input focus:outline-none"
+                                    aria-label="Description"
+                                />
+                                <button type="button" class="rounded p-1 text-muted-foreground hover:bg-accent hover:text-destructive" aria-label="Remove line" @click="removeLine(line.uid)">
+                                    <Trash2 class="h-4 w-4" />
+                                </button>
                             </div>
-                            <span class="ml-auto text-sm font-semibold tabular-nums">{{ formatMoney(totals.line_totals[index]) }}</span>
-                        </div>
-                        <p v-if="lineError(index)" class="mt-1 text-xs text-destructive">{{ lineError(index) }}</p>
-                    </li>
-                </ul>
+                            <div class="mt-1.5 flex items-center gap-2">
+                                <span class="text-xs text-muted-foreground">₹</span>
+                                <Input v-model="line.unit_price" type="number" min="0" step="any" inputmode="decimal" class="h-9 w-24 text-right" aria-label="Unit price" />
+                                <span class="text-xs text-muted-foreground">×</span>
+                                <div class="flex items-center rounded-md border">
+                                    <button type="button" class="h-9 w-8 hover:bg-accent" aria-label="Decrease quantity" @click="bumpQty(line, -1)"><Minus class="mx-auto h-3.5 w-3.5" /></button>
+                                    <input v-model="line.quantity" type="number" min="0.01" step="any" inputmode="decimal" class="h-9 w-12 border-x bg-transparent text-center text-sm focus:outline-none" aria-label="Quantity" />
+                                    <button type="button" class="h-9 w-8 hover:bg-accent" aria-label="Increase quantity" @click="bumpQty(line, 1)"><Plus class="mx-auto h-3.5 w-3.5" /></button>
+                                </div>
+                                <span class="ml-auto text-sm font-semibold tabular-nums">{{ formatMoney(totals.line_totals[index]) }}</span>
+                            </div>
+                            <p v-if="lineError(index)" class="mt-1 text-xs text-destructive">{{ lineError(index) }}</p>
+                        </li>
+                    </ul>
+                </div>
 
-                <div class="mt-auto border-t p-4">
-                    <dl class="space-y-1.5 text-sm">
+                <div class="shrink-0 border-t bg-muted/30 p-4">
+                    <dl class="space-y-1 text-sm">
                         <div class="flex justify-between">
                             <dt class="text-muted-foreground">Subtotal</dt>
                             <dd class="tabular-nums">{{ formatMoney(totals.subtotal) }}</dd>
@@ -224,7 +231,7 @@ const lineError = (index: number) =>
                         <div class="flex items-center justify-between gap-2" data-error-anchor="discount_value">
                             <dt class="flex items-center gap-1.5 text-muted-foreground">
                                 Discount
-                                <span class="flex rounded-md border p-0.5">
+                                <span class="flex rounded-md border bg-background p-0.5">
                                     <button type="button" :class="['h-7 rounded px-2 text-xs', discountType === 'flat' ? 'bg-primary text-primary-foreground' : 'hover:bg-accent']" @click="toggleDiscount('flat')">₹</button>
                                     <button type="button" :class="['h-7 rounded px-2 text-xs', discountType === 'percent' ? 'bg-primary text-primary-foreground' : 'hover:bg-accent']" @click="toggleDiscount('percent')">%</button>
                                 </span>
@@ -250,28 +257,30 @@ const lineError = (index: number) =>
                         </div>
                     </dl>
 
-                    <div class="mt-4" data-error-anchor="payment_mode">
-                        <p class="mb-1.5 text-xs font-medium text-muted-foreground">Payment</p>
+                    <div class="mt-3" data-error-anchor="payment_mode">
                         <div class="grid grid-cols-4 gap-1.5" role="group" aria-label="Payment mode">
                             <button
                                 v-for="m in payment_modes"
                                 :key="m"
                                 type="button"
-                                :class="['h-10 rounded-md border text-sm font-medium', paymentMode === m ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-accent']"
+                                :class="['h-10 rounded-md border text-sm font-medium', paymentMode === m ? 'border-primary bg-primary text-primary-foreground' : 'bg-background hover:bg-accent']"
                                 @click="paymentMode = m"
                             >
                                 {{ paymentLabel(m) }}
                             </button>
                         </div>
                         <p v-if="errors.payment_mode" class="mt-1 text-xs text-destructive">{{ errors.payment_mode }}</p>
-                        <label class="mt-2 flex items-center gap-2 text-sm">
-                            <input type="checkbox" :checked="paymentStatus === 'paid'" @change="paymentStatus = paymentStatus === 'paid' ? 'unpaid' : 'paid'" />
-                            <span>{{ paymentStatus === 'paid' ? 'Paid' : 'Unpaid — mark as pending' }}</span>
-                        </label>
+                        <div class="mt-2 flex items-center justify-between gap-2 text-sm">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" :checked="paymentStatus === 'paid'" @change="paymentStatus = paymentStatus === 'paid' ? 'unpaid' : 'paid'" />
+                                <span>{{ paymentStatus === 'paid' ? 'Paid' : 'Unpaid — mark as pending' }}</span>
+                            </label>
+                            <button v-if="!showNotes" type="button" class="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground" @click="showNotes = true">Add note</button>
+                        </div>
                     </div>
 
-                    <div class="mt-3">
-                        <textarea v-model="notes" rows="2" placeholder="Internal notes (optional)" class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                    <div v-if="showNotes" class="mt-2">
+                        <Input v-model="notes" placeholder="Internal note (optional)" class="h-9" />
                         <p v-if="errors.notes" class="text-xs text-destructive">{{ errors.notes }}</p>
                     </div>
 

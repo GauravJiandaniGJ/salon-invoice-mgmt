@@ -43,6 +43,39 @@ test('lookup reports not found and invalid numbers', function () {
         ->assertJsonPath('error', fn ($e) => is_string($e) && $e !== '');
 });
 
+test('lookup suggests customers by name or phone fragment', function () {
+    $priya = Customer::factory()->create(['name' => 'Priya Sharma', 'phone' => '919876543210', 'last_visit_at' => now()->subDay()]);
+    $prince = Customer::factory()->create(['name' => 'Prince Kumar', 'phone' => '919123456789', 'last_visit_at' => now()]);
+    Customer::factory()->create(['name' => 'Rahul Verma', 'phone' => '919555512345']);
+
+    // name match, case-insensitive, most recent visit first
+    $this->actingAs(staff())
+        ->getJson('/customers/lookup?q=pri')
+        ->assertOk()
+        ->assertJson(['found' => false, 'customer' => null, 'normalised_phone' => null, 'error' => null])
+        ->assertJsonCount(2, 'matches')
+        ->assertJsonPath('matches.0.id', $prince->id)
+        ->assertJsonPath('matches.1.id', $priya->id)
+        ->assertJsonPath('matches.1.phone_display', '+91 98765 43210')
+        ->assertJsonPath('matches.1.visits', 0);
+
+    // phone fragment match (digits only, formatting ignored)
+    $this->actingAs(staff())
+        ->getJson('/customers/lookup?q=555-12')
+        ->assertOk()
+        ->assertJsonCount(1, 'matches')
+        ->assertJsonPath('matches.0.name', 'Rahul Verma');
+
+    // too short → no matches
+    $this->actingAs(staff())->getJson('/customers/lookup?q=p')->assertOk()->assertJsonCount(0, 'matches');
+});
+
+test('lookup suggestions are capped at eight', function () {
+    Customer::factory()->count(12)->sequence(fn ($seq) => ['name' => 'Anita '.$seq->index])->create();
+
+    $this->actingAs(staff())->getJson('/customers/lookup?q=anita')->assertOk()->assertJsonCount(8, 'matches');
+});
+
 test('customers index searches by name or phone', function () {
     Customer::factory()->create(['name' => 'Priya Sharma', 'phone' => '919876543210']);
     Customer::factory()->create(['name' => 'Rahul Verma', 'phone' => '919123456789']);

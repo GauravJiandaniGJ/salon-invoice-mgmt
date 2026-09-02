@@ -90,7 +90,7 @@ const printInvoice = () => window.print();
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex flex-1 flex-col gap-4 p-4 lg:flex-row">
             <!-- Preview -->
-            <div class="print-area relative flex-1 rounded-lg border bg-card p-6 shadow-sm">
+            <div class="print-area relative flex-1 rounded-xl border bg-card p-6 shadow-sm">
                 <div v-if="isVoid" class="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden" aria-hidden="true">
                     <span class="rotate-[-25deg] text-[7rem] font-black uppercase tracking-widest text-red-500/15 print:text-red-500/25">Void</span>
                 </div>
@@ -116,14 +116,14 @@ const printInvoice = () => window.print();
 
                 <section class="grid gap-3 py-4 text-sm sm:grid-cols-2">
                     <div>
-                        <p class="text-xs uppercase text-muted-foreground">Billed to</p>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Billed to</p>
                         <p class="font-medium">
                             <Link :href="`/customers/${invoice.customer.id}`" class="hover:underline">{{ invoice.customer.name }}</Link>
                         </p>
                         <p class="text-muted-foreground">{{ invoice.customer.phone_display }}</p>
                     </div>
                     <div class="sm:text-right">
-                        <p class="text-xs uppercase text-muted-foreground">Details</p>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Details</p>
                         <p>Billed by <span class="font-medium">{{ invoice.billed_by.name }}</span></p>
                         <p v-if="invoice.staff_member">Served by <span class="font-medium">{{ invoice.staff_member.name }}</span></p>
                         <p>Payment: <span class="font-medium">{{ paymentLabel(invoice.payment_mode) }}</span> · {{ invoice.payment_status === 'paid' ? 'Paid' : 'Unpaid' }}</p>
@@ -131,7 +131,7 @@ const printInvoice = () => window.print();
                 </section>
 
                 <table class="w-full text-sm">
-                    <thead class="border-b text-left text-xs uppercase text-muted-foreground">
+                    <thead class="border-b text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         <tr>
                             <th class="py-2 font-medium">Description</th>
                             <th class="py-2 text-right font-medium">Qty</th>
@@ -171,7 +171,7 @@ const printInvoice = () => window.print();
                     <p>The public link uses <code>localhost</code>. Set the salon's public URL in <Link href="/settings" class="underline">Settings</Link> before sending to customers.</p>
                 </div>
 
-                <div class="rounded-lg border bg-card p-4">
+                <div class="rounded-xl border bg-card shadow-sm p-4">
                     <Button v-if="whatsapp_url && !isVoid" as-child size="lg" class="h-12 w-full bg-[#25D366] text-base text-white hover:bg-[#1ebe5b]">
                         <a :href="whatsapp_url" target="_blank" rel="noopener" @click="markSent"><MessageCircle /> Send on WhatsApp</a>
                     </Button>
@@ -192,12 +192,12 @@ const printInvoice = () => window.print();
                     <Button as-child variant="outline" class="h-10"><Link :href="`/bills/new?duplicate=${invoice.id}`"><CopyPlus /> Duplicate</Link></Button>
                 </div>
 
-                <div class="rounded-lg border bg-card p-3 text-xs text-muted-foreground">
+                <div class="rounded-xl border bg-card shadow-sm p-3 text-xs text-muted-foreground">
                     <p class="mb-1 font-medium text-foreground">Public link</p>
                     <a :href="public_url" target="_blank" rel="noopener" class="break-all underline underline-offset-2">{{ public_url }}</a>
                 </div>
 
-                <details class="rounded-lg border bg-card p-3 text-xs">
+                <details class="rounded-xl border bg-card shadow-sm p-3 text-xs">
                     <summary class="cursor-pointer font-medium">Message preview</summary>
                     <pre class="mt-2 whitespace-pre-wrap font-sans text-muted-foreground">{{ whatsapp_message }}</pre>
                 </details>

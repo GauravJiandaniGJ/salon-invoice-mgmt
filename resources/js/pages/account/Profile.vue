@@ -57,7 +57,7 @@ const submit = () => {
                             leave="transition ease-in-out"
                             leave-to="opacity-0"
                         >
-                            <p class="text-sm text-neutral-600">Saved.</p>
+                            <p class="text-sm text-muted-foreground">Saved.</p>
                         </TransitionRoot>
                     </div>
                 </form>

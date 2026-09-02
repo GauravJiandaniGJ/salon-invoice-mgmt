@@ -54,9 +54,9 @@ const genderLabel: Record<string, string> = { female: 'F', male: 'M', other: 'O'
                 <Input v-model="q" placeholder="Search by name or phone" class="h-10 pl-9" autofocus />
             </div>
 
-            <div class="overflow-x-auto rounded-lg border bg-card" :class="{ 'opacity-60': loading }">
+            <div class="overflow-x-auto rounded-xl border bg-card shadow-sm" :class="{ 'opacity-60': loading }">
                 <table class="w-full text-sm">
-                    <thead class="text-left text-xs uppercase text-muted-foreground">
+                    <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         <tr>
                             <th class="px-3 py-2 font-medium">Name</th>
                             <th class="px-3 py-2 font-medium">Phone</th>

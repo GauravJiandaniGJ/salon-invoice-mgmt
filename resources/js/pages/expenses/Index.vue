@@ -92,7 +92,7 @@ const modeRows = computed(() => byModeRows(props.totals.by_mode));
                 <p class="text-sm text-muted-foreground">Record what the salon spends so the daily statement shows the real net.</p>
             </div>
 
-            <form class="rounded-lg border bg-card p-4" @submit.prevent="submit">
+            <form class="rounded-xl border bg-card shadow-sm p-4" @submit.prevent="submit">
                 <h2 class="mb-3 text-sm font-semibold">Quick add</h2>
                 <div class="grid gap-3 md:grid-cols-12">
                     <div class="grid gap-1 md:col-span-2">
@@ -156,9 +156,9 @@ const modeRows = computed(() => byModeRows(props.totals.by_mode));
                 :icon="Wallet"
             />
 
-            <div v-else class="overflow-x-auto rounded-lg border bg-card">
+            <div v-else class="overflow-x-auto rounded-xl border bg-card shadow-sm">
                 <table class="w-full text-sm">
-                    <thead class="text-left text-xs uppercase text-muted-foreground">
+                    <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         <tr>
                             <th class="px-3 py-2 font-medium">Date</th>
                             <th class="px-3 py-2 font-medium">Category</th>

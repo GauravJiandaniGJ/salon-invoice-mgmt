@@ -134,7 +134,7 @@ const audienceLabel: Record<string, string> = { women: 'Women', men: 'Men', all:
                 <Button @click="showAddCategory = !showAddCategory"><Plus /> Add category</Button>
             </div>
 
-            <form v-if="showAddCategory" class="flex flex-wrap items-end gap-3 rounded-lg border bg-card p-4" @submit.prevent="addCategory">
+            <form v-if="showAddCategory" class="flex flex-wrap items-end gap-3 rounded-xl border bg-card shadow-sm p-4" @submit.prevent="addCategory">
                 <div class="grid flex-1 gap-1">
                     <label class="text-xs font-medium" for="new-cat-name">Category name</label>
                     <Input id="new-cat-name" v-model="categoryForm.name" placeholder="e.g. Hair Spa" autofocus />
@@ -150,11 +150,11 @@ const audienceLabel: Record<string, string> = { women: 'Women', men: 'Men', all:
                 <Button type="button" variant="ghost" @click="showAddCategory = false">Cancel</Button>
             </form>
 
-            <div v-if="categories.length === 0" class="rounded-lg border border-dashed p-10 text-center text-muted-foreground">
+            <div v-if="categories.length === 0" class="rounded-xl border border-dashed bg-card/60 p-10 text-center text-muted-foreground">
                 No services yet. Add a category to get started.
             </div>
 
-            <section v-for="(category, ci) in categories" :key="category.id" class="rounded-lg border bg-card" :class="{ 'opacity-60': !category.is_active }">
+            <section v-for="(category, ci) in categories" :key="category.id" class="rounded-xl border bg-card shadow-sm" :class="{ 'opacity-60': !category.is_active }">
                 <header class="flex flex-wrap items-center gap-2 border-b px-3 py-2">
                     <button type="button" class="rounded p-1 hover:bg-accent" :aria-label="collapsed[category.id] ? 'Expand' : 'Collapse'" @click="toggle(category.id)">
                         <ChevronRight v-if="collapsed[category.id]" class="h-4 w-4" />
@@ -199,7 +199,7 @@ const audienceLabel: Record<string, string> = { women: 'Women', men: 'Men', all:
 
                 <div v-show="!collapsed[category.id]" class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="text-left text-xs uppercase text-muted-foreground">
+                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             <tr>
                                 <th class="px-3 py-2 font-medium">Group</th>
                                 <th class="px-3 py-2 font-medium">Service</th>

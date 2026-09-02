@@ -64,23 +64,23 @@ const genderLabel: Record<string, string> = { female: 'Female', male: 'Male', ot
             <div class="grid gap-4 lg:grid-cols-[320px_1fr]">
                 <div class="space-y-4">
                     <div class="grid grid-cols-3 gap-2 lg:grid-cols-1">
-                        <div class="rounded-lg border bg-card p-3">
-                            <p class="text-xs uppercase text-muted-foreground">Lifetime total</p>
+                        <div class="rounded-xl border bg-card shadow-sm p-3">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lifetime total</p>
                             <p class="text-xl font-bold tabular-nums">{{ formatMoney(customer.total_spent) }}</p>
                         </div>
-                        <div class="rounded-lg border bg-card p-3">
-                            <p class="text-xs uppercase text-muted-foreground">Visits</p>
+                        <div class="rounded-xl border bg-card shadow-sm p-3">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Visits</p>
                             <p class="text-xl font-bold tabular-nums">{{ customer.visits }}</p>
                         </div>
-                        <div class="rounded-lg border bg-card p-3">
-                            <p class="text-xs uppercase text-muted-foreground">Last visit</p>
+                        <div class="rounded-xl border bg-card shadow-sm p-3">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Last visit</p>
                             <p class="text-xl font-bold">{{ formatDate(customer.last_visit_at) }}</p>
                         </div>
                     </div>
 
-                    <section class="rounded-lg border bg-card p-4">
+                    <section class="rounded-xl border bg-card shadow-sm p-4">
                         <div class="mb-3 flex items-center justify-between">
-                            <h2 class="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Profile</h2>
+                            <h2 class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Profile</h2>
                             <Button v-if="!editing" variant="ghost" size="sm" @click="editing = true"><Pencil /> Edit</Button>
                         </div>
 
@@ -124,11 +124,11 @@ const genderLabel: Record<string, string> = { female: 'Female', male: 'Male', ot
                     </section>
                 </div>
 
-                <section class="rounded-lg border bg-card">
-                    <h2 class="border-b px-4 py-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Visit history</h2>
+                <section class="rounded-xl border bg-card shadow-sm">
+                    <h2 class="border-b px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Visit history</h2>
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm">
-                            <thead class="text-left text-xs uppercase text-muted-foreground">
+                            <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                 <tr>
                                     <th class="px-3 py-2 font-medium">Invoice</th>
                                     <th class="px-3 py-2 font-medium">Date</th>

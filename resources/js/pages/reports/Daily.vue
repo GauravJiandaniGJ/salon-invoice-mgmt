@@ -78,7 +78,7 @@ const printPage = () => window.print();
             </div>
 
             <div class="grid gap-4 md:grid-cols-2">
-                <section class="rounded-lg border bg-card p-4">
+                <section class="rounded-xl border bg-card shadow-sm p-4">
                     <h2 class="text-sm font-semibold">Earnings by payment mode</h2>
                     <table class="mt-2 w-full text-sm">
                         <tbody>
@@ -94,7 +94,7 @@ const printPage = () => window.print();
                     </table>
                 </section>
 
-                <section class="rounded-lg border bg-card p-4">
+                <section class="rounded-xl border bg-card shadow-sm p-4">
                     <h2 class="text-sm font-semibold">Expenses by payment mode</h2>
                     <table class="mt-2 w-full text-sm">
                         <tbody>
@@ -111,14 +111,14 @@ const printPage = () => window.print();
                 </section>
             </div>
 
-            <section class="rounded-lg border bg-card">
+            <section class="rounded-xl border bg-card shadow-sm">
                 <header class="border-b px-4 py-3">
                     <h2 class="text-sm font-semibold">Invoices ({{ report.invoices.length }})</h2>
                 </header>
                 <EmptyState v-if="report.invoices.length === 0" title="No invoices on this day" :icon="FileText" class="m-4" />
                 <div v-else class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="text-left text-xs uppercase text-muted-foreground">
+                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             <tr>
                                 <th class="px-4 py-2 font-medium">Invoice</th>
                                 <th class="px-4 py-2 font-medium">Customer</th>
@@ -148,7 +148,7 @@ const printPage = () => window.print();
                 </div>
             </section>
 
-            <section v-if="report.voided.length" class="rounded-lg border border-dashed bg-card">
+            <section v-if="report.voided.length" class="rounded-xl border border-dashed bg-card">
                 <header class="border-b px-4 py-3">
                     <h2 class="text-sm font-semibold text-muted-foreground">Voided ({{ report.voided.length }}) — not included in totals</h2>
                 </header>
@@ -168,14 +168,14 @@ const printPage = () => window.print();
                 </div>
             </section>
 
-            <section class="rounded-lg border bg-card">
+            <section class="rounded-xl border bg-card shadow-sm">
                 <header class="border-b px-4 py-3">
                     <h2 class="text-sm font-semibold">Expenses ({{ report.expense_lines.length }})</h2>
                 </header>
                 <EmptyState v-if="report.expense_lines.length === 0" title="No expenses on this day" class="m-4" />
                 <div v-else class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="text-left text-xs uppercase text-muted-foreground">
+                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             <tr>
                                 <th class="px-4 py-2 font-medium">Category</th>
                                 <th class="px-4 py-2 font-medium">Description</th>
@@ -201,7 +201,7 @@ const printPage = () => window.print();
                 </div>
             </section>
 
-            <section class="rounded-lg border bg-card p-4">
+            <section class="rounded-xl border bg-card shadow-sm p-4">
                 <dl class="grid grid-cols-2 gap-y-2 text-sm sm:max-w-md">
                     <dt>Earnings</dt>
                     <dd class="text-right tabular-nums">{{ formatMoney(report.earnings.total) }}</dd>

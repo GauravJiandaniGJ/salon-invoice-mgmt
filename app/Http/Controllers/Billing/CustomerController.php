@@ -17,9 +17,16 @@ use InvalidArgumentException;
 
 class CustomerController extends Controller
 {
-    /** GET /customers/lookup?phone= (json) */
+    /**
+     * GET /customers/lookup?phone=   → exact match on a normalised number.
+     * GET /customers/lookup?q=       → up to 8 suggestions by name or phone fragment.
+     */
     public function lookup(Request $request): JsonResponse
     {
+        if ($request->filled('q') && ! $request->filled('phone')) {
+            return $this->suggestions(trim((string) $request->query('q')));
+        }
+
         try {
             $phone = PhoneNumber::normalise($request->query('phone'));
         } catch (InvalidArgumentException $e) {
@@ -32,20 +39,9 @@ class CustomerController extends Controller
             return response()->json(['found' => false, 'customer' => null, 'normalised_phone' => $phone, 'error' => null]);
         }
 
-        $last = $customer->invoices()->issued()->first();
-
         return response()->json([
             'found' => true,
-            'customer' => [
-                ...$this->row($customer),
-                'notes' => $customer->notes,
-                'last_invoice' => $last ? [
-                    'id' => $last->id,
-                    'invoice_number' => $last->invoice_number,
-                    'total' => (float) $last->total,
-                    'invoice_date' => $last->invoice_date->toDateString(),
-                ] : null,
-            ],
+            'customer' => $this->lookupShape($customer),
             'normalised_phone' => $phone,
             'error' => null,
         ]);
@@ -104,6 +100,52 @@ class CustomerController extends Controller
         $customer->update($request->normalised());
 
         return back()->with('success', 'Customer updated.');
+    }
+
+    protected function suggestions(string $q): JsonResponse
+    {
+        $empty = ['found' => false, 'customer' => null, 'normalised_phone' => null, 'error' => null];
+
+        if (mb_strlen($q) < 2) {
+            return response()->json([...$empty, 'matches' => []]);
+        }
+
+        $digits = preg_replace('/\D+/', '', $q) ?? '';
+
+        $matches = Customer::query()
+            ->withCount(['invoices as visits' => fn ($query) => $query->issued()])
+            ->where(function ($w) use ($q, $digits) {
+                $w->whereRaw('LOWER(name) LIKE ?', ['%'.mb_strtolower($q).'%']);
+                if (strlen($digits) >= 2) {
+                    $w->orWhere('phone', 'like', "%{$digits}%");
+                }
+            })
+            ->orderByRaw('last_visit_at IS NULL')
+            ->orderByDesc('last_visit_at')
+            ->orderByDesc('id')
+            ->limit(8)
+            ->get()
+            ->map(fn (Customer $customer) => $this->lookupShape($customer))
+            ->values();
+
+        return response()->json([...$empty, 'matches' => $matches]);
+    }
+
+    /** CustomerLookup shape (CustomerRow + notes + last_invoice). @return array<string, mixed> */
+    protected function lookupShape(Customer $customer): array
+    {
+        $last = $customer->invoices()->issued()->first();
+
+        return [
+            ...$this->row($customer),
+            'notes' => $customer->notes,
+            'last_invoice' => $last ? [
+                'id' => $last->id,
+                'invoice_number' => $last->invoice_number,
+                'total' => (float) $last->total,
+                'invoice_date' => $last->invoice_date->toDateString(),
+            ] : null,
+        ];
     }
 
     /** CustomerRow shape. Expects `visits` count loaded. @return array<string, mixed> */
