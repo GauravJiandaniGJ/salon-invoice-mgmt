@@ -2,7 +2,31 @@
 
 One image, one server. The app (Nginx + PHP-FPM), a scheduler for backups, and Caddy for automatic HTTPS run with `docker compose`. Data (SQLite file, PDFs, uploaded logo, backups) lives in two Docker volumes and survives redeploys.
 
-## 1. One-time server setup (Ubuntu 22.04/24.04, any VPS)
+## 0. Server already running Docker + other apps (most common)
+
+Skip the Docker install and do **not** start Caddy (ports 80/443 belong to your existing proxy). The app listens on `127.0.0.1:8085` only; add a site in your existing reverse proxy that forwards the domain to it.
+
+```bash
+mkdir -p /opt/wowsalon && cd /opt/wowsalon
+curl -fsSLo docker-compose.yml https://raw.githubusercontent.com/GauravJiandaniGJ/saloon-invoice-mgmt/main/docker-compose.yml
+curl -fsSLo .env https://raw.githubusercontent.com/GauravJiandaniGJ/saloon-invoice-mgmt/main/.env.production.example
+nano .env                      # APP_URL, SEED_OWNER_PASSWORD, APP_PORT (pick a free port), APP_KEY (next step)
+docker login ghcr.io -u GauravJiandaniGJ
+docker compose pull app
+docker compose run --rm app php artisan key:generate --show   # paste into .env as APP_KEY
+docker compose up -d app scheduler
+docker compose logs -f app     # wait for "[boot] ready"
+```
+
+Reverse-proxy examples for `salon.example.com → 127.0.0.1:8085`:
+
+- **Nginx:** `location / { proxy_pass http://127.0.0.1:8085; proxy_set_header Host $host; proxy_set_header X-Forwarded-Proto https; proxy_set_header X-Forwarded-For $remote_addr; }` then `certbot --nginx -d salon.example.com`.
+- **Caddy (existing):** `salon.example.com { reverse_proxy 127.0.0.1:8085 }`
+- **Traefik / Nginx Proxy Manager / Coolify:** add a host rule for the domain pointing at `127.0.0.1:8085` (or attach the app to your proxy's Docker network and target `app:8080`).
+
+Nothing else on the server is touched: the stack uses its own project name (`wowsalon`), its own volumes, and one localhost port.
+
+## 1. Fresh server (nothing else running)
 
 ```bash
 # as root or a sudo user
@@ -20,7 +44,7 @@ Edit `.env`: set `APP_URL`, `APP_DOMAIN`, `SEED_OWNER_PASSWORD`, and `APP_KEY` (
 docker login ghcr.io -u GauravJiandaniGJ
 docker compose pull
 docker compose run --rm app php artisan key:generate --show   # paste the value into .env as APP_KEY
-docker compose up -d
+docker compose --profile caddy up -d
 docker compose logs -f app   # wait for "[boot] ready"
 ```
 

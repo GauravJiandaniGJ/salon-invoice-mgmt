@@ -1,5 +1,6 @@
-# Production stack: app (Nginx + PHP-FPM), scheduler (backups), caddy (HTTPS).
-# Usage on the server:  cp .env.production.example .env  →  edit  →  docker compose up -d
+# Production stack: app (Nginx + PHP-FPM), scheduler (backups), caddy (HTTPS, optional).
+#   Fresh server:        docker compose --profile caddy up -d      (Caddy owns ports 80/443)
+#   Existing reverse proxy on the server:  docker compose up -d   (app listens on 127.0.0.1:${APP_PORT}, proxy it)
 services:
   app:
     image: ${APP_IMAGE:-ghcr.io/gauravjiandanigj/saloon-invoice-mgmt:latest}
@@ -8,8 +9,8 @@ services:
     volumes:
       - app_database:/var/www/html/database
       - app_storage:/var/www/html/storage
-    expose:
-      - "8080"
+    ports:
+      - "127.0.0.1:${APP_PORT:-8085}:8080"   # localhost only; your reverse proxy forwards the domain here
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8080/up"]
       interval: 30s
@@ -30,6 +31,7 @@ services:
 
   caddy:
     image: caddy:2-alpine
+    profiles: ["caddy"]
     restart: unless-stopped
     ports:
       - "80:80"
