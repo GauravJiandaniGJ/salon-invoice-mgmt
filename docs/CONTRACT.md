@@ -133,3 +133,31 @@ CSV via `App\Services\CsvExporter::stream(string $filename, array $header, itera
 - F2 provides shared components listed in ownership; F1 may import them **only after F2 reports** — to stay unblocked F1 should use plain Tailwind + existing `components/ui/*` and not depend on F2 components.
 - Toasts (F2): watch `usePage().props.flash`; auto-dismiss 4 s.
 - Empty states everywhere; loading via `form.processing` / `router.on('start'|'finish')`.
+
+---
+
+# Addendum 2 — client feedback round (branding, edit, WhatsApp)
+
+## New settings keys (config/salon.php defaults, `Setting::get`)
+`brand_color` (hex), `whatsapp_driver` (`wame|cloud`), `whatsapp_cloud_phone_id`, `whatsapp_cloud_token` (secret; never returned to the client — expose only `whatsapp_cloud_token_set: bool`), `whatsapp_cloud_template`. `config('salon.powered_by')` = `{name, url, label}`.
+
+## Shared props (HandleInertiaRequests — D1 edits)
+`salon.brand_color`, `powered_by: {name,url,label}`.
+
+## Routes added
+- `GET /brand/favicon` (public) → `BrandController@favicon`: uploaded salon logo (PNG/JPG passthrough) or a default SVG mark; `Cache-Control: public, max-age=3600`. `app.blade.php` links it as the favicon.
+- `GET /invoices/{invoice}/edit` → `bills/New` with `prefill` filled from the invoice **and** `editing: EditingInvoice`; 404-flash back if void.
+- `PUT /invoices/{invoice}` payload `BillPayload` → `InvoiceService::update($invoice, $validated, $user)`: same validation as store; in a transaction replace items, recompute totals, keep `invoice_number`/`public_code`, allow customer change (adjust `total_spent` on both customers), reset `whatsapp_sent_at` to null, regenerate PDF, log. Redirect to show with success "Invoice WS-0001 updated".
+- `POST /invoices/{invoice}/send` (json) → `SendResponse`. Driver `cloud`: send via `CloudApiSender`, mark sent, `{sent:true}`; on any failure log and return `{sent:false, fallback_url: <device link>, error}`. Driver `wame`: `{sent:false, fallback_url}` without marking (the client marks after opening).
+
+## Invoice show props (W1)
+Replace `whatsapp_url` with: `whatsapp_web_url` (`https://web.whatsapp.com/send?phone=91…&text=…`, for desktop — skips the wa.me interstitial that mangles emoji), `whatsapp_mobile_url` (`https://wa.me/91…?text=…`), `whatsapp_mode: 'link'|'cloud'`. Keep `whatsapp_message`, `public_url`, `pdf_url`, `app_url_missing`, `can_void`. Frontend picks web vs mobile by user agent (`/Android|iPhone|iPad/i`).
+
+## WhatsApp template
+New default (config). Placeholder `{powered_by}` = `config('salon.powered_by.label').' · '.host` e.g. `Powered by TodoIT · todoitservices.com`. A migration updates rows still equal to the old default. Message must stay < 400 chars.
+
+## Bill page prop
+`bills/New` gets `editing: EditingInvoice | null`; when set: title "Edit WS-0001", submit via `router.put('/invoices/{id}')`, button label "Save changes", Cancel → back to invoice.
+
+## Branding
+Header top-right: small "Powered by TodoIT" badge linking to the URL (new tab). Login page footer, public invoice page footer and PDF footer: "{footer_text} · todoitservices.com" as a link where HTML allows. Role labels in UI: owner → "Owner", staff → "Receptionist".

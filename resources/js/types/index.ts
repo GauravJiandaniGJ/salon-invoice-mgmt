@@ -40,7 +40,8 @@ export interface NavItem {
 
 export interface SharedData {
     name: string;
-    salon: { name: string; logo_url: string | null };
+    salon: { name: string; logo_url: string | null; brand_color: string };
+    powered_by: { name: string; url: string; label: string };
     auth: Auth;
     flash: { success: string | null; error: string | null };
     ziggy: {
@@ -162,6 +163,21 @@ export interface BillPrefill {
     discount_value: number;
     payment_mode: PaymentMode;
     notes: string;
+}
+
+/** bills/New extra prop when editing an issued invoice (PUT /invoices/{id}) */
+export interface EditingInvoice {
+    id: number;
+    invoice_number: string;
+    whatsapp_sent_at: string | null;
+}
+
+/** POST /invoices/{id}/send (json) */
+export interface SendResponse {
+    sent: boolean; // true when delivered server-side (cloud driver)
+    whatsapp_sent_at: string | null;
+    fallback_url: string | null; // open this when sent === false
+    error: string | null;
 }
 
 export interface Totals {
@@ -321,6 +337,11 @@ export interface SalonSettings {
     footer_text: string;
     app_url: string;
     logo_url: string | null;
+    brand_color: string; // hex, e.g. #0F766E
+    whatsapp_driver: 'wame' | 'cloud';
+    whatsapp_cloud_phone_id: string;
+    whatsapp_cloud_template: string;
+    whatsapp_cloud_token_set: boolean; // token itself is never sent to the client
 }
 
 export interface SettingsUserRow {

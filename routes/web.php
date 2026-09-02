@@ -10,6 +10,7 @@
 use App\Http\Controllers\Billing\BillController;
 use App\Http\Controllers\Billing\CustomerController;
 use App\Http\Controllers\Billing\InvoiceController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\Catalog\ServiceCategoryController;
 use App\Http\Controllers\Catalog\ServiceController;
 use App\Http\Controllers\DashboardController;
@@ -24,6 +25,8 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/dashboard')->name('home');
 
 // ----- Public (no auth) -----
+Route::get('brand/favicon', [BrandController::class, 'favicon'])->name('brand.favicon');
+
 Route::middleware('throttle:60,1')->group(function () {
     Route::get('i/{code}', [PublicInvoiceController::class, 'show'])->name('public.invoice');
     Route::get('i/{code}/pdf', [PublicInvoiceController::class, 'pdf'])->name('public.invoice.pdf');
@@ -35,11 +38,14 @@ Route::middleware('auth')->group(function () {
     // ----- Billing -----
     Route::get('bills/new', [BillController::class, 'create'])->name('bills.create');
     Route::post('invoices', [BillController::class, 'store'])->name('invoices.store');
+    Route::get('invoices/{invoice}/edit', [BillController::class, 'edit'])->name('invoices.edit');
+    Route::put('invoices/{invoice}', [BillController::class, 'update'])->name('invoices.update');
 
     Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::get('invoices/export.csv', [InvoiceController::class, 'exportCsv'])->middleware('role:owner')->name('invoices.export');
     Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
     Route::post('invoices/{invoice}/mark-sent', [InvoiceController::class, 'markSent'])->name('invoices.mark-sent');
+    Route::post('invoices/{invoice}/send', [InvoiceController::class, 'send'])->name('invoices.send');
     Route::post('invoices/{invoice}/void', [InvoiceController::class, 'void'])->middleware('role:owner')->name('invoices.void');
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
 
