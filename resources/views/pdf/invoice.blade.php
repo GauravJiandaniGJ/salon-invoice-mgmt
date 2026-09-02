@@ -21,8 +21,6 @@
 
     @include('partials.invoice-body', ['invoice' => $invoice, 'salon' => $salon])
 
-    @if($salon['footer_text'])
-        <div class="footer">{{ $salon['footer_text'] }}</div>
-    @endif
+    <div class="footer">{{ $salon['footer_text'] ?: config('salon.powered_by.label') }} &middot; {{ parse_url(config('salon.powered_by.url'), PHP_URL_HOST) }}</div>
 </body>
 </html>

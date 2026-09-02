@@ -8,7 +8,7 @@ import { byModeRows, paymentModeLabel } from '@/lib/format';
 import { formatMoney } from '@/lib/money';
 import { type BreadcrumbItem, type DashboardData, type SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { Check, FilePlus2, FileText, Send, X } from 'lucide-vue-next';
+import { Check, FilePlus2, FileText, Pencil, Send, X } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const props = defineProps<DashboardData>();
@@ -134,7 +134,10 @@ const todayModes = computed(() => byModeRows(props.today.by_mode));
                                     <Check v-if="inv.whatsapp_sent_at" class="inline h-4 w-4 text-green-600" aria-label="Sent" />
                                     <X v-else class="inline h-4 w-4 text-muted-foreground" aria-label="Not sent" />
                                 </td>
-                                <td class="px-4 py-2 text-right">
+                                <td class="whitespace-nowrap px-4 py-2 text-right">
+                                    <Button v-if="inv.status === 'issued'" as-child size="sm" variant="ghost" class="h-8 w-8 p-0" title="Edit bill">
+                                        <Link :href="`/invoices/${inv.id}/edit`" aria-label="Edit bill"><Pencil /></Link>
+                                    </Button>
                                     <Button v-if="!inv.whatsapp_sent_at && inv.status === 'issued'" as-child size="sm" variant="outline">
                                         <Link :href="`/invoices/${inv.id}`"><Send /> Send</Link>
                                     </Button>

@@ -162,6 +162,8 @@ export interface BillPrefill {
     discount_type: DiscountType | null;
     discount_value: number;
     payment_mode: PaymentMode;
+    payment_status?: PaymentStatus;
+    invoice_date?: string; // YYYY-MM-DD, present when editing
     notes: string;
 }
 

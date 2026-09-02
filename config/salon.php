@@ -28,7 +28,7 @@ return [
         'logo_path' => '',
         'app_url' => env('APP_URL', 'http://localhost'),
         'whatsapp_template' => "{greeting} {customer_name} 🙏\nThank you for visiting {salon_name}. Your invoice {invoice_number} for ₹{total} is ready:\n{invoice_link}\n\nSee you again soon!\n_{powered_by}_",
-        'brand_color' => '#0F766E',
+        'brand_color' => '#C9A24B',
         'whatsapp_driver' => 'wame', // wame | cloud (setting overrides config value below)
         'whatsapp_cloud_phone_id' => '',
         'whatsapp_cloud_token' => '',

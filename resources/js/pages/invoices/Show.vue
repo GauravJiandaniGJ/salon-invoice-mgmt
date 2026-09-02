@@ -8,14 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatMoney } from '@/lib/money';
-import type { BreadcrumbItem, InvoiceDetail, SharedData } from '@/types';
+import type { BreadcrumbItem, InvoiceDetail, SendResponse, SharedData } from '@/types';
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
-import { AlertTriangle, Ban, Check, Copy, CopyPlus, Download, MessageCircle, Printer } from 'lucide-vue-next';
+import { AlertTriangle, Ban, Check, Copy, CopyPlus, Download, MessageCircle, Pencil, Printer } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{
     invoice: InvoiceDetail;
-    whatsapp_url: string | null;
+    whatsapp_web_url: string | null;
+    whatsapp_mobile_url: string | null;
+    whatsapp_mode: 'link' | 'cloud';
     whatsapp_message: string;
     public_url: string;
     pdf_url: string;
@@ -32,8 +34,51 @@ const page = usePage<SharedData>();
 const salonName = computed(() => page.props.salon.name);
 
 // ----- send on WhatsApp -----
+// Desktop opens WhatsApp Web directly (the wa.me interstitial mangles emoji); phones use wa.me → app.
+const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+const linkUrl = computed(() => (isMobileDevice ? props.whatsapp_mobile_url : props.whatsapp_web_url));
 const sentAt = ref<string | null>(props.invoice.whatsapp_sent_at);
 const marking = ref(false);
+const sending = ref(false);
+const sendError = ref<string | null>(null);
+const fallbackUrl = ref<string | null>(null);
+
+const openChat = (url: string | null) => {
+    if (!url) return;
+    const win = window.open(url, '_blank', 'noopener');
+    if (!win) fallbackUrl.value = url; // popup blocked → show a plain link
+};
+
+const send = async () => {
+    if (sending.value) return;
+    sendError.value = null;
+    fallbackUrl.value = null;
+
+    if (props.whatsapp_mode !== 'cloud') {
+        openChat(linkUrl.value);
+        await markSent();
+        return;
+    }
+
+    sending.value = true;
+    try {
+        const res = await postJson<SendResponse>(`/invoices/${props.invoice.id}/send`);
+        if (res.sent) {
+            sentAt.value = res.whatsapp_sent_at;
+        } else {
+            sendError.value = res.error ?? 'Automatic sending is not available right now.';
+            openChat(res.fallback_url ?? linkUrl.value);
+            await markSent();
+        }
+    } catch {
+        sendError.value = 'Could not reach the server. Opening WhatsApp instead.';
+        openChat(linkUrl.value);
+        await markSent();
+    } finally {
+        sending.value = false;
+    }
+};
+
 const markSent = async () => {
     if (marking.value) return;
     marking.value = true;
@@ -171,9 +216,17 @@ const printInvoice = () => window.print();
                     <p>The public link uses <code>localhost</code>. Set the salon's public URL in <Link href="/settings" class="underline">Settings</Link> before sending to customers.</p>
                 </div>
 
-                <div class="rounded-xl border bg-card shadow-sm p-4">
-                    <Button v-if="whatsapp_url && !isVoid" as-child size="lg" class="h-12 w-full bg-[#25D366] text-base text-white hover:bg-[#1ebe5b]">
-                        <a :href="whatsapp_url" target="_blank" rel="noopener" @click="markSent"><MessageCircle /> Send on WhatsApp</a>
+                <div class="rounded-xl border bg-card p-4 shadow-sm">
+                    <Button
+                        v-if="linkUrl && !isVoid"
+                        size="lg"
+                        class="h-12 w-full bg-[#25D366] text-base text-white hover:bg-[#1ebe5b]"
+                        :disabled="sending"
+                        @click="send"
+                    >
+                        <LoaderCircle v-if="sending" class="animate-spin" />
+                        <MessageCircle v-else />
+                        {{ sending ? 'Sending…' : whatsapp_mode === 'cloud' ? 'Send on WhatsApp' : 'Send on WhatsApp' }}
                     </Button>
                     <p v-else-if="isVoid" class="text-center text-sm text-muted-foreground">Void invoices can't be sent.</p>
                     <p v-else class="text-center text-sm text-muted-foreground">WhatsApp sending is not configured.</p>
@@ -182,7 +235,15 @@ const printInvoice = () => window.print();
                         <template v-if="sentAt"><Check class="h-3.5 w-3.5" /> Sent {{ formatDateTime(sentAt) }}</template>
                         <template v-else>Not sent yet</template>
                     </p>
-                    <p v-if="!isVoid" class="mt-1 text-center text-[11px] text-muted-foreground">Opens WhatsApp Web with the message ready — press Enter there to send.</p>
+                    <p v-if="!isVoid" class="mt-1 text-center text-[11px] text-muted-foreground">
+                        <template v-if="whatsapp_mode === 'cloud'">Sent automatically from the salon's WhatsApp Business number.</template>
+                        <template v-else-if="isMobileDevice">Opens the chat in the WhatsApp app — press Send there.</template>
+                        <template v-else>Opens the chat in WhatsApp Web — press Enter to send.</template>
+                    </p>
+                    <p v-if="sendError" class="mt-2 rounded-md bg-amber-50 p-2 text-center text-[11px] text-amber-900 dark:bg-amber-950 dark:text-amber-200">{{ sendError }}</p>
+                    <a v-if="fallbackUrl" :href="fallbackUrl" target="_blank" rel="noopener" class="mt-2 block text-center text-xs underline underline-offset-2">
+                        Pop-up blocked — tap here to open WhatsApp
+                    </a>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
@@ -190,6 +251,7 @@ const printInvoice = () => window.print();
                     <Button as-child variant="outline" class="h-10"><a :href="pdf_url" target="_blank" rel="noopener"><Download /> PDF</a></Button>
                     <Button variant="outline" class="h-10" @click="printInvoice"><Printer /> Print</Button>
                     <Button as-child variant="outline" class="h-10"><Link :href="`/bills/new?duplicate=${invoice.id}`"><CopyPlus /> Duplicate</Link></Button>
+                    <Button v-if="invoice.status === 'issued'" as-child variant="outline" class="h-10"><Link :href="`/invoices/${invoice.id}/edit`"><Pencil /> Edit</Link></Button>
                 </div>
 
                 <div class="rounded-xl border bg-card shadow-sm p-3 text-xs text-muted-foreground">

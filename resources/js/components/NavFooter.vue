@@ -1,28 +1,18 @@
 <script setup lang="ts">
-import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+import type { SharedData } from '@/types';
+import { usePage } from '@inertiajs/vue3';
 
-interface Props {
-    items: NavItem[];
-    class?: string;
-}
-
-defineProps<Props>();
+const page = usePage<SharedData>();
 </script>
 
 <template>
-    <SidebarGroup :class="`group-data-[collapsible=icon]:p-0 ${$props.class || ''}`">
-        <SidebarGroupContent>
-            <SidebarMenu>
-                <SidebarMenuItem v-for="item in items" :key="item.title">
-                    <SidebarMenuButton class="text-neutral-600 hover:text-neutral-800 dark:text-neutral-300 dark:hover:text-neutral-100" as-child>
-                        <a :href="item.href" target="_blank" rel="noopener noreferrer">
-                            <component :is="item.icon" />
-                            <span>{{ item.title }}</span>
-                        </a>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            </SidebarMenu>
-        </SidebarGroupContent>
-    </SidebarGroup>
+    <a
+        :href="page.props.powered_by.url"
+        target="_blank"
+        rel="noopener"
+        class="mx-2 mb-1 flex items-center gap-2 rounded-md px-2 py-1.5 text-[11px] text-sidebar-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground group-data-[collapsible=icon]:hidden"
+    >
+        <span class="h-1.5 w-1.5 rounded-full bg-sidebar-primary"></span>
+        <span class="truncate">{{ page.props.powered_by.label }}</span>
+    </a>
 </template>

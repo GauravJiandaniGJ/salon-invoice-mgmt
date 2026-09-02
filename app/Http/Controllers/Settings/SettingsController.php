@@ -21,10 +21,7 @@ use Inertia\Response;
 
 class SettingsController extends Controller
 {
-    public const WHATSAPP_PLACEHOLDERS = [
-        '{greeting}', '{customer_name}', '{salon_name}', '{invoice_number}',
-        '{total}', '{invoice_link}', '{date}', '{items}',
-    ];
+    public const WHATSAPP_PLACEHOLDERS = MessageTemplate::PLACEHOLDERS;
 
     public function index(): Response
     {
@@ -108,6 +105,11 @@ class SettingsController extends Controller
             'footer_text' => (string) Setting::get('footer_text', ''),
             'app_url' => (string) Setting::get('app_url', ''),
             'logo_url' => $logo ? Storage::disk('public')->url($logo) : null,
+            'brand_color' => (string) Setting::get('brand_color'),
+            'whatsapp_driver' => (string) Setting::get('whatsapp_driver', 'wame') ?: 'wame',
+            'whatsapp_cloud_phone_id' => (string) Setting::get('whatsapp_cloud_phone_id', ''),
+            'whatsapp_cloud_template' => (string) Setting::get('whatsapp_cloud_template', 'invoice_ready'),
+            'whatsapp_cloud_token_set' => trim((string) Setting::get('whatsapp_cloud_token', '')) !== '',
         ];
     }
 

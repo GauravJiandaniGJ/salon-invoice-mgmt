@@ -38,15 +38,22 @@ test('renders every placeholder', function () {
     expect($out)->toBe('Good morning Priya! Wow Salon WS-0003 ₹1,40,000 https://wowsalon.example/i/Abcdefghij 2 Sep 2026 [Item 1, Item 2, Item 3 +2 more]');
 });
 
-test('default template keeps newlines and stays short', function () {
+test('default template keeps newlines, stays short and carries partner branding', function () {
+    Carbon::setTestNow('2026-09-02 15:00:00');
+    Setting::set('salon_name', 'Wow Salon');
     Setting::set('app_url', 'https://wowsalon.example');
     $invoice = templateInvoice();
 
     $out = (new MessageTemplate)->render(config('salon.defaults.whatsapp_template'), $invoice);
 
-    expect($out)->toContain("\n")
-        ->and(strlen($out))->toBeLessThan(700)
-        ->and(rawurlencode($out))->toContain('%0A');
+    expect($out)->toBe("Good afternoon Priya 🙏\nThank you for visiting Wow Salon. Your invoice WS-0003 for ₹1,400 is ready:\nhttps://wowsalon.example/i/Abcdefghij\n\nSee you again soon!\n_Powered by TodoIT · todoitservices.com_")
+        ->and(mb_strlen($out))->toBeLessThan(400)
+        ->and(rawurlencode($out))->toContain('%0A')->toContain('%F0%9F%99%8F');
+});
+
+test('powered_by placeholder uses the config label and host', function () {
+    expect(MessageTemplate::poweredBy())->toBe('Powered by TodoIT · todoitservices.com')
+        ->and(MessageTemplate::PLACEHOLDERS)->toContain('{powered_by}');
 });
 
 test('greeting follows the IST hour', function () {

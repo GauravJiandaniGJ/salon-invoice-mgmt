@@ -24,6 +24,11 @@ class UpdateSettingsRequest extends FormRequest
             'whatsapp_template' => ['nullable', 'string', 'max:1000'],
             'footer_text' => ['nullable', 'string', 'max:150'],
             'app_url' => ['nullable', 'url', 'max:200'],
+            'brand_color' => ['nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'whatsapp_driver' => ['nullable', 'in:wame,cloud'],
+            'whatsapp_cloud_phone_id' => ['nullable', 'string', 'max:40', 'regex:/^[0-9]*$/'],
+            'whatsapp_cloud_token' => ['nullable', 'string', 'max:500'],
+            'whatsapp_cloud_template' => ['nullable', 'string', 'max:100', 'regex:/^[a-z0-9_]*$/'],
         ];
     }
 
@@ -31,6 +36,9 @@ class UpdateSettingsRequest extends FormRequest
     {
         return [
             'invoice_prefix.regex' => 'Prefix must be 1–6 uppercase letters, e.g. WS.',
+            'brand_color.regex' => 'Brand colour must be a hex value like #C9A24B.',
+            'whatsapp_cloud_phone_id.regex' => 'The phone number ID is numeric (from Meta Business).',
+            'whatsapp_cloud_template.regex' => 'Template names are lowercase letters, digits and underscores.',
         ];
     }
 
@@ -50,6 +58,15 @@ class UpdateSettingsRequest extends FormRequest
 
         if (! empty($data['salon_whatsapp_number'])) {
             $data['salon_whatsapp_number'] = PhoneNumber::normalise($data['salon_whatsapp_number']);
+        }
+
+        if (array_key_exists('brand_color', $data) && ! empty($data['brand_color'])) {
+            $data['brand_color'] = strtoupper($data['brand_color']);
+        }
+
+        // The token is write-only: an empty field means "keep the current one".
+        if (array_key_exists('whatsapp_cloud_token', $data) && trim((string) $data['whatsapp_cloud_token']) === '') {
+            unset($data['whatsapp_cloud_token']);
         }
 
         foreach ($data as $key => $value) {

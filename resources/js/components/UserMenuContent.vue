@@ -10,12 +10,17 @@ interface Props {
 }
 
 defineProps<Props>();
+
+const roleLabel: Record<string, string> = { owner: 'Owner', staff: 'Receptionist' };
 </script>
 
 <template>
     <DropdownMenuLabel class="p-0 font-normal">
         <div class="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <UserInfo :user="user" :show-email="true" />
+            <span class="ml-auto rounded-full border border-primary/40 bg-accent px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-accent-foreground">
+                {{ roleLabel[user.role] ?? user.role }}
+            </span>
         </div>
     </DropdownMenuLabel>
     <DropdownMenuSeparator />

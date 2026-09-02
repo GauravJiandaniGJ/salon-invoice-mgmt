@@ -134,22 +134,24 @@ const printPage = () => window.print();
                 <section class="rounded-xl border bg-card shadow-sm">
                     <header class="border-b px-4 py-3"><h2 class="text-sm font-semibold">Top 10 services by revenue</h2></header>
                     <EmptyState v-if="report.top_services.length === 0" title="No services billed" class="m-4" />
-                    <table v-else class="w-full text-sm">
-                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                            <tr>
-                                <th class="px-4 py-2 font-medium">Service</th>
-                                <th class="px-4 py-2 text-right font-medium">Count</th>
-                                <th class="px-4 py-2 text-right font-medium">Revenue</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="s in report.top_services" :key="s.description" class="border-t">
-                                <td class="px-4 py-1.5">{{ s.description }}</td>
-                                <td class="px-4 py-1.5 text-right tabular-nums">{{ s.count }}</td>
-                                <td class="px-4 py-1.5 text-right tabular-nums">{{ formatMoney(s.revenue) }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div v-else class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                <tr>
+                                    <th class="px-4 py-2 font-medium">Service</th>
+                                    <th class="px-4 py-2 text-right font-medium">Count</th>
+                                    <th class="px-4 py-2 text-right font-medium">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="s in report.top_services" :key="s.description" class="border-t">
+                                    <td class="px-4 py-1.5">{{ s.description }}</td>
+                                    <td class="px-4 py-1.5 text-right tabular-nums">{{ s.count }}</td>
+                                    <td class="px-4 py-1.5 text-right tabular-nums">{{ formatMoney(s.revenue) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
 
                 <section class="rounded-xl border bg-card shadow-sm">
@@ -160,22 +162,24 @@ const printPage = () => window.print();
                         description="Pick a staff member on the New Bill screen to track this."
                         class="m-4"
                     />
-                    <table v-else class="w-full text-sm">
-                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                            <tr>
-                                <th class="px-4 py-2 font-medium">Staff</th>
-                                <th class="px-4 py-2 text-right font-medium">Invoices</th>
-                                <th class="px-4 py-2 text-right font-medium">Revenue</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="s in report.by_staff" :key="s.staff_member" class="border-t">
-                                <td class="px-4 py-1.5">{{ s.staff_member }}</td>
-                                <td class="px-4 py-1.5 text-right tabular-nums">{{ s.invoices_count }}</td>
-                                <td class="px-4 py-1.5 text-right tabular-nums">{{ formatMoney(s.revenue) }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div v-else class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                <tr>
+                                    <th class="px-4 py-2 font-medium">Staff</th>
+                                    <th class="px-4 py-2 text-right font-medium">Invoices</th>
+                                    <th class="px-4 py-2 text-right font-medium">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="s in report.by_staff" :key="s.staff_member" class="border-t">
+                                    <td class="px-4 py-1.5">{{ s.staff_member }}</td>
+                                    <td class="px-4 py-1.5 text-right tabular-nums">{{ s.invoices_count }}</td>
+                                    <td class="px-4 py-1.5 text-right tabular-nums">{{ formatMoney(s.revenue) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </section>
             </div>
         </div>

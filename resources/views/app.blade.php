@@ -3,8 +3,12 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="{{ \App\Models\Setting::get('brand_color') }}">
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ \App\Models\Setting::get('salon_name', config('app.name')) }}</title>
+
+        <link rel="icon" href="{{ route('brand.favicon') }}">
+        <link rel="apple-touch-icon" href="{{ route('brand.favicon') }}">
 
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />

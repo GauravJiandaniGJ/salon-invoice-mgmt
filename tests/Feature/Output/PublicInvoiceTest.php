@@ -4,6 +4,7 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Setting;
+use App\Services\PdfRenderer;
 use Illuminate\Support\Facades\Storage;
 
 function outputInvoice(array $attrs = []): Invoice
@@ -73,4 +74,22 @@ test('public routes need no authentication and are throttled', function () {
     outputInvoice();
 
     $this->get('/i/AbC123xYz9')->assertOk()->assertHeader('X-RateLimit-Limit', '60');
+});
+
+test('public page and pdf carry the technology partner footer and an og image', function () {
+    Setting::set('footer_text', 'Powered by TodoIT');
+    $customer = Customer::factory()->create(['phone' => '919876543210']);
+    $invoice = Invoice::factory()->for($customer)->has(InvoiceItem::factory()->count(1), 'items')->create(['public_code' => 'Footer0001']);
+
+    $this->get('/i/Footer0001')
+        ->assertOk()
+        ->assertSee('href="https://todoitservices.com"', false)
+        ->assertSee('Powered by TodoIT')
+        ->assertSee('todoitservices.com')
+        ->assertSee('property="og:site_name"', false)
+        ->assertSee('brand/wow-logo.png');
+
+    $pdf = app(PdfRenderer::class);
+    expect(view('pdf.invoice', ['invoice' => $invoice->fresh(['customer', 'items']), 'salon' => $pdf::salonDetails()])->render())
+        ->toContain('Powered by TodoIT')->toContain('todoitservices.com');
 });

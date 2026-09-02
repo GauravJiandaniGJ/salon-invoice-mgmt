@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { useBrand } from '@/composables/useBrand';
 import { onMounted, ref } from 'vue';
 
 interface Props {
@@ -7,6 +8,8 @@ interface Props {
 }
 
 defineProps<Props>();
+
+useBrand();
 
 const isOpen = ref(true);
 

@@ -7,7 +7,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem, type Role, type SalonSettings, type SettingsStaffRow, type SettingsUserRow, type SharedData } from '@/types';
 import { Head, router, useForm, usePage } from '@inertiajs/vue3';
 import { ImageOff, KeyRound, Plus, Upload, Users } from 'lucide-vue-next';
-import { onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 
 const props = defineProps<{
     settings: SalonSettings;
@@ -42,9 +42,30 @@ const form = useForm({
     whatsapp_template: props.settings.whatsapp_template ?? '',
     footer_text: props.settings.footer_text ?? '',
     app_url: props.settings.app_url ?? '',
+    brand_color: props.settings.brand_color ?? '#C9A24B',
+    whatsapp_driver: props.settings.whatsapp_driver ?? 'wame',
+    whatsapp_cloud_phone_id: props.settings.whatsapp_cloud_phone_id ?? '',
+    whatsapp_cloud_template: props.settings.whatsapp_cloud_template ?? 'invoice_ready',
+    whatsapp_cloud_token: '',
 });
 
-const save = () => form.patch('/settings', { preserveScroll: true });
+const save = () =>
+    form
+        .transform((data) => {
+            // never overwrite a saved token with an empty field
+            if (!data.whatsapp_cloud_token) {
+                const { whatsapp_cloud_token: _omit, ...rest } = data;
+                void _omit;
+                return rest;
+            }
+            return data;
+        })
+        .patch('/settings', { preserveScroll: true });
+
+const brandHex = computed({
+    get: () => (/^#[0-9a-f]{6}$/i.test(form.brand_color) ? form.brand_color : '#C9A24B'),
+    set: (v: string) => (form.brand_color = v),
+});
 
 // ---------- logo ----------
 const logoInput = ref<HTMLInputElement | null>(null);
@@ -254,8 +275,24 @@ const renameStaff = (s: SettingsStaffRow) => {
                                 >
                             </div>
                             <input ref="logoInput" type="file" accept="image/png,image/jpeg" class="hidden" @change="uploadLogo" />
-                            <p class="text-xs text-muted-foreground">PNG or JPG, up to 2 MB.</p>
+                            <p class="text-xs text-muted-foreground">PNG or JPG, up to 2 MB. Also used as the browser-tab icon.</p>
                             <p v-if="logoError" class="text-xs text-destructive">{{ logoError }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 flex flex-wrap items-center gap-4 border-t pt-4">
+                        <input
+                            id="brand_color_picker"
+                            v-model="brandHex"
+                            type="color"
+                            class="h-12 w-12 cursor-pointer rounded-md border border-input bg-background p-1"
+                            aria-label="Pick brand colour"
+                        />
+                        <div class="grid gap-1">
+                            <Label for="brand_color">Brand colour</Label>
+                            <Input id="brand_color" v-model="form.brand_color" class="w-36 font-mono uppercase" maxlength="7" placeholder="#C9A24B" />
+                            <p class="text-xs text-muted-foreground">Buttons, links and highlights use this colour. Pick the gold from your logo, or any colour you like.</p>
+                            <p v-if="form.errors.brand_color" class="text-xs text-destructive">{{ form.errors.brand_color }}</p>
                         </div>
                     </div>
                 </section>
@@ -288,7 +325,7 @@ const renameStaff = (s: SettingsStaffRow) => {
                 <section id="whatsapp" class="scroll-mt-20 rounded-xl border bg-card shadow-sm p-4">
                     <h2 class="text-base font-semibold">WhatsApp message</h2>
                     <p class="mb-4 text-sm text-muted-foreground">
-                        This text is pre-filled when you press “Send on WhatsApp”. Keep it under ~700 characters.
+                        This text is pre-filled when you press “Send on WhatsApp”. Keep it short — under 400 characters reads best on a phone.
                     </p>
                     <div class="grid gap-4 md:grid-cols-2">
                         <div class="grid gap-2">
@@ -323,6 +360,48 @@ const renameStaff = (s: SettingsStaffRow) => {
                             </div>
                         </div>
                     </div>
+
+                    <div class="mt-5 border-t pt-4">
+                        <h3 class="text-sm font-semibold">Sending method</h3>
+                        <p class="mb-3 text-xs text-muted-foreground">
+                            The free WhatsApp Web link opens the chat with the message ready; the receptionist presses Enter. The Cloud API sends
+                            automatically but needs a Meta Business account, a verified number and an approved message template.
+                        </p>
+                        <div class="grid gap-4 md:grid-cols-2">
+                            <div class="grid gap-1">
+                                <Label for="whatsapp_driver">Method</Label>
+                                <select id="whatsapp_driver" v-model="form.whatsapp_driver" class="h-10 rounded-md border border-input bg-background px-3 text-sm">
+                                    <option value="wame">WhatsApp Web link (free, one click per invoice)</option>
+                                    <option value="cloud">WhatsApp Cloud API (automatic)</option>
+                                </select>
+                                <p v-if="form.errors.whatsapp_driver" class="text-xs text-destructive">{{ form.errors.whatsapp_driver }}</p>
+                            </div>
+                            <template v-if="form.whatsapp_driver === 'cloud'">
+                                <div class="grid gap-1">
+                                    <Label for="whatsapp_cloud_phone_id">Phone number ID</Label>
+                                    <Input id="whatsapp_cloud_phone_id" v-model="form.whatsapp_cloud_phone_id" placeholder="1234567890123" />
+                                    <p v-if="form.errors.whatsapp_cloud_phone_id" class="text-xs text-destructive">{{ form.errors.whatsapp_cloud_phone_id }}</p>
+                                </div>
+                                <div class="grid gap-1">
+                                    <Label for="whatsapp_cloud_token">Access token</Label>
+                                    <Input
+                                        id="whatsapp_cloud_token"
+                                        v-model="form.whatsapp_cloud_token"
+                                        type="password"
+                                        autocomplete="off"
+                                        :placeholder="settings.whatsapp_cloud_token_set ? '•••• saved — enter a new one to replace' : 'EAAG…'"
+                                    />
+                                    <p v-if="form.errors.whatsapp_cloud_token" class="text-xs text-destructive">{{ form.errors.whatsapp_cloud_token }}</p>
+                                </div>
+                                <div class="grid gap-1">
+                                    <Label for="whatsapp_cloud_template">Approved template name</Label>
+                                    <Input id="whatsapp_cloud_template" v-model="form.whatsapp_cloud_template" placeholder="invoice_ready" />
+                                    <p class="text-xs text-muted-foreground">Template variables in order: customer name, invoice number, amount, link.</p>
+                                    <p v-if="form.errors.whatsapp_cloud_template" class="text-xs text-destructive">{{ form.errors.whatsapp_cloud_template }}</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
                 </section>
 
                 <div class="sticky bottom-0 flex items-center justify-end gap-3 border-t bg-background/95 py-3 backdrop-blur">
@@ -355,7 +434,7 @@ const renameStaff = (s: SettingsStaffRow) => {
                     <div class="grid gap-1">
                         <Label for="u-role">Role</Label>
                         <select id="u-role" v-model="userForm.role" class="h-10 rounded-md border border-input bg-background px-3 text-sm">
-                            <option value="staff">Staff</option>
+                            <option value="staff">Receptionist</option>
                             <option value="owner">Owner</option>
                         </select>
                     </div>
@@ -396,7 +475,7 @@ const renameStaff = (s: SettingsStaffRow) => {
                                         class="h-8 rounded-md border border-input bg-background px-2 text-xs"
                                         @change="(e) => updateUser(u, { role: (e.target as HTMLSelectElement).value as Role })"
                                     >
-                                        <option value="staff">Staff</option>
+                                        <option value="staff">Receptionist</option>
                                         <option value="owner">Owner</option>
                                     </select>
                                 </td>

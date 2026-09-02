@@ -28,7 +28,9 @@ class HandleInertiaRequests extends Middleware
             'salon' => fn () => [
                 'name' => Setting::get('salon_name'),
                 'logo_url' => ($logo = Setting::get('logo_path')) ? asset('storage/'.$logo) : null,
+                'brand_color' => Setting::get('brand_color'),
             ],
+            'powered_by' => config('salon.powered_by'),
             'auth' => [
                 'user' => $user ? [
                     'id' => $user->id,

@@ -8,7 +8,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { formatMoney } from '@/lib/money';
 import type { BreadcrumbItem, InvoiceFilters, InvoiceRow, Paginated, SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import { Check, Download, FilePlus2, Search, X } from 'lucide-vue-next';
+import { Check, Download, FilePlus2, Pencil, Search, X } from 'lucide-vue-next';
 import { computed, reactive, ref, watch } from 'vue';
 
 const props = defineProps<{
@@ -133,6 +133,9 @@ const exportUrl = computed(() => {
                                 <span v-else class="text-muted-foreground">—</span>
                             </td>
                             <td class="whitespace-nowrap px-3 py-2 text-right">
+                                <Button v-if="inv.status === 'issued'" as-child size="sm" variant="ghost" class="h-8 w-8 p-0" title="Edit bill">
+                                    <Link :href="`/invoices/${inv.id}/edit`" aria-label="Edit bill"><Pencil /></Link>
+                                </Button>
                                 <Button as-child size="sm" :variant="inv.whatsapp_sent_at || inv.status === 'void' ? 'ghost' : 'outline'">
                                     <Link :href="`/invoices/${inv.id}`">{{ inv.whatsapp_sent_at || inv.status === 'void' ? 'View' : 'Send' }}</Link>
                                 </Button>

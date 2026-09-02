@@ -10,7 +10,7 @@ class MessageTemplate
 {
     public const PLACEHOLDERS = [
         '{greeting}', '{customer_name}', '{salon_name}', '{invoice_number}',
-        '{total}', '{invoice_link}', '{date}', '{items}',
+        '{total}', '{invoice_link}', '{date}', '{items}', '{powered_by}',
     ];
 
     public function render(string $template, Invoice $invoice): string
@@ -26,9 +26,19 @@ class MessageTemplate
             '{invoice_link}' => InvoiceLink::publicUrl($invoice),
             '{date}' => $invoice->invoice_date->format('j M Y'),
             '{items}' => self::itemsSummary($invoice->items->pluck('description')->all()),
+            '{powered_by}' => self::poweredBy(),
         ];
 
         return trim(strtr($template, $replacements));
+    }
+
+    /** "Powered by TodoIT · todoitservices.com" — technology partner line for messages. */
+    public static function poweredBy(): string
+    {
+        $label = (string) config('salon.powered_by.label', 'Powered by TodoIT');
+        $host = (string) parse_url((string) config('salon.powered_by.url', ''), PHP_URL_HOST);
+
+        return $host !== '' ? $label.' · '.$host : $label;
     }
 
     /** Good morning (<12:00), Good afternoon (<17:00), Good evening — by app timezone (IST). */

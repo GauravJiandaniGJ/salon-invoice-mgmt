@@ -16,12 +16,13 @@ import type {
     CatalogService,
     CustomerLookup,
     DiscountType,
+    EditingInvoice,
     Gender,
     PaymentMode,
     PaymentStatus,
     StaffMemberOption,
 } from '@/types';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { LoaderCircle, Minus, Plus, Save, Trash2 } from 'lucide-vue-next';
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 
@@ -33,9 +34,20 @@ const props = defineProps<{
     today: string;
     can_edit_date: boolean;
     prefill: BillPrefill | null;
+    editing: EditingInvoice | null;
 }>();
 
-const breadcrumbs: BreadcrumbItem[] = [{ title: 'New Bill', href: '/bills/new' }];
+const isEditing = computed(() => props.editing !== null);
+const pageTitle = computed(() => (props.editing ? `Edit ${props.editing.invoice_number}` : 'New Bill'));
+const breadcrumbs = computed<BreadcrumbItem[]>(() =>
+    props.editing
+        ? [
+              { title: 'Invoices', href: '/invoices' },
+              { title: props.editing.invoice_number, href: `/invoices/${props.editing.id}` },
+              { title: 'Edit', href: `/invoices/${props.editing.id}/edit` },
+          ]
+        : [{ title: 'New Bill', href: '/bills/new' }],
+);
 
 // ----- state -----
 interface Line {
@@ -55,12 +67,12 @@ const customer = reactive<{ phone: string; name: string; gender: Gender | null }
     gender: props.prefill?.customer?.gender ?? null,
 });
 const staffMemberId = ref<number | null>(props.prefill?.staff_member_id ?? null);
-const invoiceDate = ref<string | null>(null);
+const invoiceDate = ref<string | null>(props.editing ? (props.prefill?.invoice_date ?? null) : null);
 const lines = ref<Line[]>((props.prefill?.items ?? []).map((i) => newLine({ ...i })));
 const discountType = ref<DiscountType | null>(props.prefill?.discount_type ?? null);
 const discountValue = ref<number | string>(props.prefill?.discount_value ?? 0);
 const paymentMode = ref<PaymentMode>(props.prefill?.payment_mode ?? 'cash');
-const paymentStatus = ref<PaymentStatus>('paid');
+const paymentStatus = ref<PaymentStatus>(props.prefill?.payment_status ?? 'paid');
 const notes = ref(props.prefill?.notes ?? '');
 const showNotes = ref(Boolean(props.prefill?.notes));
 const audience = ref<Audience>(customer.gender === 'female' ? 'women' : customer.gender === 'male' ? 'men' : 'all');
@@ -130,7 +142,9 @@ const payload = (): BillPayload => ({
 const save = () => {
     if (!canSave.value) return;
     errors.value = {};
-    router.post('/invoices', payload() as unknown as Record<string, unknown>, {
+    const body = payload() as unknown as Record<string, unknown>;
+    const visit = props.editing ? router.put.bind(router, `/invoices/${props.editing.id}`) : router.post.bind(router, '/invoices');
+    visit(body, {
         onStart: () => (saving.value = true),
         onFinish: () => (saving.value = false),
         onError: (e) => {
@@ -156,10 +170,24 @@ const lineError = (index: number) =>
 </script>
 
 <template>
-    <Head title="New Bill" />
+    <Head :title="pageTitle" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex flex-1 flex-col gap-4 p-4 lg:h-[calc(100vh-4rem)] lg:flex-row lg:overflow-hidden">
+        <div
+            v-if="isEditing && editing"
+            class="mx-4 mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950/40 dark:text-amber-200"
+        >
+            <div>
+                <p class="font-semibold">Editing {{ editing.invoice_number }}</p>
+                <p v-if="editing.whatsapp_sent_at" class="text-xs">This bill was already sent on WhatsApp. Saving will require sending it again.</p>
+                <p v-else class="text-xs">The invoice number stays the same; totals and the PDF are regenerated.</p>
+            </div>
+            <Button as-child variant="outline" size="sm">
+                <Link :href="`/invoices/${editing.id}`">Cancel</Link>
+            </Button>
+        </div>
+
+        <div class="flex flex-1 flex-col gap-4 p-4 lg:flex-row lg:overflow-hidden" :class="isEditing ? 'lg:h-[calc(100vh-8.5rem)]' : 'lg:h-[calc(100vh-4rem)]'">
             <!-- LEFT: customer + picker -->
             <div class="flex min-h-0 flex-1 flex-col gap-4" data-error-anchor="customer">
                 <CustomerBlock
@@ -287,7 +315,7 @@ const lineError = (index: number) =>
                     <Button type="button" size="lg" class="mt-3 h-12 w-full text-base" :disabled="!canSave" @click="save">
                         <LoaderCircle v-if="saving" class="animate-spin" />
                         <Save v-else />
-                        Save & Preview
+                        {{ isEditing ? 'Save changes' : 'Save & Preview' }}
                     </Button>
                     <p class="mt-1.5 text-center text-xs text-muted-foreground">Ctrl/⌘ + S to save · Enter in search adds first match</p>
                 </div>

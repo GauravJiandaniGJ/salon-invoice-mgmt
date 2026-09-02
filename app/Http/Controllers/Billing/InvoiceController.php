@@ -7,6 +7,8 @@ use App\Models\Invoice;
 use App\Models\Setting;
 use App\Services\InvoiceService;
 use App\Services\PdfRenderer;
+use App\Services\WhatsApp\CloudApiSender;
+use App\Services\WhatsApp\DeviceLinks;
 use App\Services\WhatsApp\InvoiceLink;
 use App\Services\WhatsApp\MessageTemplate;
 use App\Services\WhatsApp\WhatsAppSender;
@@ -19,6 +21,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 class InvoiceController extends Controller
 {
@@ -82,15 +85,82 @@ class InvoiceController extends Controller
         $invoice->load(['customer', 'items', 'staffMember', 'user', 'voidedBy']);
 
         $message = $template->render((string) Setting::get('whatsapp_template'), $invoice);
+        $phone = $invoice->customer->phone;
 
         return Inertia::render('invoices/Show', [
             'invoice' => self::detail($invoice),
-            'whatsapp_url' => $sender->send($invoice, $message),
+            'whatsapp_web_url' => DeviceLinks::web($phone, $message),
+            'whatsapp_mobile_url' => DeviceLinks::mobile($phone, $message),
+            'whatsapp_mode' => $sender instanceof CloudApiSender ? 'cloud' : 'link',
             'whatsapp_message' => $message,
             'public_url' => InvoiceLink::publicUrl($invoice),
             'pdf_url' => route('invoices.pdf', $invoice, absolute: false),
             'app_url_missing' => InvoiceLink::appUrlMissing(),
             'can_void' => $request->user()->isOwner() && ! $invoice->isVoid(),
+        ]);
+    }
+
+    /**
+     * POST /invoices/{invoice}/send (json) → SendResponse.
+     * Cloud driver: sends server-side and marks sent. Link driver (or any failure):
+     * returns the device-appropriate click-to-chat URL for the browser to open.
+     */
+    public function send(Request $request, Invoice $invoice, WhatsAppSender $sender, MessageTemplate $template): JsonResponse
+    {
+        $invoice->load(['customer', 'items']);
+
+        if ($invoice->isVoid()) {
+            return response()->json([
+                'sent' => false,
+                'whatsapp_sent_at' => $invoice->whatsapp_sent_at?->toISOString(),
+                'fallback_url' => null,
+                'error' => 'Void invoices cannot be sent.',
+            ], 422);
+        }
+
+        $message = $template->render((string) Setting::get('whatsapp_template'), $invoice);
+        $fallback = DeviceLinks::forRequest($request, $invoice->customer->phone, $message);
+
+        if (! $sender instanceof CloudApiSender) {
+            return response()->json([
+                'sent' => false,
+                'whatsapp_sent_at' => $invoice->whatsapp_sent_at?->toISOString(),
+                'fallback_url' => $fallback,
+                'error' => null,
+            ]);
+        }
+
+        try {
+            $sender->send($invoice, $message);
+        } catch (Throwable $e) {
+            Log::warning('WhatsApp Cloud API send failed', [
+                'invoice' => $invoice->invoice_number,
+                'user_id' => $request->user()->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'sent' => false,
+                'whatsapp_sent_at' => $invoice->whatsapp_sent_at?->toISOString(),
+                'fallback_url' => $fallback,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        if (! $invoice->whatsapp_sent_at) {
+            $invoice->forceFill(['whatsapp_sent_at' => now()])->save();
+        }
+
+        Log::info('WhatsApp sent via Cloud API', [
+            'invoice' => $invoice->invoice_number,
+            'user_id' => $request->user()->id,
+        ]);
+
+        return response()->json([
+            'sent' => true,
+            'whatsapp_sent_at' => $invoice->whatsapp_sent_at->toISOString(),
+            'fallback_url' => null,
+            'error' => null,
         ]);
     }
 

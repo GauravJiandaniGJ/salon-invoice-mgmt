@@ -22,7 +22,12 @@ const isActive = (href: string) => {
     <SidebarGroup class="px-2 py-0">
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.title">
-                <SidebarMenuButton as-child :is-active="isActive(item.href)" :tooltip="item.title">
+                <SidebarMenuButton
+                    as-child
+                    :is-active="isActive(item.href)"
+                    :tooltip="item.title"
+                    class="h-10 text-[15px] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:font-semibold data-[active=true]:text-sidebar-accent-foreground data-[active=true]:shadow-[inset_3px_0_0_hsl(var(--sidebar-primary))]"
+                >
                     <Link :href="item.href">
                         <component :is="item.icon" />
                         <span>{{ item.title }}</span>

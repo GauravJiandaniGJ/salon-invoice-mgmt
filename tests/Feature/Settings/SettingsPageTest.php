@@ -28,6 +28,10 @@ test('owner sees settings props', function () {
             ->where('settings.tax_rate', 0)
             ->where('settings.logo_url', null)
             ->where('next_invoice_number', 'WS-0001')
+            ->where('settings.brand_color', config('salon.defaults.brand_color'))
+            ->where('settings.whatsapp_driver', 'wame')
+            ->where('settings.whatsapp_cloud_token_set', false)
+            ->where('whatsapp_placeholders', fn ($p) => collect($p)->contains('{powered_by}'))
             ->has('users', 1)
             ->where('users.0.role', 'owner')
             ->has('staff_members', 1)
@@ -126,4 +130,49 @@ test('whatsapp preview renders the template through MessageTemplate', function (
         ->getJson('/settings/whatsapp-preview?template=Hello+{customer_name}')
         ->assertOk()
         ->assertJson(['message' => 'Hello Priya']);
+});
+
+test('owner can configure brand colour and the WhatsApp Cloud driver; token is write-only', function () {
+    $base = ['salon_name' => 'Wow Salon', 'invoice_prefix' => 'WS'];
+
+    $this->actingAs(owner())
+        ->from('/settings')
+        ->patch('/settings', $base + [
+            'brand_color' => '#c9a24b',
+            'whatsapp_driver' => 'cloud',
+            'whatsapp_cloud_phone_id' => '1234567890',
+            'whatsapp_cloud_token' => 'EAAsecret',
+            'whatsapp_cloud_template' => 'invoice_ready',
+        ])
+        ->assertRedirect('/settings')
+        ->assertSessionHasNoErrors();
+
+    Setting::flushCache();
+    expect(Setting::get('brand_color'))->toBe('#C9A24B')
+        ->and(Setting::get('whatsapp_driver'))->toBe('cloud')
+        ->and(Setting::get('whatsapp_cloud_phone_id'))->toBe('1234567890')
+        ->and(Setting::get('whatsapp_cloud_token'))->toBe('EAAsecret');
+
+    // empty token on a later save keeps the stored one
+    $this->actingAs(owner())->patch('/settings', $base + ['whatsapp_driver' => 'cloud', 'whatsapp_cloud_token' => '']);
+    Setting::flushCache();
+    expect(Setting::get('whatsapp_cloud_token'))->toBe('EAAsecret');
+
+    $this->actingAs(owner())
+        ->get('/settings')
+        ->assertInertia(fn ($page) => $page
+            ->where('settings.whatsapp_cloud_token_set', true)
+            ->where('settings.whatsapp_driver', 'cloud')
+            ->where('settings.brand_color', '#C9A24B')
+            ->missing('settings.whatsapp_cloud_token'));
+});
+
+test('brand colour and cloud fields are validated', function () {
+    $this->actingAs(owner())
+        ->from('/settings')
+        ->patch('/settings', [
+            'salon_name' => 'Wow Salon', 'invoice_prefix' => 'WS',
+            'brand_color' => 'gold', 'whatsapp_driver' => 'sms', 'whatsapp_cloud_phone_id' => 'abc', 'whatsapp_cloud_template' => 'Bad Name',
+        ])
+        ->assertSessionHasErrors(['brand_color', 'whatsapp_driver', 'whatsapp_cloud_phone_id', 'whatsapp_cloud_template']);
 });
