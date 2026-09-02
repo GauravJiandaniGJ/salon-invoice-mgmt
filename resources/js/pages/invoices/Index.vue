@@ -8,7 +8,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { formatMoney } from '@/lib/money';
 import type { BreadcrumbItem, InvoiceFilters, InvoiceRow, Paginated, SharedData } from '@/types';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import { Check, Download, FilePlus2, Pencil, Search, X } from 'lucide-vue-next';
+import { Check, Download, Eye, FilePlus2, Pencil, Search, Send, X } from 'lucide-vue-next';
 import { computed, reactive, ref, watch } from 'vue';
 
 const props = defineProps<{
@@ -133,12 +133,26 @@ const exportUrl = computed(() => {
                                 <span v-else class="text-muted-foreground">—</span>
                             </td>
                             <td class="whitespace-nowrap px-3 py-2 text-right">
-                                <Button v-if="inv.status === 'issued'" as-child size="sm" variant="ghost" class="h-8 w-8 p-0" title="Edit bill">
-                                    <Link :href="`/invoices/${inv.id}/edit`" aria-label="Edit bill"><Pencil /></Link>
-                                </Button>
-                                <Button as-child size="sm" :variant="inv.whatsapp_sent_at || inv.status === 'void' ? 'ghost' : 'outline'">
-                                    <Link :href="`/invoices/${inv.id}`">{{ inv.whatsapp_sent_at || inv.status === 'void' ? 'View' : 'Send' }}</Link>
-                                </Button>
+                                <div class="inline-flex items-center overflow-hidden rounded-md border border-border bg-card">
+                                        <Link :href="`/invoices/${inv.id}`" class="flex h-8 w-8 items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground" title="View invoice" aria-label="View invoice"><Eye class="h-4 w-4" /></Link>
+                                        <Link
+                                            v-if="inv.status === 'issued'"
+                                            :href="`/invoices/${inv.id}/edit`"
+                                            class="flex h-8 w-8 items-center justify-center border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+                                            title="Edit bill"
+                                            aria-label="Edit bill"
+                                            ><Pencil class="h-4 w-4"
+                                        /></Link>
+                                        <Link
+                                            v-if="inv.status === 'issued'"
+                                            :href="`/invoices/${inv.id}`"
+                                            class="flex h-8 w-8 items-center justify-center border-l border-border"
+                                            :class="inv.whatsapp_sent_at ? 'text-muted-foreground/60 hover:bg-muted' : 'bg-primary/10 text-primary hover:bg-primary/20'"
+                                            :title="inv.whatsapp_sent_at ? 'Already sent — open to resend' : 'Send on WhatsApp'"
+                                            aria-label="Send on WhatsApp"
+                                            ><Send class="h-4 w-4"
+                                        /></Link>
+                                    </div>
                             </td>
                         </tr>
                     </tbody>

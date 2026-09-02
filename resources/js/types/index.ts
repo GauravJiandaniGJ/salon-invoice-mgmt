@@ -40,7 +40,7 @@ export interface NavItem {
 
 export interface SharedData {
     name: string;
-    salon: { name: string; logo_url: string | null; brand_color: string };
+    salon: { name: string; logo_url: string | null; logo_url_dark: string | null; brand_color: string };
     powered_by: { name: string; url: string; label: string };
     auth: Auth;
     flash: { success: string | null; error: string | null };

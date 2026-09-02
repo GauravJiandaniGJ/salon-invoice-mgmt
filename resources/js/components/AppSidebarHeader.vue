@@ -46,7 +46,7 @@ const page = usePage<SharedData>();
             class="ml-auto flex shrink-0 items-center gap-2 opacity-90 transition-opacity hover:opacity-100"
         >
             <span class="hidden text-[11px] uppercase tracking-wide text-muted-foreground sm:inline">Powered by</span>
-            <img src="/brand/todoit-logo.png" alt="TodoIT" class="h-6 w-auto" />
+            <img src="/brand/todoit-logo.png" alt="TodoIT" class="h-6 w-auto dark:hidden" /><img src="/brand/todoit-logo-light.png" alt="TodoIT" class="hidden h-6 w-auto dark:block" />
         </a>
     </header>
 </template>

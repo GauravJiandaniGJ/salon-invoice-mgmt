@@ -87,7 +87,7 @@ test('public page and pdf carry the technology partner footer and an og image', 
         ->assertSee('Powered by TodoIT')
         ->assertSee('todoitservices.com')
         ->assertSee('property="og:site_name"', false)
-        ->assertSee('brand/wow-logo.png');
+        ->assertSee('brand/wow-logo');
 
     $pdf = app(PdfRenderer::class);
     expect(view('pdf.invoice', ['invoice' => $invoice->fresh(['customer', 'items']), 'salon' => $pdf::salonDetails()])->render())

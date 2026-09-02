@@ -26,7 +26,7 @@ const isActive = (href: string) => {
                     as-child
                     :is-active="isActive(item.href)"
                     :tooltip="item.title"
-                    class="h-10 rounded-lg text-[15px] hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-primary data-[active=true]:font-semibold data-[active=true]:text-sidebar-primary-foreground"
+                    class="h-10 rounded-lg text-[15px] hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground data-[active=true]:bg-sidebar-accent data-[active=true]:font-semibold data-[active=true]:text-sidebar-accent-foreground"
                 >
                     <Link :href="item.href">
                         <component :is="item.icon" />
