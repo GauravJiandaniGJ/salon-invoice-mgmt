@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        // The app only ever sits behind a reverse proxy (host Nginx / Caddy) that terminates HTTPS.
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'role' => EnsureRole::class,
         ]);

@@ -6,6 +6,7 @@ use App\Models\Setting;
 use App\Services\WhatsApp\CloudApiSender;
 use App\Services\WhatsApp\WaMeLinkSender;
 use App\Services\WhatsApp\WhatsAppSender;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use RuntimeException;
 use Throwable;
@@ -25,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        if ($this->app->isProduction()) {
+            URL::forceScheme('https');
+        }
+
         //
     }
 
