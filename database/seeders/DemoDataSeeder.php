@@ -40,7 +40,12 @@ class DemoDataSeeder extends Seeder
 
         $users = User::query()->where('is_active', true)->get();
         if ($users->isEmpty()) {
-            $users = collect([User::factory()->owner()->create(['email' => 'owner@wowsalon.local'])]);
+            $users = collect([User::create([
+                'name' => 'Salon Owner',
+                'email' => 'owner@wowsalon.local',
+                'password' => env('SEED_OWNER_PASSWORD', 'password'),
+                'role' => User::ROLE_OWNER,
+            ])]);
         }
 
         $prefix = (string) Setting::get('invoice_prefix', 'WS');
@@ -48,7 +53,20 @@ class DemoDataSeeder extends Seeder
         $modes = Invoice::PAYMENT_MODES;
 
         DB::transaction(function () use ($services, $users, $prefix, $taxRate, $modes) {
-            $customers = Customer::factory()->count(20)->create();
+            // No Faker here: the production image ships without dev dependencies.
+            $names = [
+                'Divyanshu Sharma', 'Priya Patel', 'Rahul Mehta', 'Sneha Joshi', 'Aarav Desai',
+                'Kavya Nair', 'Rohan Verma', 'Ananya Iyer', 'Vikram Singh', 'Pooja Shah',
+                'Karan Kapoor', 'Meera Reddy', 'Aditya Rao', 'Nisha Gupta', 'Siddharth Jain',
+                'Riya Malhotra', 'Arjun Kulkarni', 'Tanvi Bhatt', 'Manish Agarwal', 'Isha Chauhan',
+            ];
+            $customers = collect($names)->map(fn (string $name, int $i) => Customer::create([
+                'name' => $name,
+                'phone' => '91'.(9800000000 + ($i + 1) * 1234567 % 99999999 + 10000000),
+                'gender' => match ($i % 3) {
+                    0 => 'female', 1 => 'male', default => null
+                },
+            ]));
 
             // 60 dates over the last 30 days, oldest first so numbering follows time.
             $dates = collect(range(1, 60))
@@ -139,8 +157,13 @@ class DemoDataSeeder extends Seeder
             }
 
             for ($i = 0; $i < 15; $i++) {
-                Expense::factory()->create([
+                $category = config('salon.expense_categories')[$i % count(config('salon.expense_categories'))];
+                Expense::create([
                     'expense_date' => now()->subDays(random_int(0, 29))->toDateString(),
+                    'category' => $category,
+                    'description' => $category.' expense',
+                    'amount' => random_int(1, 60) * 50,
+                    'payment_mode' => $modes[$i % count($modes)],
                     'user_id' => $users->random()->id,
                 ]);
             }
