@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Service extends Model
 {
@@ -47,9 +48,14 @@ class Service extends Model
         return $query->where('is_active', true);
     }
 
-    /** True once the service appears on any invoice line (table exists from phase 2). */
+    public function invoiceItems(): HasMany
+    {
+        return $this->hasMany(InvoiceItem::class);
+    }
+
+    /** True once the service appears on any invoice line; such services must be deactivated, not deleted. */
     public function isBilled(): bool
     {
-        return false;
+        return $this->invoiceItems()->exists();
     }
 }
