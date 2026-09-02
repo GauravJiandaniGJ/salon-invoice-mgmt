@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Billing;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Billing\StoreCustomerRequest;
 use App\Http\Requests\Billing\UpdateCustomerRequest;
 use App\Models\Customer;
 use App\Models\Invoice;
@@ -93,6 +94,13 @@ class CustomerController extends Controller
             ],
             'invoices' => $invoices,
         ]);
+    }
+
+    public function store(StoreCustomerRequest $request): RedirectResponse
+    {
+        $customer = Customer::create($request->normalised());
+
+        return redirect()->route('customers.show', $customer)->with('success', 'Customer added.');
     }
 
     public function update(UpdateCustomerRequest $request, Customer $customer): RedirectResponse

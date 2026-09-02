@@ -128,3 +128,24 @@ test('customer can be updated with a normalised unique phone', function () {
         ->patch("/customers/{$customer->id}", ['name' => 'Priya S', 'phone' => '123'])
         ->assertSessionHasErrors(['phone']);
 });
+
+test('a customer can be added from the customers page', function () {
+    $this->actingAs(staff())
+        ->post('/customers', ['name' => 'Asha Patel', 'phone' => '98765 43210', 'gender' => 'female', 'notes' => null])
+        ->assertRedirect()
+        ->assertSessionHasNoErrors();
+
+    $customer = Customer::where('phone', '919876543210')->first();
+    expect($customer)->not->toBeNull()->and($customer->name)->toBe('Asha Patel');
+});
+
+test('adding a customer with an existing phone is rejected', function () {
+    Customer::factory()->create(['phone' => '919876543210']);
+
+    $this->actingAs(staff())
+        ->from('/customers')
+        ->post('/customers', ['name' => 'Dup', 'phone' => '9876543210'])
+        ->assertSessionHasErrors('phone');
+
+    expect(Customer::where('phone', '919876543210')->count())->toBe(1);
+});

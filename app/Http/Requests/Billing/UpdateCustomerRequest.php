@@ -26,8 +26,9 @@ class UpdateCustomerRequest extends FormRequest
         $validator->after(function (Validator $v) {
             try {
                 $phone = PhoneNumber::normalise($this->input('phone'));
+                $current = $this->route('customer')?->id;
                 $exists = Customer::where('phone', $phone)
-                    ->whereKeyNot($this->route('customer')?->id)
+                    ->when($current, fn ($q) => $q->whereKeyNot($current))
                     ->exists();
 
                 if ($exists) {

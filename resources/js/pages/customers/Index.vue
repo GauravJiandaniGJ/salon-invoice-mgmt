@@ -6,8 +6,8 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatMoney } from '@/lib/money';
 import type { BreadcrumbItem, CustomerRow, Paginated } from '@/types';
-import { Head, Link, router } from '@inertiajs/vue3';
-import { FilePlus2, Search } from 'lucide-vue-next';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { FilePlus2, Search, UserPlus } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
 const props = defineProps<{
@@ -35,6 +35,20 @@ watch(q, () => {
 });
 
 const genderLabel: Record<string, string> = { female: 'F', male: 'M', other: 'O' };
+
+const showAdd = ref(false);
+const addForm = useForm({ name: '', phone: '', gender: '' as '' | 'female' | 'male' | 'other', notes: '' });
+const submitAdd = () => {
+    addForm
+        .transform((d) => ({ ...d, gender: d.gender || null, notes: d.notes || null }))
+        .post('/customers', {
+            preserveScroll: true,
+            onSuccess: () => {
+                addForm.reset();
+                showAdd.value = false;
+            },
+        });
+};
 </script>
 
 <template>
@@ -44,10 +58,43 @@ const genderLabel: Record<string, string> = { female: 'F', male: 'M', other: 'O'
         <div class="flex flex-1 flex-col gap-4 p-4">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <h1 class="text-2xl font-semibold">Customers</h1>
-                <Button as-child>
-                    <Link href="/bills/new"><FilePlus2 /> New Bill</Link>
-                </Button>
+                <div class="flex gap-2">
+                    <Button variant="outline" @click="showAdd = !showAdd"><UserPlus /> Add customer</Button>
+                    <Button as-child>
+                        <Link href="/bills/new"><FilePlus2 /> New Bill</Link>
+                    </Button>
+                </div>
             </div>
+
+            <form v-if="showAdd" class="grid gap-3 rounded-xl border bg-card p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4" @submit.prevent="submitAdd">
+                <div class="grid gap-1">
+                    <label class="text-xs font-medium" for="add-name">Name</label>
+                    <Input id="add-name" v-model="addForm.name" placeholder="Full name" autofocus />
+                    <p v-if="addForm.errors.name" class="text-xs text-destructive">{{ addForm.errors.name }}</p>
+                </div>
+                <div class="grid gap-1">
+                    <label class="text-xs font-medium" for="add-phone">Phone</label>
+                    <Input id="add-phone" v-model="addForm.phone" type="text" inputmode="tel" placeholder="98765 43210" />
+                    <p v-if="addForm.errors.phone" class="text-xs text-destructive">{{ addForm.errors.phone }}</p>
+                </div>
+                <div class="grid gap-1">
+                    <label class="text-xs font-medium" for="add-gender">Gender (optional)</label>
+                    <select id="add-gender" v-model="addForm.gender" class="h-10 rounded-md border border-input bg-background px-3 text-sm">
+                        <option value="">—</option>
+                        <option value="female">Female</option>
+                        <option value="male">Male</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="grid gap-1">
+                    <label class="text-xs font-medium" for="add-notes">Notes (optional)</label>
+                    <Input id="add-notes" v-model="addForm.notes" placeholder="Allergies, preferences" />
+                </div>
+                <div class="flex gap-2 sm:col-span-2 lg:col-span-4">
+                    <Button type="submit" :disabled="addForm.processing">Save customer</Button>
+                    <Button type="button" variant="ghost" @click="showAdd = false">Cancel</Button>
+                </div>
+            </form>
 
             <div class="relative max-w-md">
                 <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
