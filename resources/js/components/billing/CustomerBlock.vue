@@ -254,12 +254,17 @@ const dropdownVisible = computed(() => suggestOpen.value && suggestions.value.le
                             @blur="onFieldBlur"
                         />
                         <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                            <LoaderCircle v-if="state === 'loading' || (suggestLoading && activeField === 'phone')" class="h-4 w-4 animate-spin text-muted-foreground" />
+                            <LoaderCircle
+                                v-if="state === 'loading' || (suggestLoading && activeField === 'phone')"
+                                class="h-4 w-4 animate-spin text-muted-foreground"
+                            />
                             <CheckCircle2 v-else-if="state === 'found'" class="h-4 w-4 text-emerald-600" />
                             <UserPlus v-else-if="state === 'new'" class="h-4 w-4 text-blue-600" />
                         </span>
                     </div>
-                    <p v-if="errors['customer.phone'] || lookupError" class="text-xs text-destructive">{{ errors['customer.phone'] || lookupError }}</p>
+                    <p v-if="errors['customer.phone'] || lookupError" class="text-xs text-destructive">
+                        {{ errors['customer.phone'] || lookupError }}
+                    </p>
                 </div>
 
                 <div class="grid gap-1.5">
@@ -301,7 +306,10 @@ const dropdownVisible = computed(() => suggestOpen.value && suggestions.value.le
                     :key="c.id"
                     role="option"
                     :aria-selected="i === activeIndex"
-                    :class="['flex cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2', i === activeIndex ? 'bg-accent' : 'hover:bg-accent/60']"
+                    :class="[
+                        'flex cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2',
+                        i === activeIndex ? 'bg-accent' : 'hover:bg-accent/60',
+                    ]"
                     @mousedown.prevent
                     @mouseenter="activeIndex = i"
                     @click="selectSuggestion(c)"
@@ -317,7 +325,9 @@ const dropdownVisible = computed(() => suggestOpen.value && suggestions.value.le
 
         <p v-if="state === 'found' && found" class="mt-2 flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
             <span class="font-medium text-foreground">{{ found.name }}</span>
-            <span v-if="found.last_invoice">· Last visit {{ formatDate(found.last_invoice.invoice_date) }}, {{ formatMoney(found.last_invoice.total) }}</span>
+            <span v-if="found.last_invoice"
+                >· Last visit {{ formatDate(found.last_invoice.invoice_date) }}, {{ formatMoney(found.last_invoice.total) }}</span
+            >
             <span v-else-if="found.last_visit_at">· Last visit {{ formatDate(found.last_visit_at) }}</span>
             <span>· {{ found.visits }} visit{{ found.visits === 1 ? '' : 's' }}</span>
             <Link :href="`/customers/${found.id}`" class="underline underline-offset-2 hover:text-foreground">History</Link>
@@ -344,7 +354,14 @@ const dropdownVisible = computed(() => suggestOpen.value && suggestions.value.le
             </div>
             <div v-if="canEditDate" class="grid gap-1.5">
                 <Label for="invoice-date">Bill date</Label>
-                <Input id="invoice-date" type="date" :model-value="invoiceDate ?? today" :max="today" class="h-10" @update:model-value="(v) => (invoiceDate = String(v) === today ? null : String(v))" />
+                <Input
+                    id="invoice-date"
+                    type="date"
+                    :model-value="invoiceDate ?? today"
+                    :max="today"
+                    class="h-10"
+                    @update:model-value="(v) => (invoiceDate = String(v) === today ? null : String(v))"
+                />
                 <p v-if="errors.invoice_date" class="text-xs text-destructive">{{ errors.invoice_date }}</p>
             </div>
         </div>

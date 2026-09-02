@@ -44,7 +44,7 @@ const todayModes = computed(() => byModeRows(props.today.by_mode));
             </div>
 
             <div class="grid gap-4 lg:grid-cols-3">
-                <div class="rounded-xl border bg-card shadow-sm p-4">
+                <div class="rounded-xl border bg-card p-4 shadow-sm">
                     <h2 class="text-sm font-semibold">Earnings by payment mode</h2>
                     <ul class="mt-2 divide-y text-sm">
                         <li v-for="row in todayModes" :key="row.mode" class="flex items-center justify-between py-1.5">
@@ -54,7 +54,7 @@ const todayModes = computed(() => byModeRows(props.today.by_mode));
                     </ul>
                 </div>
 
-                <div v-if="isOwner && month" class="rounded-xl border bg-card shadow-sm p-4">
+                <div v-if="isOwner && month" class="rounded-xl border bg-card p-4 shadow-sm">
                     <h2 class="text-sm font-semibold">This month · {{ formatMonth(currentMonth()) }}</h2>
                     <dl class="mt-2 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                         <dt class="text-muted-foreground">Invoices</dt>
@@ -73,7 +73,7 @@ const todayModes = computed(() => byModeRows(props.today.by_mode));
                     >
                 </div>
 
-                <div class="rounded-xl border bg-card shadow-sm p-4">
+                <div class="rounded-xl border bg-card p-4 shadow-sm">
                     <h2 class="text-sm font-semibold">Quick links</h2>
                     <div class="mt-2 flex flex-col gap-1 text-sm">
                         <Link href="/reports/daily" class="text-primary underline-offset-4 hover:underline">Daily statement</Link>
@@ -136,7 +136,13 @@ const todayModes = computed(() => byModeRows(props.today.by_mode));
                                 </td>
                                 <td class="whitespace-nowrap px-4 py-2 text-right">
                                     <div class="inline-flex items-center overflow-hidden rounded-md border border-border bg-card">
-                                        <Link :href="`/invoices/${inv.id}`" class="flex h-8 w-8 items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground" title="View invoice" aria-label="View invoice"><Eye class="h-4 w-4" /></Link>
+                                        <Link
+                                            :href="`/invoices/${inv.id}`"
+                                            class="flex h-8 w-8 items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground"
+                                            title="View invoice"
+                                            aria-label="View invoice"
+                                            ><Eye class="h-4 w-4"
+                                        /></Link>
                                         <Link
                                             v-if="inv.status === 'issued'"
                                             :href="`/invoices/${inv.id}/edit`"
@@ -149,7 +155,11 @@ const todayModes = computed(() => byModeRows(props.today.by_mode));
                                             v-if="inv.status === 'issued'"
                                             :href="`/invoices/${inv.id}`"
                                             class="flex h-8 w-8 items-center justify-center border-l border-border"
-                                            :class="inv.whatsapp_sent_at ? 'text-muted-foreground/60 hover:bg-muted' : 'bg-primary/10 text-primary hover:bg-primary/20'"
+                                            :class="
+                                                inv.whatsapp_sent_at
+                                                    ? 'text-muted-foreground/60 hover:bg-muted'
+                                                    : 'bg-primary/10 text-primary hover:bg-primary/20'
+                                            "
                                             :title="inv.whatsapp_sent_at ? 'Already sent — open to resend' : 'Send on WhatsApp'"
                                             aria-label="Send on WhatsApp"
                                             ><Send class="h-4 w-4"

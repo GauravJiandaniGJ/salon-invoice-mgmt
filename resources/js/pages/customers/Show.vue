@@ -64,21 +64,21 @@ const genderLabel: Record<string, string> = { female: 'Female', male: 'Male', ot
             <div class="grid gap-4 lg:grid-cols-[320px_1fr]">
                 <div class="space-y-4">
                     <div class="grid grid-cols-3 gap-2 lg:grid-cols-1">
-                        <div class="rounded-xl border bg-card shadow-sm p-3">
+                        <div class="rounded-xl border bg-card p-3 shadow-sm">
                             <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Lifetime total</p>
                             <p class="text-xl font-bold tabular-nums">{{ formatMoney(customer.total_spent) }}</p>
                         </div>
-                        <div class="rounded-xl border bg-card shadow-sm p-3">
+                        <div class="rounded-xl border bg-card p-3 shadow-sm">
                             <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Visits</p>
                             <p class="text-xl font-bold tabular-nums">{{ customer.visits }}</p>
                         </div>
-                        <div class="rounded-xl border bg-card shadow-sm p-3">
+                        <div class="rounded-xl border bg-card p-3 shadow-sm">
                             <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Last visit</p>
                             <p class="text-xl font-bold">{{ formatDate(customer.last_visit_at) }}</p>
                         </div>
                     </div>
 
-                    <section class="rounded-xl border bg-card shadow-sm p-4">
+                    <section class="rounded-xl border bg-card p-4 shadow-sm">
                         <div class="mb-3 flex items-center justify-between">
                             <h2 class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Profile</h2>
                             <Button v-if="!editing" variant="ghost" size="sm" @click="editing = true"><Pencil /> Edit</Button>
@@ -107,7 +107,13 @@ const genderLabel: Record<string, string> = { female: 'Female', male: 'Male', ot
                             </div>
                             <div class="grid gap-1.5">
                                 <Label for="c-notes">Notes</Label>
-                                <textarea id="c-notes" v-model="form.notes" rows="3" placeholder="Allergies, preferences…" class="rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                                <textarea
+                                    id="c-notes"
+                                    v-model="form.notes"
+                                    rows="3"
+                                    placeholder="Allergies, preferences…"
+                                    class="rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                />
                                 <p v-if="form.errors.notes" class="text-xs text-destructive">{{ form.errors.notes }}</p>
                             </div>
                             <div class="flex gap-2">
@@ -117,9 +123,18 @@ const genderLabel: Record<string, string> = { female: 'Female', male: 'Male', ot
                         </form>
 
                         <dl v-else class="space-y-2 text-sm">
-                            <div><dt class="text-xs text-muted-foreground">Phone</dt><dd>{{ customer.phone_display }}</dd></div>
-                            <div><dt class="text-xs text-muted-foreground">Gender</dt><dd>{{ customer.gender ? genderLabel[customer.gender] : '—' }}</dd></div>
-                            <div><dt class="text-xs text-muted-foreground">Notes</dt><dd class="whitespace-pre-wrap">{{ customer.notes || '—' }}</dd></div>
+                            <div>
+                                <dt class="text-xs text-muted-foreground">Phone</dt>
+                                <dd>{{ customer.phone_display }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs text-muted-foreground">Gender</dt>
+                                <dd>{{ customer.gender ? genderLabel[customer.gender] : '—' }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs text-muted-foreground">Notes</dt>
+                                <dd class="whitespace-pre-wrap">{{ customer.notes || '—' }}</dd>
+                            </div>
                         </dl>
                     </section>
                 </div>
@@ -141,14 +156,26 @@ const genderLabel: Record<string, string> = { female: 'Female', male: 'Male', ot
                                 <tr v-if="invoices.data.length === 0">
                                     <td colspan="5" class="px-3 py-10 text-center text-muted-foreground">No bills yet.</td>
                                 </tr>
-                                <tr v-for="inv in invoices.data" :key="inv.id" class="border-t hover:bg-accent/40" :class="{ 'text-muted-foreground': inv.status === 'void' }">
+                                <tr
+                                    v-for="inv in invoices.data"
+                                    :key="inv.id"
+                                    class="border-t hover:bg-accent/40"
+                                    :class="{ 'text-muted-foreground': inv.status === 'void' }"
+                                >
                                     <td class="px-3 py-2 font-medium">
                                         <Link :href="`/invoices/${inv.id}`" class="hover:underline">{{ inv.invoice_number }}</Link>
-                                        <StatusBadge v-if="inv.status === 'void' || inv.payment_status === 'unpaid'" :status="inv.status" :payment-status="inv.payment_status" class="ml-1" />
+                                        <StatusBadge
+                                            v-if="inv.status === 'void' || inv.payment_status === 'unpaid'"
+                                            :status="inv.status"
+                                            :payment-status="inv.payment_status"
+                                            class="ml-1"
+                                        />
                                     </td>
                                     <td class="whitespace-nowrap px-3 py-2">{{ formatDate(inv.invoice_date) }}</td>
                                     <td class="max-w-[280px] truncate px-3 py-2" :title="inv.items_summary">{{ inv.items_summary }}</td>
-                                    <td class="px-3 py-2 text-right font-semibold tabular-nums" :class="{ 'line-through': inv.status === 'void' }">{{ formatMoney(inv.total) }}</td>
+                                    <td class="px-3 py-2 text-right font-semibold tabular-nums" :class="{ 'line-through': inv.status === 'void' }">
+                                        {{ formatMoney(inv.total) }}
+                                    </td>
                                     <td class="px-3 py-2">{{ paymentLabel(inv.payment_mode) }}</td>
                                 </tr>
                             </tbody>

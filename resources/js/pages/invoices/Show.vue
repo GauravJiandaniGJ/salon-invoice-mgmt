@@ -139,7 +139,10 @@ const printInvoice = () => window.print();
                 <div v-if="isVoid" class="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden" aria-hidden="true">
                     <span class="rotate-[-25deg] text-[7rem] font-black uppercase tracking-widest text-red-500/15 print:text-red-500/25">Void</span>
                 </div>
-                <div v-if="isVoid" class="mb-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
+                <div
+                    v-if="isVoid"
+                    class="mb-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200"
+                >
                     <strong>VOID</strong> — {{ invoice.void_reason }}
                     <span class="block text-xs opacity-80">by {{ invoice.voided_by?.name ?? '—' }} · {{ formatDateTime(invoice.voided_at) }}</span>
                 </div>
@@ -169,9 +172,16 @@ const printInvoice = () => window.print();
                     </div>
                     <div class="sm:text-right">
                         <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Details</p>
-                        <p>Billed by <span class="font-medium">{{ invoice.billed_by.name }}</span></p>
-                        <p v-if="invoice.staff_member">Served by <span class="font-medium">{{ invoice.staff_member.name }}</span></p>
-                        <p>Payment: <span class="font-medium">{{ paymentLabel(invoice.payment_mode) }}</span> · {{ invoice.payment_status === 'paid' ? 'Paid' : 'Unpaid' }}</p>
+                        <p>
+                            Billed by <span class="font-medium">{{ invoice.billed_by.name }}</span>
+                        </p>
+                        <p v-if="invoice.staff_member">
+                            Served by <span class="font-medium">{{ invoice.staff_member.name }}</span>
+                        </p>
+                        <p>
+                            Payment: <span class="font-medium">{{ paymentLabel(invoice.payment_mode) }}</span> ·
+                            {{ invoice.payment_status === 'paid' ? 'Paid' : 'Unpaid' }}
+                        </p>
                     </div>
                 </section>
 
@@ -195,25 +205,47 @@ const printInvoice = () => window.print();
                 </table>
 
                 <dl class="ml-auto mt-4 w-full max-w-xs space-y-1 text-sm">
-                    <div class="flex justify-between"><dt class="text-muted-foreground">Subtotal</dt><dd class="tabular-nums">{{ formatMoney(invoice.subtotal) }}</dd></div>
+                    <div class="flex justify-between">
+                        <dt class="text-muted-foreground">Subtotal</dt>
+                        <dd class="tabular-nums">{{ formatMoney(invoice.subtotal) }}</dd>
+                    </div>
                     <div v-if="invoice.discount_amount > 0" class="flex justify-between">
-                        <dt class="text-muted-foreground">Discount<span v-if="invoice.discount_type === 'percent'"> ({{ Number(invoice.discount_value) }}%)</span></dt>
+                        <dt class="text-muted-foreground">
+                            Discount<span v-if="invoice.discount_type === 'percent'"> ({{ Number(invoice.discount_value) }}%)</span>
+                        </dt>
                         <dd class="tabular-nums">− {{ formatMoney(invoice.discount_amount) }}</dd>
                     </div>
-                    <div v-if="invoice.tax_amount > 0" class="flex justify-between"><dt class="text-muted-foreground">GST {{ Number(invoice.tax_rate) }}%</dt><dd class="tabular-nums">{{ formatMoney(invoice.tax_amount) }}</dd></div>
-                    <div v-if="Number(invoice.round_off) !== 0" class="flex justify-between"><dt class="text-muted-foreground">Round off</dt><dd class="tabular-nums">{{ invoice.round_off > 0 ? '+' : '−' }} {{ formatMoney(Math.abs(invoice.round_off)) }}</dd></div>
-                    <div class="flex items-baseline justify-between border-t pt-2"><dt class="font-semibold">Total</dt><dd class="text-2xl font-bold tabular-nums">{{ formatMoney(invoice.total) }}</dd></div>
+                    <div v-if="invoice.tax_amount > 0" class="flex justify-between">
+                        <dt class="text-muted-foreground">GST {{ Number(invoice.tax_rate) }}%</dt>
+                        <dd class="tabular-nums">{{ formatMoney(invoice.tax_amount) }}</dd>
+                    </div>
+                    <div v-if="Number(invoice.round_off) !== 0" class="flex justify-between">
+                        <dt class="text-muted-foreground">Round off</dt>
+                        <dd class="tabular-nums">{{ invoice.round_off > 0 ? '+' : '−' }} {{ formatMoney(Math.abs(invoice.round_off)) }}</dd>
+                    </div>
+                    <div class="flex items-baseline justify-between border-t pt-2">
+                        <dt class="font-semibold">Total</dt>
+                        <dd class="text-2xl font-bold tabular-nums">{{ formatMoney(invoice.total) }}</dd>
+                    </div>
                 </dl>
 
-                <p v-if="invoice.notes" class="mt-4 rounded-md bg-muted p-2 text-xs text-muted-foreground print:hidden"><strong>Internal note:</strong> {{ invoice.notes }}</p>
+                <p v-if="invoice.notes" class="mt-4 rounded-md bg-muted p-2 text-xs text-muted-foreground print:hidden">
+                    <strong>Internal note:</strong> {{ invoice.notes }}
+                </p>
                 <p class="mt-6 text-center text-sm text-muted-foreground">Thank you for visiting {{ salonName }}!</p>
             </div>
 
             <!-- Actions -->
-            <aside class="w-full space-y-3 print:hidden lg:w-80 lg:shrink-0">
-                <div v-if="app_url_missing" class="flex gap-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+            <aside class="w-full space-y-3 lg:w-80 lg:shrink-0 print:hidden">
+                <div
+                    v-if="app_url_missing"
+                    class="flex gap-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200"
+                >
                     <AlertTriangle class="mt-0.5 h-4 w-4 shrink-0" />
-                    <p>The public link uses <code>localhost</code>. Set the salon's public URL in <Link href="/settings" class="underline">Settings</Link> before sending to customers.</p>
+                    <p>
+                        The public link uses <code>localhost</code>. Set the salon's public URL in
+                        <Link href="/settings" class="underline">Settings</Link> before sending to customers.
+                    </p>
                 </div>
 
                 <div class="rounded-xl border bg-card p-4 shadow-sm">
@@ -241,7 +273,10 @@ const printInvoice = () => window.print();
                     <p v-else-if="isVoid" class="text-center text-sm text-muted-foreground">Void invoices can't be sent.</p>
                     <p v-else class="text-center text-sm text-muted-foreground">WhatsApp sending is not configured.</p>
 
-                    <p class="mt-2 flex items-center justify-center gap-1 text-xs" :class="sentAt ? 'text-emerald-700 dark:text-emerald-400' : 'text-muted-foreground'">
+                    <p
+                        class="mt-2 flex items-center justify-center gap-1 text-xs"
+                        :class="sentAt ? 'text-emerald-700 dark:text-emerald-400' : 'text-muted-foreground'"
+                    >
                         <template v-if="sentAt"><Check class="h-3.5 w-3.5" /> Sent {{ formatDateTime(sentAt) }}</template>
                         <template v-else>Not sent yet</template>
                     </p>
@@ -250,26 +285,43 @@ const printInvoice = () => window.print();
                         <template v-else-if="isMobileDevice">Opens the chat in the WhatsApp app — press Send there.</template>
                         <template v-else>Opens the chat in WhatsApp Web — press Enter to send.</template>
                     </p>
-                    <p v-if="sendError" class="mt-2 rounded-md bg-amber-50 p-2 text-center text-[11px] text-amber-900 dark:bg-amber-950 dark:text-amber-200">{{ sendError }}</p>
-                    <a v-if="fallbackUrl" :href="fallbackUrl" target="_blank" rel="noopener" class="mt-2 block text-center text-xs underline underline-offset-2">
+                    <p
+                        v-if="sendError"
+                        class="mt-2 rounded-md bg-amber-50 p-2 text-center text-[11px] text-amber-900 dark:bg-amber-950 dark:text-amber-200"
+                    >
+                        {{ sendError }}
+                    </p>
+                    <a
+                        v-if="fallbackUrl"
+                        :href="fallbackUrl"
+                        target="_blank"
+                        rel="noopener"
+                        class="mt-2 block text-center text-xs underline underline-offset-2"
+                    >
                         Pop-up blocked — tap here to open WhatsApp
                     </a>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
                     <Button variant="outline" class="h-10" @click="copyLink"><Copy /> {{ copied ? 'Copied!' : 'Copy link' }}</Button>
-                    <Button as-child variant="outline" class="h-10"><a :href="pdf_url" target="_blank" rel="noopener"><Download /> PDF</a></Button>
+                    <Button as-child variant="outline" class="h-10"
+                        ><a :href="pdf_url" target="_blank" rel="noopener"><Download /> PDF</a></Button
+                    >
                     <Button variant="outline" class="h-10" @click="printInvoice"><Printer /> Print</Button>
-                    <Button as-child variant="outline" class="h-10"><Link :href="`/bills/new?duplicate=${invoice.id}`"><CopyPlus /> Duplicate</Link></Button>
-                    <Button v-if="invoice.status === 'issued'" as-child variant="outline" class="h-10"><Link :href="`/invoices/${invoice.id}/edit`"><Pencil /> Edit</Link></Button>
+                    <Button as-child variant="outline" class="h-10"
+                        ><Link :href="`/bills/new?duplicate=${invoice.id}`"><CopyPlus /> Duplicate</Link></Button
+                    >
+                    <Button v-if="invoice.status === 'issued'" as-child variant="outline" class="h-10"
+                        ><Link :href="`/invoices/${invoice.id}/edit`"><Pencil /> Edit</Link></Button
+                    >
                 </div>
 
-                <div class="rounded-xl border bg-card shadow-sm p-3 text-xs text-muted-foreground">
+                <div class="rounded-xl border bg-card p-3 text-xs text-muted-foreground shadow-sm">
                     <p class="mb-1 font-medium text-foreground">Public link</p>
                     <a :href="public_url" target="_blank" rel="noopener" class="break-all underline underline-offset-2">{{ public_url }}</a>
                 </div>
 
-                <details class="rounded-xl border bg-card shadow-sm p-3 text-xs">
+                <details class="rounded-xl border bg-card p-3 text-xs shadow-sm">
                     <summary class="cursor-pointer font-medium">Message preview</summary>
                     <pre class="mt-2 whitespace-pre-wrap font-sans text-muted-foreground">{{ whatsapp_message }}</pre>
                 </details>
@@ -282,7 +334,9 @@ const printInvoice = () => window.print();
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Void {{ invoice.invoice_number }}?</DialogTitle>
-                    <DialogDescription>The invoice stays in the records with a VOID mark and is excluded from earnings. This cannot be undone.</DialogDescription>
+                    <DialogDescription
+                        >The invoice stays in the records with a VOID mark and is excluded from earnings. This cannot be undone.</DialogDescription
+                    >
                 </DialogHeader>
                 <form class="grid gap-2" @submit.prevent="submitVoid">
                     <Label for="void-reason">Reason</Label>

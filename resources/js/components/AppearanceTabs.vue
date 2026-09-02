@@ -25,9 +25,7 @@ const tabs = [
             @click="updateAppearance(value)"
             :class="[
                 'flex items-center rounded-md px-3.5 py-1.5 transition-colors',
-                appearance === value
-                    ? 'bg-card text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                appearance === value ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground hover:bg-accent hover:text-foreground',
             ]"
         >
             <component :is="Icon" class="-ml-1 h-4 w-4" />

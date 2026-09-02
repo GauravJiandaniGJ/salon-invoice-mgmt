@@ -18,7 +18,7 @@ const tabs = computed(() =>
 </script>
 
 <template>
-    <nav v-if="tabs.length > 1" class="flex gap-1 overflow-x-auto rounded-xl border bg-card p-1 shadow-sm text-sm print:hidden" aria-label="Reports">
+    <nav v-if="tabs.length > 1" class="flex gap-1 overflow-x-auto rounded-xl border bg-card p-1 text-sm shadow-sm print:hidden" aria-label="Reports">
         <Link
             v-for="tab in tabs"
             :key="tab.key"

@@ -65,7 +65,7 @@ const printPage = () => window.print();
                 </div>
             </div>
 
-            <form class="flex flex-wrap items-end gap-2 rounded-xl border bg-card shadow-sm p-3 print:hidden" @submit.prevent="apply">
+            <form class="flex flex-wrap items-end gap-2 rounded-xl border bg-card p-3 shadow-sm print:hidden" @submit.prevent="apply">
                 <div class="grid gap-1">
                     <label class="text-xs font-medium" for="svc-from">From</label>
                     <DateInput id="svc-from" v-model="from" :max="to" class="h-9" />

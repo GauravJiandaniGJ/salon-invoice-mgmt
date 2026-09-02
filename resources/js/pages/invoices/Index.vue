@@ -24,13 +24,17 @@ const filters = reactive<InvoiceFilters>({ ...props.filters });
 const loading = ref(false);
 
 const apply = () => {
-    router.get('/invoices', { ...filters }, {
-        preserveState: true,
-        preserveScroll: true,
-        replace: true,
-        onStart: () => (loading.value = true),
-        onFinish: () => (loading.value = false),
-    });
+    router.get(
+        '/invoices',
+        { ...filters },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            onStart: () => (loading.value = true),
+            onFinish: () => (loading.value = false),
+        },
+    );
 };
 
 let qTimer: ReturnType<typeof setTimeout> | null = null;
@@ -70,7 +74,7 @@ const exportUrl = computed(() => {
                 </div>
             </div>
 
-            <div class="grid gap-2 rounded-xl border bg-card shadow-sm p-3 md:grid-cols-[1fr_auto_auto_auto_auto_auto_auto]">
+            <div class="grid gap-2 rounded-xl border bg-card p-3 shadow-sm md:grid-cols-[1fr_auto_auto_auto_auto_auto_auto]">
                 <div class="relative">
                     <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input v-model="filters.q" placeholder="Search customer, phone or invoice no." class="h-10 pl-9" />
@@ -82,7 +86,11 @@ const exportUrl = computed(() => {
                     <option value="issued">Issued</option>
                     <option value="void">Void</option>
                 </select>
-                <select v-model="filters.payment_mode" class="h-10 rounded-md border border-input bg-background px-3 text-sm" aria-label="Payment mode">
+                <select
+                    v-model="filters.payment_mode"
+                    class="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                    aria-label="Payment mode"
+                >
                     <option value="">All payments</option>
                     <option value="cash">Cash</option>
                     <option value="upi">UPI</option>
@@ -115,10 +123,20 @@ const exportUrl = computed(() => {
                         <tr v-if="invoices.data.length === 0">
                             <td colspan="8" class="px-3 py-10 text-center text-muted-foreground">No invoices match these filters.</td>
                         </tr>
-                        <tr v-for="inv in invoices.data" :key="inv.id" class="border-t hover:bg-accent/40" :class="{ 'text-muted-foreground': inv.status === 'void' }">
+                        <tr
+                            v-for="inv in invoices.data"
+                            :key="inv.id"
+                            class="border-t hover:bg-accent/40"
+                            :class="{ 'text-muted-foreground': inv.status === 'void' }"
+                        >
                             <td class="px-3 py-2 font-medium">
                                 <Link :href="`/invoices/${inv.id}`" class="hover:underline">{{ inv.invoice_number }}</Link>
-                                <StatusBadge v-if="inv.status === 'void' || inv.payment_status === 'unpaid'" :status="inv.status" :payment-status="inv.payment_status" class="ml-1" />
+                                <StatusBadge
+                                    v-if="inv.status === 'void' || inv.payment_status === 'unpaid'"
+                                    :status="inv.status"
+                                    :payment-status="inv.payment_status"
+                                    class="ml-1"
+                                />
                             </td>
                             <td class="whitespace-nowrap px-3 py-2">{{ formatDate(inv.invoice_date) }}</td>
                             <td class="px-3 py-2">
@@ -126,7 +144,9 @@ const exportUrl = computed(() => {
                                 <span class="block text-xs text-muted-foreground">{{ inv.customer.phone_display }}</span>
                             </td>
                             <td class="max-w-[280px] truncate px-3 py-2" :title="inv.items_summary">{{ inv.items_summary }}</td>
-                            <td class="px-3 py-2 text-right font-semibold tabular-nums" :class="{ 'line-through': inv.status === 'void' }">{{ formatMoney(inv.total) }}</td>
+                            <td class="px-3 py-2 text-right font-semibold tabular-nums" :class="{ 'line-through': inv.status === 'void' }">
+                                {{ formatMoney(inv.total) }}
+                            </td>
                             <td class="px-3 py-2">{{ paymentLabel(inv.payment_mode) }}</td>
                             <td class="px-3 py-2 text-center">
                                 <Check v-if="inv.whatsapp_sent_at" class="mx-auto h-4 w-4 text-emerald-600" aria-label="Sent" />
@@ -134,25 +154,35 @@ const exportUrl = computed(() => {
                             </td>
                             <td class="whitespace-nowrap px-3 py-2 text-right">
                                 <div class="inline-flex items-center overflow-hidden rounded-md border border-border bg-card">
-                                        <Link :href="`/invoices/${inv.id}`" class="flex h-8 w-8 items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground" title="View invoice" aria-label="View invoice"><Eye class="h-4 w-4" /></Link>
-                                        <Link
-                                            v-if="inv.status === 'issued'"
-                                            :href="`/invoices/${inv.id}/edit`"
-                                            class="flex h-8 w-8 items-center justify-center border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground"
-                                            title="Edit bill"
-                                            aria-label="Edit bill"
-                                            ><Pencil class="h-4 w-4"
-                                        /></Link>
-                                        <Link
-                                            v-if="inv.status === 'issued'"
-                                            :href="`/invoices/${inv.id}`"
-                                            class="flex h-8 w-8 items-center justify-center border-l border-border"
-                                            :class="inv.whatsapp_sent_at ? 'text-muted-foreground/60 hover:bg-muted' : 'bg-primary/10 text-primary hover:bg-primary/20'"
-                                            :title="inv.whatsapp_sent_at ? 'Already sent — open to resend' : 'Send on WhatsApp'"
-                                            aria-label="Send on WhatsApp"
-                                            ><Send class="h-4 w-4"
-                                        /></Link>
-                                    </div>
+                                    <Link
+                                        :href="`/invoices/${inv.id}`"
+                                        class="flex h-8 w-8 items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground"
+                                        title="View invoice"
+                                        aria-label="View invoice"
+                                        ><Eye class="h-4 w-4"
+                                    /></Link>
+                                    <Link
+                                        v-if="inv.status === 'issued'"
+                                        :href="`/invoices/${inv.id}/edit`"
+                                        class="flex h-8 w-8 items-center justify-center border-l border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+                                        title="Edit bill"
+                                        aria-label="Edit bill"
+                                        ><Pencil class="h-4 w-4"
+                                    /></Link>
+                                    <Link
+                                        v-if="inv.status === 'issued'"
+                                        :href="`/invoices/${inv.id}`"
+                                        class="flex h-8 w-8 items-center justify-center border-l border-border"
+                                        :class="
+                                            inv.whatsapp_sent_at
+                                                ? 'text-muted-foreground/60 hover:bg-muted'
+                                                : 'bg-primary/10 text-primary hover:bg-primary/20'
+                                        "
+                                        :title="inv.whatsapp_sent_at ? 'Already sent — open to resend' : 'Send on WhatsApp'"
+                                        aria-label="Send on WhatsApp"
+                                        ><Send class="h-4 w-4"
+                                    /></Link>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

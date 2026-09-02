@@ -106,7 +106,7 @@ const printPage = () => window.print();
             </section>
 
             <div class="grid gap-4 md:grid-cols-2">
-                <section class="rounded-xl border bg-card shadow-sm p-4">
+                <section class="rounded-xl border bg-card p-4 shadow-sm">
                     <h2 class="text-sm font-semibold">Earnings by payment mode</h2>
                     <table class="mt-2 w-full text-sm">
                         <tbody>
@@ -117,7 +117,7 @@ const printPage = () => window.print();
                         </tbody>
                     </table>
                 </section>
-                <section class="rounded-xl border bg-card shadow-sm p-4">
+                <section class="rounded-xl border bg-card p-4 shadow-sm">
                     <h2 class="text-sm font-semibold">Expenses by payment mode</h2>
                     <table class="mt-2 w-full text-sm">
                         <tbody>

@@ -24,5 +24,5 @@ export function formatDateTime(value: string | null | undefined): string {
 export const PAYMENT_LABELS: Record<string, string> = { cash: 'Cash', upi: 'UPI', card: 'Card', other: 'Other' };
 
 export function paymentLabel(mode: string | null | undefined): string {
-    return PAYMENT_LABELS[mode ?? ''] ?? (mode ?? '—');
+    return PAYMENT_LABELS[mode ?? ''] ?? mode ?? '—';
 }

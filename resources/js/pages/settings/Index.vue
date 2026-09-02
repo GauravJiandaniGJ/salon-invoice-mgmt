@@ -195,7 +195,7 @@ const renameStaff = (s: SettingsStaffRow) => {
                 <p class="text-sm text-muted-foreground">Salon details, invoice options, WhatsApp message and the people who use this app.</p>
             </div>
 
-            <nav class="flex gap-1 overflow-x-auto rounded-xl border bg-card p-1 shadow-sm text-sm">
+            <nav class="flex gap-1 overflow-x-auto rounded-xl border bg-card p-1 text-sm shadow-sm">
                 <a
                     v-for="s in sections"
                     :key="s.id"
@@ -208,7 +208,7 @@ const renameStaff = (s: SettingsStaffRow) => {
 
             <form class="flex flex-col gap-5" @submit.prevent="save">
                 <!-- ================= Salon ================= -->
-                <section id="salon" class="scroll-mt-20 rounded-xl border bg-card shadow-sm p-4">
+                <section id="salon" class="scroll-mt-20 rounded-xl border bg-card p-4 shadow-sm">
                     <h2 class="text-base font-semibold">Salon details</h2>
                     <p class="mb-4 text-sm text-muted-foreground">Shown on invoices, the public invoice page and the PDF.</p>
 
@@ -291,14 +291,16 @@ const renameStaff = (s: SettingsStaffRow) => {
                         <div class="grid gap-1">
                             <Label for="brand_color">Brand colour</Label>
                             <Input id="brand_color" v-model="form.brand_color" class="w-36 font-mono uppercase" maxlength="7" placeholder="#C9A24B" />
-                            <p class="text-xs text-muted-foreground">Buttons, links and highlights use this colour. Pick the gold from your logo, or any colour you like.</p>
+                            <p class="text-xs text-muted-foreground">
+                                Buttons, links and highlights use this colour. Pick the gold from your logo, or any colour you like.
+                            </p>
                             <p v-if="form.errors.brand_color" class="text-xs text-destructive">{{ form.errors.brand_color }}</p>
                         </div>
                     </div>
                 </section>
 
                 <!-- ================= Invoice ================= -->
-                <section id="invoice" class="scroll-mt-20 rounded-xl border bg-card shadow-sm p-4">
+                <section id="invoice" class="scroll-mt-20 rounded-xl border bg-card p-4 shadow-sm">
                     <h2 class="text-base font-semibold">Invoice</h2>
                     <p class="mb-4 text-sm text-muted-foreground">Numbering and tax.</p>
                     <div class="grid gap-4 md:grid-cols-3">
@@ -322,7 +324,7 @@ const renameStaff = (s: SettingsStaffRow) => {
                 </section>
 
                 <!-- ================= WhatsApp ================= -->
-                <section id="whatsapp" class="scroll-mt-20 rounded-xl border bg-card shadow-sm p-4">
+                <section id="whatsapp" class="scroll-mt-20 rounded-xl border bg-card p-4 shadow-sm">
                     <h2 class="text-base font-semibold">WhatsApp message</h2>
                     <p class="mb-4 text-sm text-muted-foreground">
                         This text is pre-filled when you press “Send on WhatsApp”. Keep it short — under 400 characters reads best on a phone.
@@ -370,7 +372,11 @@ const renameStaff = (s: SettingsStaffRow) => {
                         <div class="grid gap-4 md:grid-cols-2">
                             <div class="grid gap-1">
                                 <Label for="whatsapp_driver">Method</Label>
-                                <select id="whatsapp_driver" v-model="form.whatsapp_driver" class="h-10 rounded-md border border-input bg-background px-3 text-sm">
+                                <select
+                                    id="whatsapp_driver"
+                                    v-model="form.whatsapp_driver"
+                                    class="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                                >
                                     <option value="wame">WhatsApp Web link (free, one click per invoice)</option>
                                     <option value="cloud">WhatsApp Cloud API (automatic)</option>
                                 </select>
@@ -380,7 +386,9 @@ const renameStaff = (s: SettingsStaffRow) => {
                                 <div class="grid gap-1">
                                     <Label for="whatsapp_cloud_phone_id">Phone number ID</Label>
                                     <Input id="whatsapp_cloud_phone_id" v-model="form.whatsapp_cloud_phone_id" placeholder="1234567890123" />
-                                    <p v-if="form.errors.whatsapp_cloud_phone_id" class="text-xs text-destructive">{{ form.errors.whatsapp_cloud_phone_id }}</p>
+                                    <p v-if="form.errors.whatsapp_cloud_phone_id" class="text-xs text-destructive">
+                                        {{ form.errors.whatsapp_cloud_phone_id }}
+                                    </p>
                                 </div>
                                 <div class="grid gap-1">
                                     <Label for="whatsapp_cloud_token">Access token</Label>
@@ -391,13 +399,19 @@ const renameStaff = (s: SettingsStaffRow) => {
                                         autocomplete="off"
                                         :placeholder="settings.whatsapp_cloud_token_set ? '•••• saved — enter a new one to replace' : 'EAAG…'"
                                     />
-                                    <p v-if="form.errors.whatsapp_cloud_token" class="text-xs text-destructive">{{ form.errors.whatsapp_cloud_token }}</p>
+                                    <p v-if="form.errors.whatsapp_cloud_token" class="text-xs text-destructive">
+                                        {{ form.errors.whatsapp_cloud_token }}
+                                    </p>
                                 </div>
                                 <div class="grid gap-1">
                                     <Label for="whatsapp_cloud_template">Approved template name</Label>
                                     <Input id="whatsapp_cloud_template" v-model="form.whatsapp_cloud_template" placeholder="invoice_ready" />
-                                    <p class="text-xs text-muted-foreground">Template variables in order: customer name, invoice number, amount, link.</p>
-                                    <p v-if="form.errors.whatsapp_cloud_template" class="text-xs text-destructive">{{ form.errors.whatsapp_cloud_template }}</p>
+                                    <p class="text-xs text-muted-foreground">
+                                        Template variables in order: customer name, invoice number, amount, link.
+                                    </p>
+                                    <p v-if="form.errors.whatsapp_cloud_template" class="text-xs text-destructive">
+                                        {{ form.errors.whatsapp_cloud_template }}
+                                    </p>
                                 </div>
                             </template>
                         </div>

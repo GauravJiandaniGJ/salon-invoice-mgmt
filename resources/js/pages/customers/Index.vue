@@ -24,13 +24,17 @@ let timer: ReturnType<typeof setTimeout> | null = null;
 watch(q, () => {
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
-        router.get('/customers', { q: q.value }, {
-            preserveState: true,
-            preserveScroll: true,
-            replace: true,
-            onStart: () => (loading.value = true),
-            onFinish: () => (loading.value = false),
-        });
+        router.get(
+            '/customers',
+            { q: q.value },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+                onStart: () => (loading.value = true),
+                onFinish: () => (loading.value = false),
+            },
+        );
     }, 350);
 });
 

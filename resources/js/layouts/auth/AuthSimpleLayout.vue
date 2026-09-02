@@ -44,7 +44,11 @@ useBrand();
             class="mt-6 flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground"
         >
             <span>Powered by</span>
-            <img src="/brand/todoit-logo.png" alt="TodoIT" class="h-6 w-auto dark:hidden" /><img src="/brand/todoit-logo-light.png" alt="TodoIT" class="hidden h-6 w-auto dark:block" />
+            <img src="/brand/todoit-logo.png" alt="TodoIT" class="h-6 w-auto dark:hidden" /><img
+                src="/brand/todoit-logo-light.png"
+                alt="TodoIT"
+                class="hidden h-6 w-auto dark:block"
+            />
         </a>
     </div>
 </template>

@@ -150,7 +150,10 @@ const save = () => {
         onError: (e) => {
             errors.value = e as Record<string, string>;
             const first = Object.keys(e)[0];
-            if (first) document.querySelector<HTMLElement>(`[data-error-anchor="${first.split('.')[0]}"]`)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            if (first)
+                document
+                    .querySelector<HTMLElement>(`[data-error-anchor="${first.split('.')[0]}"]`)
+                    ?.scrollIntoView({ block: 'center', behavior: 'smooth' });
         },
     });
 };
@@ -166,7 +169,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown));
 
 const itemsError = computed(() => errors.value.items ?? null);
 const lineError = (index: number) =>
-    errors.value[`items.${index}.unit_price`] || errors.value[`items.${index}.quantity`] || errors.value[`items.${index}.description`] || errors.value[`items.${index}.service_id`] || null;
+    errors.value[`items.${index}.unit_price`] ||
+    errors.value[`items.${index}.quantity`] ||
+    errors.value[`items.${index}.description`] ||
+    errors.value[`items.${index}.service_id`] ||
+    null;
 </script>
 
 <template>
@@ -187,7 +194,10 @@ const lineError = (index: number) =>
             </Button>
         </div>
 
-        <div class="flex flex-1 flex-col gap-4 p-4 lg:flex-row lg:overflow-hidden" :class="isEditing ? 'lg:h-[calc(100vh-8.5rem)]' : 'lg:h-[calc(100vh-4rem)]'">
+        <div
+            class="flex flex-1 flex-col gap-4 p-4 lg:flex-row lg:overflow-hidden"
+            :class="isEditing ? 'lg:h-[calc(100vh-8.5rem)]' : 'lg:h-[calc(100vh-4rem)]'"
+        >
             <!-- LEFT: customer + picker -->
             <div class="flex min-h-0 flex-1 flex-col gap-4" data-error-anchor="customer">
                 <CustomerBlock
@@ -202,7 +212,14 @@ const lineError = (index: number) =>
                     :errors="errors"
                     @customer-found="onCustomerFound"
                 />
-                <ServicePicker ref="picker" v-model:audience="audience" :catalog="catalog" class="lg:min-h-0" @add="addService" @add-custom="addCustom" />
+                <ServicePicker
+                    ref="picker"
+                    v-model:audience="audience"
+                    :catalog="catalog"
+                    class="lg:min-h-0"
+                    @add="addService"
+                    @add-custom="addCustom"
+                />
             </div>
 
             <!-- RIGHT: the bill — header / scrollable lines / fixed footer with totals + save -->
@@ -229,18 +246,43 @@ const lineError = (index: number) =>
                                     class="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-1 py-0.5 text-sm font-medium hover:border-input focus:border-input focus:outline-none"
                                     aria-label="Description"
                                 />
-                                <button type="button" class="rounded p-1 text-muted-foreground hover:bg-accent hover:text-destructive" aria-label="Remove line" @click="removeLine(line.uid)">
+                                <button
+                                    type="button"
+                                    class="rounded p-1 text-muted-foreground hover:bg-accent hover:text-destructive"
+                                    aria-label="Remove line"
+                                    @click="removeLine(line.uid)"
+                                >
                                     <Trash2 class="h-4 w-4" />
                                 </button>
                             </div>
                             <div class="mt-1.5 flex items-center gap-2">
                                 <span class="text-xs text-muted-foreground">₹</span>
-                                <Input v-model="line.unit_price" type="number" min="0" step="any" inputmode="decimal" class="h-9 w-24 text-right" aria-label="Unit price" />
+                                <Input
+                                    v-model="line.unit_price"
+                                    type="number"
+                                    min="0"
+                                    step="any"
+                                    inputmode="decimal"
+                                    class="h-9 w-24 text-right"
+                                    aria-label="Unit price"
+                                />
                                 <span class="text-xs text-muted-foreground">×</span>
                                 <div class="flex items-center rounded-md border">
-                                    <button type="button" class="h-9 w-8 hover:bg-accent" aria-label="Decrease quantity" @click="bumpQty(line, -1)"><Minus class="mx-auto h-3.5 w-3.5" /></button>
-                                    <input v-model="line.quantity" type="number" min="0.01" step="any" inputmode="decimal" class="h-9 w-12 border-x bg-transparent text-center text-sm focus:outline-none" aria-label="Quantity" />
-                                    <button type="button" class="h-9 w-8 hover:bg-accent" aria-label="Increase quantity" @click="bumpQty(line, 1)"><Plus class="mx-auto h-3.5 w-3.5" /></button>
+                                    <button type="button" class="h-9 w-8 hover:bg-accent" aria-label="Decrease quantity" @click="bumpQty(line, -1)">
+                                        <Minus class="mx-auto h-3.5 w-3.5" />
+                                    </button>
+                                    <input
+                                        v-model="line.quantity"
+                                        type="number"
+                                        min="0.01"
+                                        step="any"
+                                        inputmode="decimal"
+                                        class="h-9 w-12 border-x bg-transparent text-center text-sm focus:outline-none"
+                                        aria-label="Quantity"
+                                    />
+                                    <button type="button" class="h-9 w-8 hover:bg-accent" aria-label="Increase quantity" @click="bumpQty(line, 1)">
+                                        <Plus class="mx-auto h-3.5 w-3.5" />
+                                    </button>
                                 </div>
                                 <span class="ml-auto text-sm font-semibold tabular-nums">{{ formatMoney(totals.line_totals[index]) }}</span>
                             </div>
@@ -260,16 +302,45 @@ const lineError = (index: number) =>
                             <dt class="flex items-center gap-1.5 text-muted-foreground">
                                 Discount
                                 <span class="flex rounded-md border bg-background p-0.5">
-                                    <button type="button" :class="['h-7 rounded px-2 text-xs', discountType === 'flat' ? 'bg-primary text-primary-foreground' : 'hover:bg-accent']" @click="toggleDiscount('flat')">₹</button>
-                                    <button type="button" :class="['h-7 rounded px-2 text-xs', discountType === 'percent' ? 'bg-primary text-primary-foreground' : 'hover:bg-accent']" @click="toggleDiscount('percent')">%</button>
+                                    <button
+                                        type="button"
+                                        :class="[
+                                            'h-7 rounded px-2 text-xs',
+                                            discountType === 'flat' ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
+                                        ]"
+                                        @click="toggleDiscount('flat')"
+                                    >
+                                        ₹
+                                    </button>
+                                    <button
+                                        type="button"
+                                        :class="[
+                                            'h-7 rounded px-2 text-xs',
+                                            discountType === 'percent' ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
+                                        ]"
+                                        @click="toggleDiscount('percent')"
+                                    >
+                                        %
+                                    </button>
                                 </span>
-                                <Input v-if="discountType" v-model="discountValue" type="number" min="0" step="any" inputmode="decimal" class="h-8 w-20 text-right" aria-label="Discount value" />
+                                <Input
+                                    v-if="discountType"
+                                    v-model="discountValue"
+                                    type="number"
+                                    min="0"
+                                    step="any"
+                                    inputmode="decimal"
+                                    class="h-8 w-20 text-right"
+                                    aria-label="Discount value"
+                                />
                             </dt>
                             <dd class="tabular-nums" :class="totals.discount_amount > 0 ? 'text-emerald-700 dark:text-emerald-400' : ''">
                                 {{ totals.discount_amount > 0 ? '− ' + formatMoney(totals.discount_amount) : '—' }}
                             </dd>
                         </div>
-                        <p v-if="errors.discount_value || errors.discount_type" class="text-xs text-destructive">{{ errors.discount_value || errors.discount_type }}</p>
+                        <p v-if="errors.discount_value || errors.discount_type" class="text-xs text-destructive">
+                            {{ errors.discount_value || errors.discount_type }}
+                        </p>
 
                         <div v-if="tax_rate > 0" class="flex justify-between">
                             <dt class="text-muted-foreground">GST {{ tax_rate }}%</dt>
@@ -291,7 +362,10 @@ const lineError = (index: number) =>
                                 v-for="m in payment_modes"
                                 :key="m"
                                 type="button"
-                                :class="['h-10 rounded-md border text-sm font-medium', paymentMode === m ? 'border-primary bg-primary text-primary-foreground' : 'bg-background hover:bg-accent']"
+                                :class="[
+                                    'h-10 rounded-md border text-sm font-medium',
+                                    paymentMode === m ? 'border-primary bg-primary text-primary-foreground' : 'bg-background hover:bg-accent',
+                                ]"
                                 @click="paymentMode = m"
                             >
                                 {{ paymentLabel(m) }}
@@ -300,10 +374,21 @@ const lineError = (index: number) =>
                         <p v-if="errors.payment_mode" class="mt-1 text-xs text-destructive">{{ errors.payment_mode }}</p>
                         <div class="mt-2 flex items-center justify-between gap-2 text-sm">
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" :checked="paymentStatus === 'paid'" @change="paymentStatus = paymentStatus === 'paid' ? 'unpaid' : 'paid'" />
+                                <input
+                                    type="checkbox"
+                                    :checked="paymentStatus === 'paid'"
+                                    @change="paymentStatus = paymentStatus === 'paid' ? 'unpaid' : 'paid'"
+                                />
                                 <span>{{ paymentStatus === 'paid' ? 'Paid' : 'Unpaid — mark as pending' }}</span>
                             </label>
-                            <button v-if="!showNotes" type="button" class="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground" @click="showNotes = true">Add note</button>
+                            <button
+                                v-if="!showNotes"
+                                type="button"
+                                class="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                                @click="showNotes = true"
+                            >
+                                Add note
+                            </button>
                         </div>
                     </div>
 

@@ -92,7 +92,7 @@ const modeRows = computed(() => byModeRows(props.totals.by_mode));
                 <p class="text-sm text-muted-foreground">Record what the salon spends so the daily statement shows the real net.</p>
             </div>
 
-            <form class="rounded-xl border bg-card shadow-sm p-4" @submit.prevent="submit">
+            <form class="rounded-xl border bg-card p-4 shadow-sm" @submit.prevent="submit">
                 <h2 class="mb-3 text-sm font-semibold">Quick add</h2>
                 <div class="grid gap-3 md:grid-cols-12">
                     <div class="grid gap-1 md:col-span-2">

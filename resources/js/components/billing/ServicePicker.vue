@@ -67,7 +67,11 @@ const grouped = computed(() => {
         if (!cat.groups.has(key)) cat.groups.set(key, []);
         cat.groups.get(key)!.push(s);
     }
-    return [...byCategory.entries()].map(([id, c]) => ({ id, name: c.name, groups: [...c.groups.entries()].map(([g, services]) => ({ group: g, services })) }));
+    return [...byCategory.entries()].map(([id, c]) => ({
+        id,
+        name: c.name,
+        groups: [...c.groups.entries()].map(([g, services]) => ({ group: g, services })),
+    }));
 });
 
 // ----- price prompt for ranged / zero-priced services -----
@@ -124,7 +128,12 @@ const addCustom = () => {
     focusSearch();
 };
 
-const priceLabel = (s: CatalogService) => (s.price_max !== null ? `${formatMoney(s.price)}–${formatMoney(s.price_max).replace('₹', '')}` : Number(s.price) > 0 ? formatMoney(s.price) : 'Price at billing');
+const priceLabel = (s: CatalogService) =>
+    s.price_max !== null
+        ? `${formatMoney(s.price)}–${formatMoney(s.price_max).replace('₹', '')}`
+        : Number(s.price) > 0
+          ? formatMoney(s.price)
+          : 'Price at billing';
 
 defineExpose({ focusSearch });
 </script>
@@ -143,7 +152,16 @@ defineExpose({ focusSearch });
                     @keydown.enter.prevent="onSearchEnter"
                     @keydown.esc="search = ''"
                 />
-                <button v-if="search" type="button" class="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 hover:bg-accent" aria-label="Clear search" @click="search = ''; focusSearch()">
+                <button
+                    v-if="search"
+                    type="button"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 hover:bg-accent"
+                    aria-label="Clear search"
+                    @click="
+                        search = '';
+                        focusSearch();
+                    "
+                >
                     <X class="h-4 w-4" />
                 </button>
             </div>
@@ -152,7 +170,10 @@ defineExpose({ focusSearch });
                     v-for="a in ['women', 'men', 'all'] as Audience[]"
                     :key="a"
                     type="button"
-                    :class="['h-9 rounded px-3 text-sm font-medium capitalize', audience === a ? 'bg-primary text-primary-foreground' : 'hover:bg-accent']"
+                    :class="[
+                        'h-9 rounded px-3 text-sm font-medium capitalize',
+                        audience === a ? 'bg-primary text-primary-foreground' : 'hover:bg-accent',
+                    ]"
                     @click="audience = a"
                 >
                     {{ a }}
@@ -168,7 +189,16 @@ defineExpose({ focusSearch });
             </div>
             <div class="grid gap-1">
                 <label class="text-xs font-medium" for="custom-price">Price ₹</label>
-                <Input id="custom-price" v-model="custom.price" type="number" min="0" step="any" inputmode="decimal" class="h-10 w-28" @keydown.enter.prevent="addCustom" />
+                <Input
+                    id="custom-price"
+                    v-model="custom.price"
+                    type="number"
+                    min="0"
+                    step="any"
+                    inputmode="decimal"
+                    class="h-10 w-28"
+                    @keydown.enter.prevent="addCustom"
+                />
             </div>
             <Button type="submit" class="h-10">Add</Button>
             <Button type="button" variant="ghost" class="h-10" @click="showCustom = false">Cancel</Button>
@@ -177,7 +207,10 @@ defineExpose({ focusSearch });
         <div v-if="!isSearching" class="flex flex-wrap gap-1.5 border-b p-3">
             <button
                 type="button"
-                :class="['h-9 rounded-full border px-3 text-sm', selectedCategoryId === null ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-accent']"
+                :class="[
+                    'h-9 rounded-full border px-3 text-sm',
+                    selectedCategoryId === null ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-accent',
+                ]"
                 @click="selectedCategoryId = null"
             >
                 All
@@ -186,7 +219,10 @@ defineExpose({ focusSearch });
                 v-for="c in audienceCategories"
                 :key="c.id"
                 type="button"
-                :class="['h-9 rounded-full border px-3 text-sm', selectedCategoryId === c.id ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-accent']"
+                :class="[
+                    'h-9 rounded-full border px-3 text-sm',
+                    selectedCategoryId === c.id ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-accent',
+                ]"
                 @click="selectedCategoryId = c.id"
             >
                 {{ c.name }}
@@ -196,11 +232,28 @@ defineExpose({ focusSearch });
         <div v-if="pending" class="flex flex-wrap items-end gap-2 border-b bg-amber-50 p-3 dark:bg-amber-950/40">
             <div class="flex-1 text-sm">
                 <p class="font-medium">{{ pending.service.display_name }}</p>
-                <p class="text-muted-foreground">{{ pending.service.price_max !== null ? `Range ${priceLabel(pending.service)} — enter the price for this bill` : 'Enter the price for this bill' }}</p>
+                <p class="text-muted-foreground">
+                    {{
+                        pending.service.price_max !== null
+                            ? `Range ${priceLabel(pending.service)} — enter the price for this bill`
+                            : 'Enter the price for this bill'
+                    }}
+                </p>
             </div>
             <div class="grid gap-1">
                 <label class="text-xs font-medium" for="pending-price">Price ₹</label>
-                <Input id="pending-price" ref="pendingInput" v-model="pending.price" type="number" min="0" step="any" inputmode="decimal" class="h-10 w-28" @keydown.enter.prevent="confirmPending" @keydown.esc="pending = null" />
+                <Input
+                    id="pending-price"
+                    ref="pendingInput"
+                    v-model="pending.price"
+                    type="number"
+                    min="0"
+                    step="any"
+                    inputmode="decimal"
+                    class="h-10 w-28"
+                    @keydown.enter.prevent="confirmPending"
+                    @keydown.esc="pending = null"
+                />
             </div>
             <Button type="button" class="h-10" @click="confirmPending">Add</Button>
             <Button type="button" variant="ghost" class="h-10" @click="pending = null">Cancel</Button>
@@ -215,7 +268,12 @@ defineExpose({ focusSearch });
             </div>
 
             <div v-for="cat in grouped" :key="cat.id" class="mb-4">
-                <h3 v-if="isSearching || selectedCategoryId === null" class="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{{ cat.name }}</h3>
+                <h3
+                    v-if="isSearching || selectedCategoryId === null"
+                    class="mb-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+                >
+                    {{ cat.name }}
+                </h3>
                 <div v-for="g in cat.groups" :key="g.group" class="mb-2">
                     <p v-if="g.group" class="mb-1 text-xs font-medium text-muted-foreground">{{ g.group }}</p>
                     <div class="grid grid-cols-2 gap-1.5 md:grid-cols-3 xl:grid-cols-4">
