@@ -36,10 +36,10 @@ useBrand();
             :href="page.props.powered_by.url"
             target="_blank"
             rel="noopener"
-            class="mt-6 inline-flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-foreground"
+            class="mt-6 flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground"
         >
-            <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
-            {{ page.props.powered_by.label }}
+            <span>Powered by</span>
+            <img src="/brand/todoit-logo.png" alt="TodoIT" class="h-6 w-auto" />
         </a>
     </div>
 </template>

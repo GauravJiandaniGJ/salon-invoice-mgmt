@@ -42,12 +42,11 @@ const page = usePage<SharedData>();
             :href="page.props.powered_by.url"
             target="_blank"
             rel="noopener"
-            class="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
             :title="page.props.powered_by.label"
+            class="ml-auto flex shrink-0 items-center gap-2 opacity-90 transition-opacity hover:opacity-100"
         >
-            <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
-            <span class="hidden sm:inline">{{ page.props.powered_by.label }}</span>
-            <span class="sm:hidden">{{ page.props.powered_by.name }}</span>
+            <span class="hidden text-[11px] uppercase tracking-wide text-muted-foreground sm:inline">Powered by</span>
+            <img src="/brand/todoit-logo.png" alt="TodoIT" class="h-6 w-auto" />
         </a>
     </header>
 </template>

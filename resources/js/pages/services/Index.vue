@@ -199,53 +199,49 @@ const audienceLabel: Record<string, string> = { women: 'Women', men: 'Men', all:
 
                 <div v-show="!collapsed[category.id]" class="overflow-x-auto">
                     <table class="w-full text-sm">
-                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        <thead class="bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                             <tr>
-                                <th class="px-3 py-2 font-medium">Group</th>
-                                <th class="px-3 py-2 font-medium">Service</th>
-                                <th class="px-3 py-2 text-right font-medium">Price (₹)</th>
-                                <th class="px-3 py-2 text-right font-medium">Max (₹)</th>
-                                <th class="px-3 py-2 text-right font-medium">Mins</th>
-                                <th class="px-3 py-2 text-center font-medium">Active</th>
-                                <th class="px-3 py-2"></th>
+                                <th class="border-r border-gray-200 px-3 py-2.5 font-medium">Group</th>
+                                <th class="border-r border-gray-200 px-3 py-2.5 font-medium">Service</th>
+                                <th class="w-[130px] border-r border-gray-200 px-3 py-2.5 text-right font-medium">Price (₹)</th>
+                                <th class="w-[130px] border-r border-gray-200 px-3 py-2.5 text-right font-medium" title="Only for services priced as a range, e.g. Nail art ₹100–500">Up to (₹)</th>
+                                <th class="w-[90px] border-r border-gray-200 px-3 py-2.5 text-center font-medium">Active</th>
+                                <th class="w-[120px] px-3 py-2.5"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(service, si) in category.services" :key="service.id" class="border-t" :class="{ 'text-muted-foreground': !service.is_active }">
-                                <td class="px-1 py-0.5 w-[220px]">
+                            <tr v-for="(service, si) in category.services" :key="service.id" class="border-t border-gray-200 hover:bg-gray-50/60" :class="{ 'text-muted-foreground': !service.is_active }">
+                                <td class="w-[220px] border-r border-gray-200 px-2 py-1 align-middle">
                                     <InlineEdit :model-value="service.group_name" placeholder="—" @save="(v) => updateService(service, { group_name: v })" />
                                 </td>
-                                <td class="px-1 py-0.5">
+                                <td class="border-r border-gray-200 px-2 py-1 align-middle">
                                     <InlineEdit :model-value="service.name" @save="(v) => updateService(service, { name: v })" />
                                     <p v-if="service.description" class="px-2 text-xs text-muted-foreground">{{ service.description }}</p>
                                 </td>
-                                <td class="px-1 py-0.5 w-[120px]">
+                                <td class="border-r border-gray-200 px-2 py-1 text-right align-middle">
                                     <InlineEdit
                                         type="number"
                                         :min="0"
                                         :model-value="service.price"
                                         :display="formatMoney(service.price)"
-                                        input-class="w-24 text-right"
+                                        input-class="w-24 text-right" display-class="text-right"
                                         @save="(v) => updateService(service, { price: v })"
                                     />
                                 </td>
-                                <td class="px-1 py-0.5 w-[110px]">
+                                <td class="border-r border-gray-200 px-2 py-1 text-right align-middle">
                                     <InlineEdit
                                         type="number"
                                         :min="0"
                                         :model-value="service.price_max"
                                         :display="service.price_max == null ? undefined : formatMoney(service.price_max)"
-                                        input-class="w-24 text-right"
+                                        input-class="w-24 text-right" display-class="text-right"
                                         @save="(v) => updateService(service, { price_max: v })"
                                     />
                                 </td>
-                                <td class="px-1 py-0.5 w-[80px]">
-                                    <InlineEdit type="number" :min="0" step="1" :model-value="service.duration_minutes" input-class="w-16 text-right" @save="(v) => updateService(service, { duration_minutes: v })" />
-                                </td>
-                                <td class="px-3 py-0.5 text-center">
+                                <td class="border-r border-gray-200 px-3 py-1 text-center align-middle">
                                     <input type="checkbox" :checked="service.is_active" @change="updateService(service, { is_active: !service.is_active })" />
                                 </td>
-                                <td class="px-1 py-0.5 whitespace-nowrap text-right">
+                                <td class="whitespace-nowrap px-2 py-1 text-right align-middle">
                                     <Button variant="ghost" size="icon" class="h-7 w-7" :disabled="si === 0" title="Move up" @click="moveService(category, si, -1)"><ArrowUp /></Button>
                                     <Button variant="ghost" size="icon" class="h-7 w-7" :disabled="si === category.services.length - 1" title="Move down" @click="moveService(category, si, 1)"><ArrowDown /></Button>
                                     <Button
@@ -262,7 +258,7 @@ const audienceLabel: Record<string, string> = { women: 'Women', men: 'Men', all:
                             </tr>
 
                             <tr v-if="addingIn === category.id" class="border-t bg-muted/40">
-                                <td colspan="7" class="px-3 py-2">
+                                <td colspan="6" class="px-3 py-2">
                                     <form class="flex flex-wrap items-start gap-2" @submit.prevent="addService">
                                         <div class="grid gap-1">
                                             <Input v-model="serviceForm.group_name" placeholder="Group (optional)" class="h-9 w-44" />

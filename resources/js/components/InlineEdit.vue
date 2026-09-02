@@ -8,11 +8,12 @@ const props = withDefaults(
         placeholder?: string;
         display?: string; // optional pre-formatted display text
         inputClass?: string;
+        displayClass?: string;
         min?: number;
         step?: string;
         disabled?: boolean;
     }>(),
-    { type: 'text', placeholder: '—', inputClass: '', step: 'any', disabled: false },
+    { type: 'text', placeholder: '—', inputClass: '', displayClass: '', step: 'any', disabled: false },
 );
 
 const emit = defineEmits<{ (e: 'save', value: string | number | null): void }>();
@@ -74,6 +75,7 @@ const save = () => {
             'min-h-8 w-full rounded-md px-2 py-1 text-left hover:bg-accent focus:bg-accent focus:outline-none',
             disabled ? 'cursor-default' : 'cursor-text',
             modelValue == null || modelValue === '' ? 'text-muted-foreground' : '',
+            displayClass,
         ]"
         :title="disabled ? undefined : 'Click to edit'"
         @click="start"

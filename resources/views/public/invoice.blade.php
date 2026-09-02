@@ -44,6 +44,9 @@
         <a class="btn" href="{{ $pdfUrl }}">Download PDF</a>
 
         <div class="footer">
+            <a href="{{ config('salon.powered_by.url') }}" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:6px;">
+                <img src="{{ asset('brand/todoit-logo.png') }}" alt="TodoIT" style="height:28px;width:auto;">
+            </a><br>
             @if($salon['footer_text'])
                 <a href="{{ config('salon.powered_by.url') }}" target="_blank" rel="noopener">{{ $salon['footer_text'] }}</a>
                 &middot;
