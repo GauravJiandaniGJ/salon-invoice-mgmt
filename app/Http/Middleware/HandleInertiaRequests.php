@@ -27,7 +27,7 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'salon' => fn () => [
                 'name' => Setting::get('salon_name'),
-                'logo_url' => ($logo = Setting::get('logo_path')) ? asset('storage/'.$logo) : null,
+                'logo_url' => ($logo = Setting::get('logo_path')) ? asset('storage/'.$logo) : asset('brand/wow-logo.png'),
                 'brand_color' => Setting::get('brand_color'),
             ],
             'powered_by' => config('salon.powered_by'),

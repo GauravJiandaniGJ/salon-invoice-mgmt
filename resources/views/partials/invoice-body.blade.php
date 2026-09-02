@@ -11,7 +11,7 @@
     <tr>
         <td valign="top" style="width:60%;">
             @if($salon['logo_src'])
-                <img src="{{ $salon['logo_src'] }}" alt="" style="height:56px;max-width:160px;margin-bottom:6px;">
+                <img src="{{ $salon['logo_src'] }}" alt="" style="height:60px;width:auto;border-radius:6px;margin-bottom:6px;">
             @endif
             <div style="font-size:20px;font-weight:bold;">{{ $salon['name'] }}</div>
             @if($salon['tagline'])<div style="font-size:12px;color:#555;">{{ $salon['tagline'] }}</div>@endif

@@ -146,7 +146,7 @@ const printInvoice = () => window.print();
 
                 <header class="flex flex-wrap items-start justify-between gap-3 border-b pb-4">
                     <div class="flex items-center gap-3">
-                        <img v-if="page.props.salon.logo_url" :src="page.props.salon.logo_url" alt="" class="h-12 w-12 rounded object-cover" />
+                        <img v-if="page.props.salon.logo_url" :src="page.props.salon.logo_url" alt="" class="h-14 w-auto rounded-md" />
                         <div>
                             <h1 class="text-xl font-bold">{{ salonName }}</h1>
                             <p class="text-xs text-muted-foreground">Invoice</p>

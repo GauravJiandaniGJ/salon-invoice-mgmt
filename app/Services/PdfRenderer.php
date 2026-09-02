@@ -83,6 +83,10 @@ class PdfRenderer
             $logoUrl = asset('storage/'.$logoPath);
             $mime = Storage::disk('public')->mimeType($logoPath) ?: 'image/png';
             $logoSrc = 'data:'.$mime.';base64,'.base64_encode(Storage::disk('public')->get($logoPath));
+        } elseif (is_file($default = public_path('brand/wow-logo.png'))) {
+            // Bundled salon logo until the owner uploads one in Settings.
+            $logoUrl = asset('brand/wow-logo.png');
+            $logoSrc = 'data:image/png;base64,'.base64_encode((string) file_get_contents($default));
         }
 
         return [
