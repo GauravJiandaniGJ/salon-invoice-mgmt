@@ -3,7 +3,7 @@
 #   Existing reverse proxy on the server:  docker compose up -d   (app listens on 127.0.0.1:${APP_PORT}, proxy it)
 services:
   app:
-    image: ${APP_IMAGE:-ghcr.io/gauravjiandanigj/saloon-invoice-mgmt:latest}
+    image: ${APP_IMAGE:-ghcr.io/gauravjiandanigj/salon-invoice-mgmt:latest}
     restart: unless-stopped
     env_file: .env
     volumes:
@@ -18,7 +18,7 @@ services:
       retries: 3
 
   scheduler:
-    image: ${APP_IMAGE:-ghcr.io/gauravjiandanigj/saloon-invoice-mgmt:latest}
+    image: ${APP_IMAGE:-ghcr.io/gauravjiandanigj/salon-invoice-mgmt:latest}
     restart: unless-stopped
     env_file: .env
     command: ["php", "/var/www/html/artisan", "schedule:work"]

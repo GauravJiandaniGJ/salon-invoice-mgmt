@@ -8,8 +8,8 @@ Skip the Docker install and do **not** start Caddy (ports 80/443 belong to your 
 
 ```bash
 mkdir -p /opt/wowsalon && cd /opt/wowsalon
-curl -fsSLo docker-compose.yml https://raw.githubusercontent.com/GauravJiandaniGJ/saloon-invoice-mgmt/main/docker-compose.yml
-curl -fsSLo .env https://raw.githubusercontent.com/GauravJiandaniGJ/saloon-invoice-mgmt/main/.env.production.example
+curl -fsSLo docker-compose.yml https://raw.githubusercontent.com/GauravJiandaniGJ/salon-invoice-mgmt/main/docker-compose.yml
+curl -fsSLo .env https://raw.githubusercontent.com/GauravJiandaniGJ/salon-invoice-mgmt/main/.env.production.example
 nano .env                      # APP_URL, SEED_OWNER_PASSWORD, APP_PORT (pick a free port), APP_KEY (next step)
 docker login ghcr.io -u GauravJiandaniGJ
 docker compose pull app
@@ -32,9 +32,9 @@ Nothing else on the server is touched: the stack uses its own project name (`wow
 # as root or a sudo user
 curl -fsSL https://get.docker.com | sh
 mkdir -p /opt/wowsalon/docker && cd /opt/wowsalon
-curl -fsSLo docker-compose.yml https://raw.githubusercontent.com/GauravJiandaniGJ/saloon-invoice-mgmt/main/docker-compose.yml
-curl -fsSLo docker/Caddyfile   https://raw.githubusercontent.com/GauravJiandaniGJ/saloon-invoice-mgmt/main/docker/Caddyfile
-curl -fsSLo .env               https://raw.githubusercontent.com/GauravJiandaniGJ/saloon-invoice-mgmt/main/.env.production.example
+curl -fsSLo docker-compose.yml https://raw.githubusercontent.com/GauravJiandaniGJ/salon-invoice-mgmt/main/docker-compose.yml
+curl -fsSLo docker/Caddyfile   https://raw.githubusercontent.com/GauravJiandaniGJ/salon-invoice-mgmt/main/docker/Caddyfile
+curl -fsSLo .env               https://raw.githubusercontent.com/GauravJiandaniGJ/salon-invoice-mgmt/main/.env.production.example
 ```
 
 Edit `.env`: set `APP_URL`, `APP_DOMAIN`, `SEED_OWNER_PASSWORD`, and `APP_KEY` (generate below). Point the domain's DNS A record at the server first, so Caddy can obtain the certificate.
@@ -57,7 +57,7 @@ The container entrypoint runs `migrate --force`, the idempotent seeders (setting
 ## 3. CI/CD (GitHub Actions)
 
 - `tests` and `lint` run on every push.
-- `deploy` runs after `tests` succeeds on `main`: builds the image, pushes it to `ghcr.io/gauravjiandanigj/saloon-invoice-mgmt` tagged `latest` and the commit SHA, then SSHes to the server and runs `docker compose pull && docker compose up -d`.
+- `deploy` runs after `tests` succeeds on `main`: builds the image, pushes it to `ghcr.io/gauravjiandanigj/salon-invoice-mgmt` tagged `latest` and the commit SHA, then SSHes to the server and runs `docker compose pull && docker compose up -d`.
 
 Enable the SSH step by adding in the repo's **Settings → Secrets and variables → Actions**:
 
@@ -71,7 +71,7 @@ Enable the SSH step by adding in the repo's **Settings → Secrets and variables
 
 Until `DEPLOY_ENABLED` is set, the workflow only builds and pushes the image. You can also trigger it manually from the Actions tab (**Run workflow**).
 
-**Rollback:** `APP_IMAGE=ghcr.io/gauravjiandanigj/saloon-invoice-mgmt:<sha> docker compose up -d` on the server.
+**Rollback:** `APP_IMAGE=ghcr.io/gauravjiandanigj/salon-invoice-mgmt:<sha> docker compose up -d` on the server.
 
 ## 4. Backups
 
