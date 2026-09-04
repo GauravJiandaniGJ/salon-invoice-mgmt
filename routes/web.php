@@ -71,6 +71,11 @@ Route::middleware('auth')->group(function () {
         Route::get('reports/monthly.csv', [ReportController::class, 'monthlyCsv'])->name('reports.monthly.csv');
         Route::get('reports/services', [ReportController::class, 'services'])->name('reports.services');
         Route::get('reports/services.csv', [ReportController::class, 'servicesCsv'])->name('reports.services.csv');
+        Route::get('reports/monthly/pdf', [ReportController::class, 'monthlyPdf'])->name('reports.monthly.pdf');
+        Route::get('reports/services/pdf', [ReportController::class, 'servicesPdf'])->name('reports.services.pdf');
+        Route::get('reports/staff', [ReportController::class, 'staff'])->name('reports.staff');
+        Route::get('reports/staff.csv', [ReportController::class, 'staffCsv'])->name('reports.staff.csv');
+        Route::get('reports/staff/pdf', [ReportController::class, 'staffPdf'])->name('reports.staff.pdf');
     });
 
     // ----- Owner only -----

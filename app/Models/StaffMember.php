@@ -12,15 +12,20 @@ class StaffMember extends Model
     /** @use HasFactory<StaffMemberFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'is_active'];
+    protected $fillable = ['name', 'commission_percent', 'is_active'];
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean'];
+        return ['is_active' => 'boolean', 'commission_percent' => 'decimal:2'];
     }
 
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function invoiceItems(): HasMany
+    {
+        return $this->hasMany(InvoiceItem::class);
     }
 }

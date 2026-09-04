@@ -161,3 +161,28 @@ New default (config). Placeholder `{powered_by}` = `config('salon.powered_by.lab
 
 ## Branding
 Header top-right: small "Powered by TodoIT" badge linking to the URL (new tab). Login page footer, public invoice page footer and PDF footer: "{footer_text} · todoitservices.com" as a link where HTML allows. Role labels in UI: owner → "Owner", staff → "Receptionist".
+
+---
+
+# Addendum 3 — barbers (staff attribution), report date ranges, report PDFs, downloads
+
+## Schema (done)
+`invoice_items.staff_member_id` (nullable FK), `staff_members.commission_percent` decimal(5,2) default 0. Models updated (`InvoiceItem::staffMember()`, `StaffMember::invoiceItems()`).
+
+## Billing (B)
+- `BillPayload.items[].staff_member_id` optional. `InvoiceService::create/update`: each line's `staff_member_id` = provided value, else the invoice-level `staff_member_id`. `InvoiceDetail.items[].staff_member` populated. `BillPrefill.items[]` carries `staff_member_id`.
+- New Bill (F): each line shows a compact "by" select (active staff), defaulting to the bill's "Served by" and following it until the line is changed manually.
+
+## Reports (B: `ReportService`, `ReportController`; F: pages)
+- `daily()` becomes a **range**: `ReportService::statement(CarbonInterface $from, CarbonInterface $to): array` returning `DailyReport` (`date` = from, plus `from`, `to`, `date_label`, and `by_staff: StaffReportRow[]`). Keep `daily($date)` as `statement($date, $date)`.
+- `GET /reports/daily?from&to` (also accept `date` = single day). Staff role: pinned to today regardless of params. Props unchanged plus `can_pick_date`.
+- `ReportService::staff(from, to, ?int $staffMemberId): array` → `StaffReport`. Attribution = `invoice_items.staff_member_id` on issued invoices in range (`invoice_date`), falling back to `invoices.staff_member_id` when the line has none; lines with neither → "Unassigned" row (id null). `invoices_count` = distinct invoices per staff. `commission` = revenue × percent / 100.
+- `GET /reports/staff?from&to&staff_member_id` → `reports/Staff` props `report: StaffReport`, `staff_members: StaffMemberOption[]` (owner only). `.csv` and `/pdf`.
+- PDFs for all reports: `PdfRenderer::reportPdf(string $view, array $data): string` generic; views `pdf/daily-statement` (existing, now range-aware label + staff section), `pdf/monthly-report`, `pdf/services-report`, `pdf/staff-report`. Routes `reports/monthly/pdf?month`, `reports/services/pdf?from&to`, `reports/staff/pdf?from&to`. Filenames `Statement-<from>_<to>.pdf`, `Monthly-<YYYY-MM>.pdf`, `Services-<from>_<to>.pdf`, `Staff-<from>_<to>.pdf`.
+- **All PDF responses use `Content-Disposition: attachment`** (reports, `/invoices/{id}/pdf`, public `/i/{code}/pdf`). Print stays via the browser.
+- Monthly `by_staff` reuses `StaffReportRow`.
+
+## Frontend (F)
+- Reports tab strip gains **Staff** (owner). Daily page: range picker with presets Today / Yesterday / This week / This month / Last month / Custom (from–to), Print, **Download PDF**, CSV. Monthly and Services pages: add **Download PDF**. Staff page: range presets, table (name, services, invoices, revenue, avg ticket, commission %, commission), click a row → invoices list below (`?staff_member_id=`), CSV/PDF.
+- Settings → Staff members: commission % inline (PATCH `{commission_percent}` 0–100).
+- Invoice show page: per-line "by" shown when lines have different staff; public invoice + PDF partial: "Served by" line stays; when lines differ, a small "by <name>" under the description.

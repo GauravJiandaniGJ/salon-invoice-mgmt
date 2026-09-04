@@ -136,6 +136,7 @@ export interface CustomerDetail extends CustomerRow {
 // ---------- Billing ----------
 export interface BillLineInput {
     service_id: number | null;
+    staff_member_id?: number | null; // who performed this line; null = the bill's "Served by"
     description: string;
     unit_price: number;
     quantity: number;
@@ -193,6 +194,7 @@ export interface Totals {
 export interface InvoiceItemRow {
     id: number;
     service_id: number | null;
+    staff_member: StaffMemberOption | null;
     description: string;
     unit_price: number;
     quantity: number;
@@ -289,8 +291,10 @@ export interface ReportExpenseLine {
 }
 
 export interface DailyReport {
-    date: string; // YYYY-MM-DD
-    date_label: string; // "Tue, 2 Sep 2026"
+    date: string; // YYYY-MM-DD (= from)
+    from: string; // YYYY-MM-DD
+    to: string; // YYYY-MM-DD (same as from for a single day)
+    date_label: string; // "Tue, 2 Sep 2026" or "1 Sep – 7 Sep 2026"
     invoices_count: number;
     customers_served: number;
     earnings: { total: number; by_mode: ByMode };
@@ -300,6 +304,27 @@ export interface DailyReport {
     invoices: ReportInvoiceLine[];
     voided: ReportInvoiceLine[];
     expense_lines: ReportExpenseLine[];
+    by_staff: StaffReportRow[];
+}
+
+export interface StaffReportRow {
+    staff_member_id: number | null; // null = "Unassigned"
+    name: string;
+    services_count: number; // line items
+    invoices_count: number; // distinct invoices touched
+    revenue: number; // sum of line_total for their lines (issued invoices only)
+    average_ticket: number; // revenue / invoices_count
+    commission_percent: number;
+    commission: number; // revenue * commission_percent / 100
+}
+
+export interface StaffReport {
+    from: string;
+    to: string;
+    rows: StaffReportRow[];
+    totals: { services_count: number; invoices_count: number; revenue: number; commission: number };
+    /** invoices for a selected staff member (when ?staff_member_id= is given) */
+    selected: { staff_member_id: number; name: string; invoices: ReportInvoiceLine[] } | null;
 }
 
 export interface MonthlyReport {
@@ -357,5 +382,6 @@ export interface SettingsUserRow {
 export interface SettingsStaffRow {
     id: number;
     name: string;
+    commission_percent: number;
     is_active: boolean;
 }

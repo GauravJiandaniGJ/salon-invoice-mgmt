@@ -12,7 +12,7 @@ class InvoiceItem extends Model
     /** @use HasFactory<InvoiceItemFactory> */
     use HasFactory;
 
-    protected $fillable = ['invoice_id', 'service_id', 'description', 'unit_price', 'quantity', 'line_total', 'sort_order'];
+    protected $fillable = ['invoice_id', 'service_id', 'staff_member_id', 'description', 'unit_price', 'quantity', 'line_total', 'sort_order'];
 
     protected function casts(): array
     {
@@ -31,5 +31,10 @@ class InvoiceItem extends Model
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
+    }
+
+    public function staffMember(): BelongsTo
+    {
+        return $this->belongsTo(StaffMember::class);
     }
 }
