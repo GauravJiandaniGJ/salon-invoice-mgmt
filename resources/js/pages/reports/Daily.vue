@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { byModeRows, paymentModeLabel } from '@/lib/format';
 import { formatMoney } from '@/lib/money';
-import { type BreadcrumbItem, type DailyReport } from '@/types';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { type BreadcrumbItem, type DailyReport, type SharedData } from '@/types';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import { Download, FileText, Printer } from 'lucide-vue-next';
 import { computed } from 'vue';
 import ReportTabs from './ReportTabs.vue';
@@ -23,6 +23,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const goTo = (range: { from: string; to: string }) => router.get('/reports/daily', range, { preserveState: true, preserveScroll: true });
+const page = usePage<SharedData>();
+const isOwner = computed(() => page.props.auth.user?.role === 'owner');
 const query = computed(() => `from=${props.report.from}&to=${props.report.to}`);
 const isRange = computed(() => props.report.from !== props.report.to);
 
@@ -195,7 +197,7 @@ const printPage = () => window.print();
             <section class="rounded-xl border bg-card shadow-sm">
                 <header class="flex items-center justify-between border-b px-4 py-3">
                     <h2 class="text-sm font-semibold">By staff</h2>
-                    <Link href="/reports/staff" class="text-xs text-primary hover:underline print:hidden">Staff report →</Link>
+                    <Link v-if="isOwner" href="/reports/staff" class="text-xs text-primary hover:underline print:hidden">Staff report →</Link>
                 </header>
                 <EmptyState v-if="report.by_staff.length === 0" title="No services in this period" class="m-4" />
                 <div v-else class="overflow-x-auto">

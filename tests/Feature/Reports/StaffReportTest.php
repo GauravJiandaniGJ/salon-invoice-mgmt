@@ -115,3 +115,10 @@ test('staff commission percent is validated and saved', function () {
     expect((float) $member->fresh()->commission_percent)->toBe(12.5);
     $this->actingAs(owner())->patch("/settings/staff-members/{$member->id}", ['commission_percent' => 150])->assertSessionHasErrors('commission_percent');
 });
+
+test('the staff report link is only rendered for owners', function () {
+    $daily = file_get_contents(resource_path('js/pages/reports/Daily.vue'));
+
+    expect($daily)->toContain('v-if="isOwner"')
+        ->and(preg_match('/<Link\s+href="\/reports\/staff"/', $daily))->toBe(0);
+});
