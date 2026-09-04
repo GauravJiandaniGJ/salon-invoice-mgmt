@@ -1,42 +1,8 @@
 @php
     $money = fn ($n) => '₹' . number_format((float) $n, abs($n - round($n)) < 0.005 ? 0 : 2);
     $modes = ['cash' => 'Cash', 'upi' => 'UPI', 'card' => 'Card', 'other' => 'Other'];
-    $salonName = \App\Models\Setting::get('salon_name');
 @endphp
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>Daily Statement – {{ $report['date_label'] }}</title>
-    <style>
-        @page { margin: 18mm 15mm; }
-        body { font-family: "DejaVu Sans", sans-serif; font-size: 11px; color: #111; }
-        h1 { font-size: 18px; margin: 0 0 2px 0; }
-        h2 { font-size: 13px; margin: 18px 0 6px 0; border-bottom: 1px solid #999; padding-bottom: 3px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 4px 6px; vertical-align: top; }
-        th { background: #f0f0f0; text-align: left; font-size: 10px; text-transform: uppercase; }
-        td.num, th.num { text-align: right; white-space: nowrap; }
-        tr.total td { font-weight: bold; border-top: 1px solid #999; }
-        .muted { color: #666; }
-        .summary td { padding: 6px 8px; }
-        .summary .big { font-size: 15px; font-weight: bold; }
-        .kv td { border: 1px solid #ddd; }
-    </style>
-</head>
-<body>
-    <table>
-        <tr>
-            <td>
-                <h1>{{ $salonName }}</h1>
-                <div class="muted">Daily Statement</div>
-            </td>
-            <td class="num">
-                <div class="big" style="font-size:15px;font-weight:bold;">{{ $report['date_label'] }}</div>
-                <div class="muted">{{ $report['invoices_count'] }} invoices · {{ $report['customers_served'] }} customers</div>
-            </td>
-        </tr>
-    </table>
+@include('pdf.partials.report-head', ['title' => $report['from'] === $report['to'] ? 'Daily Statement' : 'Statement', 'subtitle' => $report['date_label'], 'meta' => $report['invoices_count'].' invoices · '.$report['customers_served'].' customers'])
 
     <h2>Summary</h2>
     <table class="summary kv">
@@ -68,7 +34,7 @@
 
     <h2>Invoices</h2>
     @if (count($report['invoices']) === 0)
-        <p class="muted">No invoices on this day.</p>
+        <p class="muted">No invoices in this period.</p>
     @else
         <table>
             <tr><th>#</th><th>Customer</th><th>Staff</th><th>Payment</th><th class="num">Total</th></tr>
@@ -102,7 +68,7 @@
 
     <h2>Expenses</h2>
     @if (count($report['expense_lines']) === 0)
-        <p class="muted">No expenses on this day.</p>
+        <p class="muted">No expenses in this period.</p>
     @else
         <table>
             <tr><th>Category</th><th>Description</th><th>Payment</th><th class="num">Amount</th></tr>
@@ -118,6 +84,7 @@
         </table>
     @endif
 
-    <p class="muted" style="margin-top:24px;">Generated {{ now()->format('j M Y, g:i A') }} · {{ \App\Models\Setting::get('footer_text') }}</p>
-</body>
-</html>
+    <h2>By staff</h2>
+    @include('pdf.partials.staff-table', ['rows' => $report['by_staff'], 'totals' => null])
+
+@include('pdf.partials.report-foot')

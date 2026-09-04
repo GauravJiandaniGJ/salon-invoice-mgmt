@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import DateInput from '@/components/DateInput.vue';
+import DateRangePicker from '@/components/DateRangePicker.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import StatCard from '@/components/StatCard.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { addDays, todayIso } from '@/lib/dates';
 import { byModeRows, paymentModeLabel } from '@/lib/format';
 import { formatMoney } from '@/lib/money';
 import { type BreadcrumbItem, type DailyReport } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ChevronLeft, ChevronRight, Download, FileText, Printer } from 'lucide-vue-next';
+import { Download, FileText, Printer } from 'lucide-vue-next';
 import { computed } from 'vue';
 import ReportTabs from './ReportTabs.vue';
 
@@ -23,11 +22,12 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Daily statement', href: '/reports/daily' },
 ];
 
-const goTo = (date: string) => router.get('/reports/daily', { date }, { preserveState: true, preserveScroll: true });
+const goTo = (range: { from: string; to: string }) => router.get('/reports/daily', range, { preserveState: true, preserveScroll: true });
+const query = computed(() => `from=${props.report.from}&to=${props.report.to}`);
+const isRange = computed(() => props.report.from !== props.report.to);
 
 const earningsRows = computed(() => byModeRows(props.report.earnings.by_mode));
 const expenseRows = computed(() => byModeRows(props.report.expenses.by_mode));
-const isToday = computed(() => props.report.date === todayIso());
 const printPage = () => window.print();
 </script>
 
@@ -40,27 +40,18 @@ const printPage = () => window.print();
 
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h1 class="text-2xl font-semibold">Daily statement</h1>
+                    <h1 class="text-2xl font-semibold">{{ isRange ? 'Statement' : 'Daily statement' }}</h1>
                     <p class="text-sm text-muted-foreground">{{ report.date_label }}</p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 print:hidden">
-                    <template v-if="can_pick_date">
-                        <Button variant="outline" size="icon" aria-label="Previous day" @click="goTo(addDays(report.date, -1))"
-                            ><ChevronLeft
-                        /></Button>
-                        <DateInput :model-value="report.date" :max="todayIso()" class="h-9" @update:model-value="goTo" />
-                        <Button variant="outline" size="icon" aria-label="Next day" :disabled="isToday" @click="goTo(addDays(report.date, 1))"
-                            ><ChevronRight
-                        /></Button>
-                        <Button v-if="!isToday" variant="ghost" size="sm" @click="goTo(todayIso())">Today</Button>
-                    </template>
+                    <DateRangePicker v-if="can_pick_date" :from="report.from" :to="report.to" @change="goTo" />
                     <Button variant="outline" size="sm" @click="printPage"><Printer /> Print</Button>
                     <Button as-child variant="outline" size="sm">
-                        <a :href="`/reports/daily/pdf?date=${report.date}`" target="_blank" rel="noopener"><Download /> PDF</a>
+                        <a :href="`/reports/daily/pdf?${query}`"><Download /> PDF</a>
                     </Button>
                     <Button as-child variant="ghost" size="sm">
-                        <a :href="`/reports/daily.csv?date=${report.date}`">CSV</a>
+                        <a :href="`/reports/daily.csv?${query}`">CSV</a>
                     </Button>
                 </div>
             </div>
@@ -172,7 +163,7 @@ const printPage = () => window.print();
                 <header class="border-b px-4 py-3">
                     <h2 class="text-sm font-semibold">Expenses ({{ report.expense_lines.length }})</h2>
                 </header>
-                <EmptyState v-if="report.expense_lines.length === 0" title="No expenses on this day" class="m-4" />
+                <EmptyState v-if="report.expense_lines.length === 0" title="No expenses in this period" class="m-4" />
                 <div v-else class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -197,6 +188,38 @@ const printPage = () => window.print();
                                 <td class="px-4 py-2 text-right tabular-nums">{{ formatMoney(report.expenses.total) }}</td>
                             </tr>
                         </tfoot>
+                    </table>
+                </div>
+            </section>
+
+            <section class="rounded-xl border bg-card shadow-sm">
+                <header class="flex items-center justify-between border-b px-4 py-3">
+                    <h2 class="text-sm font-semibold">By staff</h2>
+                    <Link href="/reports/staff" class="text-xs text-primary hover:underline print:hidden">Staff report →</Link>
+                </header>
+                <EmptyState v-if="report.by_staff.length === 0" title="No services in this period" class="m-4" />
+                <div v-else class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            <tr>
+                                <th class="px-4 py-2 font-medium">Staff</th>
+                                <th class="px-4 py-2 text-right font-medium">Services</th>
+                                <th class="px-4 py-2 text-right font-medium">Invoices</th>
+                                <th class="px-4 py-2 text-right font-medium">Revenue</th>
+                                <th class="px-4 py-2 text-right font-medium">Commission</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="s in report.by_staff" :key="s.staff_member_id ?? 'none'" class="border-t">
+                                <td class="px-4 py-1.5">{{ s.name }}</td>
+                                <td class="px-4 py-1.5 text-right tabular-nums">{{ s.services_count }}</td>
+                                <td class="px-4 py-1.5 text-right tabular-nums">{{ s.invoices_count }}</td>
+                                <td class="px-4 py-1.5 text-right tabular-nums">{{ formatMoney(s.revenue) }}</td>
+                                <td class="px-4 py-1.5 text-right tabular-nums text-muted-foreground">
+                                    {{ s.commission_percent > 0 ? formatMoney(s.commission) : '—' }}
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </section>

@@ -3,16 +3,17 @@ import { type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const props = defineProps<{ active: 'daily' | 'monthly' | 'services' }>();
+const props = defineProps<{ active: 'daily' | 'monthly' | 'services' | 'staff' }>();
 
 const page = usePage<SharedData>();
 const isOwner = computed(() => page.props.auth.user?.role === 'owner');
 
 const tabs = computed(() =>
     [
-        { key: 'daily', title: 'Daily statement', href: '/reports/daily', ownerOnly: false },
+        { key: 'daily', title: 'Statement', href: '/reports/daily', ownerOnly: false },
         { key: 'monthly', title: 'Monthly', href: '/reports/monthly', ownerOnly: true },
         { key: 'services', title: 'Services', href: '/reports/services', ownerOnly: true },
+        { key: 'staff', title: 'Staff', href: '/reports/staff', ownerOnly: true },
     ].filter((t) => !t.ownerOnly || isOwner.value),
 );
 </script>

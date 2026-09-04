@@ -46,7 +46,7 @@ test('public page 404s for an unknown or malformed code', function () {
     $this->get('/i/ZZZZZZZZZZ/pdf')->assertNotFound();
 });
 
-test('public pdf streams inline and regenerates a missing file', function () {
+test('public pdf downloads as an attachment and regenerates a missing file', function () {
     Setting::set('salon_name', 'Wow Salon');
     $invoice = outputInvoice();
 
@@ -54,7 +54,7 @@ test('public pdf streams inline and regenerates a missing file', function () {
 
     $response->assertOk()
         ->assertHeader('Content-Type', 'application/pdf')
-        ->assertHeader('Content-Disposition', 'inline; filename="WowSalon-WS-0007.pdf"');
+        ->assertHeader('Content-Disposition', 'attachment; filename="WowSalon-WS-0007.pdf"');
 
     expect(substr($response->getContent(), 0, 4))->toBe('%PDF');
     Storage::disk('local')->assertExists('invoices/WS-0007.pdf');

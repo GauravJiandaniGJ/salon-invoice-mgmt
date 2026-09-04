@@ -219,6 +219,7 @@ class InvoiceController extends Controller
             'items' => $invoice->items->map(fn ($item) => [
                 'id' => $item->id,
                 'service_id' => $item->service_id,
+                'staff_member' => $item->staffMember ? ['id' => $item->staffMember->id, 'name' => $item->staffMember->name] : null,
                 'description' => $item->description,
                 'unit_price' => (float) $item->unit_price,
                 'quantity' => (float) $item->quantity,

@@ -141,6 +141,7 @@ class BillController extends Controller
             'invoice_date' => $invoice->invoice_date->toDateString(),
             'items' => $invoice->items->map(fn ($item) => [
                 'service_id' => $item->service_id,
+                'staff_member_id' => $item->staff_member_id,
                 'description' => $item->description,
                 'unit_price' => (float) $item->unit_price,
                 'quantity' => (float) $item->quantity,

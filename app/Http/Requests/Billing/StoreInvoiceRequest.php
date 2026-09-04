@@ -23,6 +23,7 @@ class StoreInvoiceRequest extends FormRequest
             'invoice_date' => ['nullable', 'date_format:Y-m-d'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.service_id' => ['nullable', 'integer', 'exists:services,id'],
+            'items.*.staff_member_id' => ['nullable', 'integer', 'exists:staff_members,id'],
             'items.*.description' => ['nullable', 'required_without:items.*.service_id', 'string', 'max:160'],
             'items.*.unit_price' => ['required', 'numeric', 'min:0', 'max:99999999'],
             'items.*.quantity' => ['required', 'numeric', 'gt:0', 'max:999'],

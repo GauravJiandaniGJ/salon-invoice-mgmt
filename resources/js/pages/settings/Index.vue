@@ -168,6 +168,11 @@ const toggleUserActive = (user: SettingsUserRow) => {
 };
 
 // ---------- staff members ----------
+const setCommission = (s: SettingsStaffRow, value: string) => {
+    const pct = Math.min(100, Math.max(0, Number(value) || 0));
+    if (pct === Number(s.commission_percent)) return;
+    router.patch(`/settings/staff-members/${s.id}`, { commission_percent: pct }, { preserveScroll: true });
+};
 const staffForm = useForm({ name: '' });
 const addStaff = () => {
     staffForm.post('/settings/staff-members', {
@@ -545,6 +550,18 @@ const renameStaff = (s: SettingsStaffRow) => {
                     >
                         <button type="button" class="text-left hover:underline" title="Rename" @click="renameStaff(s)">{{ s.name }}</button>
                         <div class="flex items-center gap-2">
+                            <label class="flex items-center gap-1 text-xs text-muted-foreground" :title="`Commission % for ${s.name}`">
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    step="0.5"
+                                    :value="s.commission_percent"
+                                    class="h-7 w-16 rounded-md border border-input bg-background px-1.5 text-right text-xs"
+                                    @change="(e) => setCommission(s, (e.target as HTMLInputElement).value)"
+                                />
+                                % commission
+                            </label>
                             <span class="text-xs" :class="s.is_active ? 'text-green-700 dark:text-green-400' : ''">{{
                                 s.is_active ? 'Active' : 'Inactive'
                             }}</span>

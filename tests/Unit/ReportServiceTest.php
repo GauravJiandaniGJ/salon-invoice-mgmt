@@ -122,7 +122,7 @@ test('monthly report has one row per day, totals, top services and staff split',
         ->and($r['earnings_by_mode']['cash'])->toBe(1000.0)
         ->and($r['earnings_by_mode']['upi'])->toBe(2000.0)
         ->and($r['top_services'][0])->toBe(['description' => 'Keratin – Upto Waist', 'count' => 1, 'revenue' => 2000.0])
-        ->and(collect($r['by_staff'])->pluck('staff_member')->all())->toBe(['Unassigned', 'Priya'])
+        ->and(collect($r['by_staff'])->pluck('name')->all())->toBe(['Unassigned', 'Priya'])
         ->and($r['by_staff'][1]['revenue'])->toBe(1000.0);
 });
 

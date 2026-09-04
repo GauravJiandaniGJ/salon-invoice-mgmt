@@ -37,7 +37,7 @@ class SettingsController extends Controller
                     'is_active' => $u->is_active,
                 ])->values(),
             'staff_members' => StaffMember::query()->orderBy('name')->get()
-                ->map(fn (StaffMember $s) => ['id' => $s->id, 'name' => $s->name, 'is_active' => $s->is_active])
+                ->map(fn (StaffMember $s) => ['id' => $s->id, 'name' => $s->name, 'commission_percent' => (float) $s->commission_percent, 'is_active' => $s->is_active])
                 ->values(),
             'whatsapp_placeholders' => self::WHATSAPP_PLACEHOLDERS,
         ]);

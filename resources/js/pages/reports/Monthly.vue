@@ -9,7 +9,7 @@ import { byModeRows } from '@/lib/format';
 import { formatMoney } from '@/lib/money';
 import { type BreadcrumbItem, type MonthlyReport } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ChevronLeft, ChevronRight, Printer } from 'lucide-vue-next';
+import { ChevronLeft, ChevronRight, Download, Printer } from 'lucide-vue-next';
 import { computed } from 'vue';
 import ReportTabs from './ReportTabs.vue';
 
@@ -49,6 +49,9 @@ const printPage = () => window.print();
                         ><ChevronRight
                     /></Button>
                     <Button variant="outline" size="sm" @click="printPage"><Printer /> Print</Button>
+                    <Button as-child variant="outline" size="sm"
+                        ><a :href="`/reports/monthly/pdf?month=${report.month}`"><Download /> PDF</a></Button
+                    >
                     <Button as-child variant="ghost" size="sm"><a :href="`/reports/monthly.csv?month=${report.month}`">CSV</a></Button>
                 </div>
             </div>
@@ -167,15 +170,21 @@ const printPage = () => window.print();
                             <thead class="bg-muted/50 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                                 <tr>
                                     <th class="px-4 py-2 font-medium">Staff</th>
+                                    <th class="px-4 py-2 text-right font-medium">Services</th>
                                     <th class="px-4 py-2 text-right font-medium">Invoices</th>
                                     <th class="px-4 py-2 text-right font-medium">Revenue</th>
+                                    <th class="px-4 py-2 text-right font-medium">Commission</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="s in report.by_staff" :key="s.staff_member" class="border-t">
-                                    <td class="px-4 py-1.5">{{ s.staff_member }}</td>
+                                <tr v-for="s in report.by_staff" :key="s.staff_member_id ?? 'none'" class="border-t">
+                                    <td class="px-4 py-1.5">{{ s.name }}</td>
+                                    <td class="px-4 py-1.5 text-right tabular-nums">{{ s.services_count }}</td>
                                     <td class="px-4 py-1.5 text-right tabular-nums">{{ s.invoices_count }}</td>
                                     <td class="px-4 py-1.5 text-right tabular-nums">{{ formatMoney(s.revenue) }}</td>
+                                    <td class="px-4 py-1.5 text-right tabular-nums text-muted-foreground">
+                                        {{ s.commission_percent > 0 ? formatMoney(s.commission) : '—' }}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

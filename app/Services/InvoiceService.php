@@ -42,7 +42,7 @@ class InvoiceService
         return DB::transaction(function () use ($data, $user) {
             $customer = $this->findOrCreateCustomer($data['customer']);
 
-            $items = $this->snapshotItems($data['items']);
+            $items = $this->snapshotItems($data['items'], isset($data['staff_member_id']) ? (int) $data['staff_member_id'] : null);
 
             $taxRate = (float) Setting::get('tax_rate', 0);
             $totals = InvoiceTotals::calculate($items, $data['discount_type'] ?? null, (float) ($data['discount_value'] ?? 0), $taxRate);
@@ -101,7 +101,7 @@ class InvoiceService
             $oldTotal = (float) $invoice->total;
 
             $customer = $this->findOrCreateCustomer($data['customer']);
-            $items = $this->snapshotItems($data['items']);
+            $items = $this->snapshotItems($data['items'], isset($data['staff_member_id']) ? (int) $data['staff_member_id'] : null);
 
             $taxRate = (float) Setting::get('tax_rate', 0);
             $totals = InvoiceTotals::calculate($items, $data['discount_type'] ?? null, (float) ($data['discount_value'] ?? 0), $taxRate);
@@ -179,14 +179,15 @@ class InvoiceService
      * @param  array<int, array<string, mixed>>  $items
      * @return array<int, array<string, mixed>>
      */
-    protected function snapshotItems(array $items): array
+    protected function snapshotItems(array $items, ?int $defaultStaffId = null): array
     {
-        return collect($items)->values()->map(function (array $item, int $index) {
+        return collect($items)->values()->map(function (array $item, int $index) use ($defaultStaffId) {
             $service = ! empty($item['service_id']) ? Service::find($item['service_id']) : null;
             $description = trim((string) ($item['description'] ?? ''));
 
             return [
                 'service_id' => $service?->id,
+                'staff_member_id' => ! empty($item['staff_member_id']) ? (int) $item['staff_member_id'] : $defaultStaffId,
                 'description' => $description !== '' ? $description : ($service?->display_name ?? 'Service'),
                 'unit_price' => (float) $item['unit_price'],
                 'quantity' => (float) $item['quantity'],

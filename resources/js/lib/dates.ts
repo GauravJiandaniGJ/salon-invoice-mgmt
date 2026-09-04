@@ -90,3 +90,27 @@ export function relativeDate(iso: string | null | undefined): string {
     if (iso === addDays(todayIso(), -1)) return 'Yesterday';
     return formatDate(iso);
 }
+
+export type RangePreset = 'today' | 'yesterday' | 'week' | 'month' | 'last_month';
+
+/** Inclusive from/to for a preset, in local (browser) time. Week starts Monday. */
+export function presetRange(preset: RangePreset): { from: string; to: string } {
+    const today = todayIso();
+    switch (preset) {
+        case 'today':
+            return { from: today, to: today };
+        case 'yesterday': {
+            const y = addDays(today, -1);
+            return { from: y, to: y };
+        }
+        case 'week': {
+            const d = parseIsoDate(today) as Date;
+            const offset = (d.getDay() + 6) % 7; // Monday = 0
+            return { from: addDays(today, -offset), to: today };
+        }
+        case 'month':
+            return { from: monthRange(currentMonth()).from, to: today };
+        case 'last_month':
+            return monthRange(addMonths(currentMonth(), -1));
+    }
+}

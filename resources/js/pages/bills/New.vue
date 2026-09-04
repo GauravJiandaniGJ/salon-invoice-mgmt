@@ -56,6 +56,7 @@ interface Line {
     description: string;
     unit_price: number | string;
     quantity: number | string;
+    staff_member_id?: number | null; // null/undefined = follows the bill's "Served by"
 }
 
 let uidSeq = 1;
@@ -95,6 +96,7 @@ const addCustom = (description: string, price: number) => {
     lines.value.push(newLine({ service_id: null, description, unit_price: price, quantity: 1 }));
 };
 
+const staffName = (id: number | null) => props.staff_members.find((s) => s.id === id)?.name ?? null;
 const removeLine = (uid: number) => (lines.value = lines.value.filter((l) => l.uid !== uid));
 const bumpQty = (line: Line, delta: number) => {
     const next = Number(line.quantity) + delta;
@@ -131,6 +133,7 @@ const payload = (): BillPayload => ({
         description: l.description.trim(),
         unit_price: Number(l.unit_price) || 0,
         quantity: Number(l.quantity) || 0,
+        staff_member_id: l.staff_member_id ?? null,
     })),
     discount_type: discountType.value,
     discount_value: discountType.value ? Number(discountValue.value) || 0 : 0,
@@ -246,6 +249,17 @@ const lineError = (index: number) =>
                                     class="min-w-0 flex-1 rounded-md border border-transparent bg-transparent px-1 py-0.5 text-sm font-medium hover:border-input focus:border-input focus:outline-none"
                                     aria-label="Description"
                                 />
+                                <select
+                                    v-if="staff_members.length"
+                                    v-model="line.staff_member_id"
+                                    class="h-7 max-w-[130px] rounded-md border border-transparent bg-transparent px-1 text-xs text-muted-foreground hover:border-input focus:border-input focus:outline-none"
+                                    :class="{ 'text-foreground': line.staff_member_id != null }"
+                                    title="Who did this service"
+                                    aria-label="Done by"
+                                >
+                                    <option :value="null">by {{ staffName(staffMemberId) ?? '—' }}</option>
+                                    <option v-for="s in staff_members" :key="s.id" :value="s.id">by {{ s.name }}</option>
+                                </select>
                                 <button
                                     type="button"
                                     class="rounded p-1 text-muted-foreground hover:bg-accent hover:text-destructive"

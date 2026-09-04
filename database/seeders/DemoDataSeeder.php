@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Service;
 use App\Models\Setting;
+use App\Models\StaffMember;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -48,11 +49,18 @@ class DemoDataSeeder extends Seeder
             ])]);
         }
 
+        $staff = StaffMember::query()->where('is_active', true)->get();
+        if ($staff->isEmpty()) {
+            foreach ([['Shubham', 10], ['Priya', 12.5], ['Raj', 8]] as [$name, $pct]) {
+                $staff->push(StaffMember::create(['name' => $name, 'commission_percent' => $pct, 'is_active' => true]));
+            }
+        }
+
         $prefix = (string) Setting::get('invoice_prefix', 'WS');
         $taxRate = (float) Setting::get('tax_rate', 0);
         $modes = Invoice::PAYMENT_MODES;
 
-        DB::transaction(function () use ($services, $users, $prefix, $taxRate, $modes) {
+        DB::transaction(function () use ($services, $users, $prefix, $taxRate, $modes, $staff) {
             // No Faker here: the production image ships without dev dependencies.
             $names = [
                 'Divyanshu Sharma', 'Priya Patel', 'Rahul Mehta', 'Sneha Joshi', 'Aarav Desai',
@@ -115,13 +123,14 @@ class DemoDataSeeder extends Seeder
 
                 $isVoid = $i % 15 === 7; // a few voids
                 $user = $users->random();
+                $servedBy = $staff->random();
 
                 $invoice = Invoice::create([
                     'invoice_number' => $prefix.'-'.str_pad((string) $number, 4, '0', STR_PAD_LEFT),
                     'public_code' => $this->uniqueCode(),
                     'customer_id' => $customer->id,
                     'user_id' => $user->id,
-                    'staff_member_id' => null,
+                    'staff_member_id' => $servedBy->id,
                     'invoice_date' => $date->toDateString(),
                     'subtotal' => $subtotal,
                     'discount_type' => $discountType,
@@ -143,8 +152,10 @@ class DemoDataSeeder extends Seeder
                     'updated_at' => $date->copy()->addHours(random_int(10, 20)),
                 ]);
 
-                foreach ($items as $item) {
-                    InvoiceItem::create([...$item, 'invoice_id' => $invoice->id]);
+                foreach ($items as $k => $item) {
+                    // most lines by the invoice's barber, occasionally another one
+                    $lineStaff = ($k > 0 && random_int(1, 4) === 1) ? $staff->random() : $servedBy;
+                    InvoiceItem::create([...$item, 'invoice_id' => $invoice->id, 'staff_member_id' => $lineStaff->id]);
                 }
 
                 if (! $isVoid) {

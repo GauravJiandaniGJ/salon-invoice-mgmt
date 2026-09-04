@@ -12,6 +12,7 @@ class StaffMemberRequest extends FormRequest
 
         return [
             'name' => [$required, 'required', 'string', 'max:100'],
+            'commission_percent' => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:100'],
             'is_active' => ['sometimes', 'boolean'],
         ];
     }

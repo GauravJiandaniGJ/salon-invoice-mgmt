@@ -34,7 +34,7 @@ class PdfRenderer
         return $path;
     }
 
-    /** Streams the stored PDF inline, regenerating it if the file is missing. */
+    /** Downloads the stored PDF, regenerating it if the file is missing. */
     public function download(Invoice $invoice): Response
     {
         $disk = Storage::disk(self::DISK);
@@ -47,17 +47,20 @@ class PdfRenderer
 
         return response($disk->get($invoice->pdf_path), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$filename.'"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ]);
     }
 
     /** Daily Statement PDF (view owned by the reports agent). Returns binary PDF. */
     public function dailyStatement(array $report): string
     {
-        return Pdf::loadView('pdf.daily-statement', [
-            'report' => $report,
-            'salon' => self::salonDetails(),
-        ])->setPaper('a4', 'portrait')->output();
+        return $this->reportPdf('pdf.daily-statement', ['report' => $report]);
+    }
+
+    /** Renders any report Blade view (tables + inline CSS only) to a PDF binary. */
+    public function reportPdf(string $view, array $data): string
+    {
+        return Pdf::loadView($view, $data + ['salon' => self::salonDetails()])->setPaper('a4', 'portrait')->output();
     }
 
     /** "WowSalon-WS-0001.pdf" */

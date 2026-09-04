@@ -65,16 +65,16 @@ test('daily csv streams invoices, expenses and totals', function () {
 
 test('daily pdf uses the PdfRenderer daily statement', function () {
     $this->mock(PdfRenderer::class)
-        ->shouldReceive('dailyStatement')
+        ->shouldReceive('reportPdf')
         ->once()
-        ->withArgs(fn (array $report) => $report['date'] === '2026-09-10')
+        ->withArgs(fn (string $view, array $data) => $view === 'pdf.daily-statement' && $data['report']['date'] === '2026-09-10')
         ->andReturn('%PDF-fake');
 
     $this->actingAs(staff())
         ->get('/reports/daily/pdf')
         ->assertOk()
         ->assertHeader('content-type', 'application/pdf')
-        ->assertHeader('content-disposition', 'inline; filename="Daily-Statement-2026-09-10.pdf"');
+        ->assertHeader('content-disposition', 'attachment; filename="Statement-2026-09-10.pdf"');
 });
 
 test('daily statement blade view renders with a real report', function () {

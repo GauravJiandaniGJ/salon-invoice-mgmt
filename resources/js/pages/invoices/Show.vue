@@ -125,6 +125,10 @@ const submitVoid = () => {
     });
 };
 
+const showLineStaff = computed(() => {
+    const ids = new Set(props.invoice.items.map((i) => i.staff_member?.id).filter((v): v is number => v != null));
+    return ids.size > 1 || (ids.size === 1 && [...ids][0] !== props.invoice.staff_member?.id);
+});
 const isVoid = computed(() => props.invoice.status === 'void');
 const printInvoice = () => window.print();
 </script>
@@ -196,7 +200,12 @@ const printInvoice = () => window.print();
                     </thead>
                     <tbody>
                         <tr v-for="item in invoice.items" :key="item.id" class="border-b border-dashed">
-                            <td class="py-2">{{ item.description }}</td>
+                            <td class="py-2">
+                                {{ item.description }}
+                                <span v-if="showLineStaff && item.staff_member" class="ml-1 text-xs text-muted-foreground"
+                                    >by {{ item.staff_member.name }}</span
+                                >
+                            </td>
                             <td class="py-2 text-right tabular-nums">{{ Number(item.quantity) }}</td>
                             <td class="py-2 text-right tabular-nums">{{ formatMoney(item.unit_price) }}</td>
                             <td class="py-2 text-right font-medium tabular-nums">{{ formatMoney(item.line_total) }}</td>

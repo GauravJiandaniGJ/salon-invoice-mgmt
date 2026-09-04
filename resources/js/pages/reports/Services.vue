@@ -8,7 +8,7 @@ import { addMonths, currentMonth, formatDate, monthRange, todayIso } from '@/lib
 import { formatMoney } from '@/lib/money';
 import { type BreadcrumbItem, type ServicesReport } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
-import { Printer } from 'lucide-vue-next';
+import { Download, Printer } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import ReportTabs from './ReportTabs.vue';
 
@@ -61,6 +61,9 @@ const printPage = () => window.print();
                 </div>
                 <div class="flex flex-wrap items-center gap-2 print:hidden">
                     <Button variant="outline" size="sm" @click="printPage"><Printer /> Print</Button>
+                    <Button as-child variant="outline" size="sm"
+                        ><a :href="`/reports/services/pdf?from=${report.from}&to=${report.to}`"><Download /> PDF</a></Button
+                    >
                     <Button as-child variant="ghost" size="sm"><a :href="csvHref()">CSV</a></Button>
                 </div>
             </div>

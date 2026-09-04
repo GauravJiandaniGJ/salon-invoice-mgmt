@@ -20,21 +20,28 @@ class ReportService
 {
     public const MODES = ['cash', 'upi', 'card', 'other'];
 
-    /** @return array<string, mixed> DailyReport */
+    /** @return array<string, mixed> DailyReport (single day) */
     public function daily(CarbonInterface $date): array
     {
-        $day = $date->toDateString();
+        return $this->statement($date, $date);
+    }
+
+    /** @return array<string, mixed> DailyReport over an inclusive date range */
+    public function statement(CarbonInterface $from, CarbonInterface $to): array
+    {
+        $fromDay = $from->toDateString();
+        $toDay = $to->toDateString();
 
         $invoices = Invoice::query()
             ->with(['customer', 'staffMember'])
-            ->whereDate('invoice_date', $day)
-            ->orderBy('id')
+            ->whereBetween('invoice_date', [$fromDay, $toDay])
+            ->orderBy('invoice_date')->orderBy('id')
             ->get();
 
         $issued = $invoices->where('status', Invoice::STATUS_ISSUED)->values();
         $voided = $invoices->where('status', Invoice::STATUS_VOID)->values();
 
-        $expenses = Expense::query()->whereDate('expense_date', $day)->orderBy('id')->get();
+        $expenses = Expense::query()->whereBetween('expense_date', [$fromDay, $toDay])->orderBy('expense_date')->orderBy('id')->get();
 
         $earningsByMode = $this->byMode($issued, 'total');
         $expensesByMode = $this->byMode($expenses, 'amount');
@@ -42,8 +49,10 @@ class ReportService
         $expenseTotal = $this->round((float) $expenses->sum('amount'));
 
         return [
-            'date' => $day,
-            'date_label' => CarbonImmutable::parse($day)->format('D, j M Y'),
+            'date' => $fromDay,
+            'from' => $fromDay,
+            'to' => $toDay,
+            'date_label' => $this->rangeLabel($from, $to),
             'invoices_count' => $issued->count(),
             'customers_served' => $issued->pluck('customer_id')->unique()->count(),
             'earnings' => ['total' => $earnings, 'by_mode' => $earningsByMode],
@@ -59,7 +68,103 @@ class ReportService
                 'amount' => (float) $e->amount,
                 'payment_mode' => $e->payment_mode,
             ])->all(),
+            'by_staff' => $this->staffRows($issued->pluck('id')),
         ];
+    }
+
+    /** @return array<string, mixed> StaffReport */
+    public function staff(CarbonInterface $from, CarbonInterface $to, ?int $staffMemberId = null): array
+    {
+        $ids = Invoice::query()->issued()
+            ->whereBetween('invoice_date', [$from->toDateString(), $to->toDateString()])
+            ->pluck('id');
+
+        $rows = $this->staffRows($ids);
+
+        $selected = null;
+        if ($staffMemberId && ($member = StaffMember::find($staffMemberId))) {
+            $invoiceIds = InvoiceItem::query()
+                ->join('invoices', 'invoices.id', '=', 'invoice_items.invoice_id')
+                ->whereIn('invoice_items.invoice_id', $ids)
+                ->whereRaw('COALESCE(invoice_items.staff_member_id, invoices.staff_member_id) = ?', [$member->id])
+                ->distinct()
+                ->pluck('invoice_items.invoice_id');
+
+            $selected = [
+                'staff_member_id' => $member->id,
+                'name' => $member->name,
+                'invoices' => Invoice::query()->with(['customer', 'staffMember'])
+                    ->whereIn('id', $invoiceIds)
+                    ->orderByDesc('invoice_date')->orderByDesc('id')
+                    ->get()
+                    ->map(fn (Invoice $i) => $this->invoiceLine($i))
+                    ->all(),
+            ];
+        }
+
+        return [
+            'from' => $from->toDateString(),
+            'to' => $to->toDateString(),
+            'rows' => $rows,
+            'totals' => [
+                'services_count' => array_sum(array_column($rows, 'services_count')),
+                'invoices_count' => $ids->count(),
+                'revenue' => $this->round(array_sum(array_column($rows, 'revenue'))),
+                'commission' => $this->round(array_sum(array_column($rows, 'commission'))),
+            ],
+            'selected' => $selected,
+        ];
+    }
+
+    /**
+     * Revenue per staff member from invoice lines (line staff, else the invoice's staff).
+     *
+     * @return array<int, array<string, mixed>> StaffReportRow[]
+     */
+    protected function staffRows(Collection $invoiceIds): array
+    {
+        if ($invoiceIds->isEmpty()) {
+            return [];
+        }
+
+        $members = StaffMember::query()->get()->keyBy('id');
+
+        $grouped = InvoiceItem::query()
+            ->join('invoices', 'invoices.id', '=', 'invoice_items.invoice_id')
+            ->whereIn('invoice_items.invoice_id', $invoiceIds)
+            ->selectRaw('COALESCE(invoice_items.staff_member_id, invoices.staff_member_id) as sid, COUNT(*) as services_count, COUNT(DISTINCT invoice_items.invoice_id) as invoices_count, SUM(invoice_items.line_total) as revenue')
+            ->groupBy('sid')
+            ->get();
+
+        return $grouped->map(function ($row) use ($members) {
+            $member = $row->sid ? $members->get((int) $row->sid) : null;
+            $revenue = $this->round((float) $row->revenue);
+            $invoices = (int) $row->invoices_count;
+            $percent = $member ? (float) $member->commission_percent : 0.0;
+
+            return [
+                'staff_member_id' => $member?->id,
+                'name' => $member?->name ?? 'Unassigned',
+                'services_count' => (int) $row->services_count,
+                'invoices_count' => $invoices,
+                'revenue' => $revenue,
+                'average_ticket' => $invoices > 0 ? $this->round($revenue / $invoices) : 0.0,
+                'commission_percent' => $percent,
+                'commission' => $this->round($revenue * $percent / 100),
+            ];
+        })->sortByDesc('revenue')->values()->all();
+    }
+
+    protected function rangeLabel(CarbonInterface $from, CarbonInterface $to): string
+    {
+        if ($from->toDateString() === $to->toDateString()) {
+            return $from->format('D, j M Y');
+        }
+        if ($from->year === $to->year) {
+            return $from->format('j M').' – '.$to->format('j M Y');
+        }
+
+        return $from->format('j M Y').' – '.$to->format('j M Y');
     }
 
     /** @return array<string, mixed> MonthlyReport */
@@ -111,16 +216,7 @@ class ReportService
                 'revenue' => $this->round((float) $row->revenue),
             ])->all();
 
-        $staffNames = StaffMember::query()->pluck('name', 'id');
-        $byStaff = $invoices->groupBy(fn (Invoice $i) => $i->staff_member_id ?? 0)
-            ->map(fn (Collection $group, $staffId) => [
-                'staff_member' => $staffId ? ($staffNames[$staffId] ?? 'Unknown') : 'Unassigned',
-                'invoices_count' => $group->count(),
-                'revenue' => $this->round((float) $group->sum('total')),
-            ])
-            ->sortByDesc('revenue')
-            ->values()
-            ->all();
+        $byStaff = $this->staffRows($invoices->pluck('id'));
 
         return [
             'month' => $start->format('Y-m'),

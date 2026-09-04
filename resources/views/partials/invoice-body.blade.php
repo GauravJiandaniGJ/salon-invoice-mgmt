@@ -54,9 +54,13 @@
         </tr>
     </thead>
     <tbody>
+        @php
+            $lineStaffIds = $invoice->items->pluck('staff_member_id')->filter()->unique();
+            $showLineStaff = $lineStaffIds->count() > 1 || ($lineStaffIds->count() === 1 && (int) $lineStaffIds->first() !== (int) $invoice->staff_member_id);
+        @endphp
         @foreach($invoice->items as $item)
             <tr>
-                <td style="border-bottom:1px solid #eee;">{{ $item->description }}</td>
+                <td style="border-bottom:1px solid #eee;">{{ $item->description }}@if($showLineStaff && $item->staffMember)<div style="font-size:10px;color:#777;">by {{ $item->staffMember->name }}</div>@endif</td>
                 <td align="right" style="border-bottom:1px solid #eee;">{{ rtrim(rtrim(number_format((float) $item->quantity, 2, '.', ''), '0'), '.') }}</td>
                 <td align="right" style="border-bottom:1px solid #eee;">{{ PdfRenderer::money($item->unit_price) }}</td>
                 <td align="right" style="border-bottom:1px solid #eee;">{{ PdfRenderer::money($item->line_total) }}</td>
