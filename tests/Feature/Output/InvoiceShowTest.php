@@ -45,11 +45,11 @@ test('invoice page builds device links with a normalised phone, encoded newlines
                 && ! str_contains($url, "\n")
                 && str_contains($url, rawurlencode('https://wowsalon.example/i/Qwe123Rty4')))
             ->where('whatsapp_web_url', fn ($url) => str_starts_with($url, 'https://web.whatsapp.com/send?phone=919876543210&text=')
-                && str_contains($url, '%F0%9F%99%8F') // 🙏 survives as raw UTF-8 percent-encoding
+                && str_contains($url, '%F0%9F%98%83') // 😃 survives as raw UTF-8 percent-encoding
                 && str_contains($url, '%20') && ! str_contains($url, '+')
                 && ! preg_match('/[^\x20-\x7E]/', $url) // no literal non-ASCII in the URL
                 && str_contains($url, '%0A'))
-            ->where('whatsapp_message', fn ($m) => str_contains($m, 'Priya 🙏') && str_contains($m, 'WS-0011') && str_contains($m, '₹1,400') && str_contains($m, 'Powered by TodoIT · todoitservices.com'))
+            ->where('whatsapp_message', fn ($m) => str_contains($m, 'Priya 😃') && str_contains($m, 'WS-0011') && str_contains($m, '₹1,400') && str_contains($m, 'Powered by TodoIT · todoitservices.com'))
         );
 });
 

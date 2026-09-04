@@ -50,9 +50,9 @@ test('default template keeps newlines, stays short and carries partner branding'
 
     $out = (new MessageTemplate)->render(config('salon.defaults.whatsapp_template'), $invoice);
 
-    expect($out)->toBe("Good afternoon Priya 🙏\nThank you for visiting Wow Salon. Your invoice WS-0003 for ₹1,400 is ready:\nhttps://wowsalon.example/i/Abcdefghij\n\nSee you again soon!\n_Powered by TodoIT · todoitservices.com_")
+    expect($out)->toBe("Good afternoon Priya 😃\nThank you for visiting Wow Salon. Your invoice WS-0003 for ₹1,400 is ready:\nhttps://wowsalon.example/i/Abcdefghij\n\nSee you again soon!\n_Powered by TodoIT · todoitservices.com_")
         ->and(mb_strlen($out))->toBeLessThan(400)
-        ->and(rawurlencode($out))->toContain('%0A')->toContain('%F0%9F%99%8F');
+        ->and(rawurlencode($out))->toContain('%0A')->toContain('%F0%9F%98%83');
 });
 
 test('powered_by placeholder uses the config label and host', function () {
