@@ -385,3 +385,26 @@ export interface SettingsStaffRow {
     commission_percent: number;
     is_active: boolean;
 }
+
+// ---------- Activity log ----------
+export interface ActivityRow {
+    id: number;
+    created_at: string;
+    user_name: string;
+    action: string;
+    action_label: string;
+    subject_type: string | null;
+    subject_id: number | null;
+    subject_label: string | null;
+    description: string;
+    changes: Record<string, unknown> | null;
+    ip_address: string | null;
+}
+
+export interface ActivityFilters {
+    q: string;
+    action: string;
+    user_id: string;
+    from: string;
+    to: string;
+}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Catalog;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalog\StoreServiceCategoryRequest;
 use App\Http\Requests\Catalog\UpdateServiceCategoryRequest;
+use App\Models\Activity;
 use App\Models\ServiceCategory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,11 +15,13 @@ class ServiceCategoryController extends Controller
 {
     public function store(StoreServiceCategoryRequest $request): RedirectResponse
     {
-        ServiceCategory::create([
+        $category = ServiceCategory::create([
             ...$request->validated(),
             'sort_order' => ((int) ServiceCategory::max('sort_order')) + 1,
             'is_active' => true,
         ]);
+
+        Activity::log('category.created', 'For '.$category->audience, $category, null, $category->name);
 
         return back()->with('success', 'Category added.');
     }
@@ -26,6 +29,8 @@ class ServiceCategoryController extends Controller
     public function update(UpdateServiceCategoryRequest $request, ServiceCategory $serviceCategory): RedirectResponse
     {
         $serviceCategory->update($request->validated());
+
+        Activity::log('category.updated', 'Category updated', $serviceCategory, null, $serviceCategory->name);
 
         return back()->with('success', 'Category updated.');
     }
@@ -36,6 +41,7 @@ class ServiceCategoryController extends Controller
             return back()->with('error', 'Move or delete the services in this category first.');
         }
 
+        Activity::log('category.deleted', 'Category removed', $serviceCategory, null, $serviceCategory->name);
         $serviceCategory->delete();
 
         return back()->with('success', 'Category deleted.');

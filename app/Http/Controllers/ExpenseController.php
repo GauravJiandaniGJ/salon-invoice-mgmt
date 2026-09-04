@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ExpenseRequest;
+use App\Models\Activity;
 use App\Models\Expense;
 use App\Models\User;
 use App\Services\ReportService;
@@ -61,7 +62,9 @@ class ExpenseController extends Controller
 
     public function store(ExpenseRequest $request): RedirectResponse
     {
-        Expense::create([...$request->validated(), 'user_id' => $request->user()->id]);
+        $expense = Expense::create([...$request->validated(), 'user_id' => $request->user()->id]);
+
+        Activity::log('expense.created', 'Expense added', $expense);
 
         return back()->with('success', 'Expense added.');
     }
@@ -70,7 +73,10 @@ class ExpenseController extends Controller
     {
         abort_unless($this->canEdit($request->user(), $expense), 403);
 
+        $before = $expense->only(['category', 'description', 'amount', 'payment_mode']);
         $expense->update($request->validated());
+
+        Activity::log('expense.updated', $expense->category.' · ₹'.number_format((float) $expense->amount), $expense, array_diff_assoc($expense->only(array_keys($before)), $before) ? ['from' => $before, 'to' => $expense->only(array_keys($before))] : null, $expense->description);
 
         return back()->with('success', 'Expense updated.');
     }
@@ -79,6 +85,7 @@ class ExpenseController extends Controller
     {
         abort_unless($this->canEdit($request->user(), $expense), 403);
 
+        Activity::log('expense.deleted', $expense->category.' · ₹'.number_format((float) $expense->amount), $expense, null, $expense->description);
         $expense->delete();
 
         return back()->with('success', 'Expense deleted.');

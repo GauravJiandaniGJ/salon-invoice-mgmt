@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Billing;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Billing\StoreCustomerRequest;
 use App\Http\Requests\Billing\UpdateCustomerRequest;
+use App\Models\Activity;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Services\InvoiceService;
@@ -100,12 +101,17 @@ class CustomerController extends Controller
     {
         $customer = Customer::create($request->normalised());
 
+        Activity::log('customer.created', $customer->phone_display, $customer, null, $customer->name);
+
         return redirect()->route('customers.show', $customer)->with('success', 'Customer added.');
     }
 
     public function update(UpdateCustomerRequest $request, Customer $customer): RedirectResponse
     {
+        $before = $customer->only(['name', 'phone', 'gender']);
         $customer->update($request->normalised());
+
+        Activity::log('customer.updated', 'Profile updated', $customer, ['from' => $before, 'to' => $customer->only(array_keys($before))], $customer->name);
 
         return back()->with('success', 'Customer updated.');
     }

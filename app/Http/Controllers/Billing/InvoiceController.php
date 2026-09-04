@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Billing;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
 use App\Models\Invoice;
 use App\Models\Setting;
 use App\Services\InvoiceService;
@@ -175,6 +176,8 @@ class InvoiceController extends Controller
             'invoice' => $invoice->invoice_number,
             'user_id' => $request->user()->id,
         ]);
+
+        Activity::log('invoice.sent', 'Sent to '.$invoice->customer->name, $invoice, null, $invoice->invoice_number);
 
         return response()->json(['whatsapp_sent_at' => $invoice->whatsapp_sent_at->toISOString()]);
     }

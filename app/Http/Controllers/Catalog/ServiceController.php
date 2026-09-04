@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Catalog;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Catalog\StoreServiceRequest;
 use App\Http\Requests\Catalog\UpdateServiceRequest;
+use App\Models\Activity;
 use App\Models\Service;
 use App\Models\ServiceCategory;
 use Illuminate\Http\RedirectResponse;
@@ -53,14 +54,27 @@ class ServiceController extends Controller
         $data['sort_order'] = ((int) Service::where('service_category_id', $data['service_category_id'])->max('sort_order')) + 1;
         $data['is_active'] = true;
 
-        Service::create($data);
+        $service = Service::create($data);
+
+        Activity::log('service.created', '₹'.number_format((float) $service->price), $service, null, $service->display_name);
 
         return back()->with('success', 'Service added.');
     }
 
     public function update(UpdateServiceRequest $request, Service $service): RedirectResponse
     {
+        $before = $service->only(['name', 'group_name', 'price', 'price_max', 'is_active']);
         $service->update($request->validated());
+        $after = $service->only(array_keys($before));
+        $changed = array_keys(array_diff_assoc(array_map('strval', $after), array_map('strval', $before)));
+
+        Activity::log(
+            'service.updated',
+            $changed ? implode(', ', $changed).' changed' : 'Saved',
+            $service,
+            $changed ? ['from' => array_intersect_key($before, array_flip($changed)), 'to' => array_intersect_key($after, array_flip($changed))] : null,
+            $service->display_name,
+        );
 
         return back()->with('success', 'Saved.');
     }
@@ -71,6 +85,7 @@ class ServiceController extends Controller
             return back()->with('error', 'This service has been billed before. Deactivate it instead of deleting.');
         }
 
+        Activity::log('service.deleted', 'Removed from the catalog', $service, null, $service->display_name);
         $service->delete();
 
         return back()->with('success', 'Service deleted.');

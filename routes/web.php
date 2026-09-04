@@ -17,6 +17,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\Public\PublicInvoiceController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Settings\ActivityController;
 use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Settings\StaffMemberController;
 use App\Http\Controllers\Settings\UserController;
@@ -95,6 +96,8 @@ Route::middleware('auth')->group(function () {
         Route::patch('settings', [SettingsController::class, 'update'])->name('settings.update');
         Route::post('settings/logo', [SettingsController::class, 'uploadLogo'])->name('settings.logo');
         Route::delete('settings/logo', [SettingsController::class, 'removeLogo'])->name('settings.logo.remove');
+        Route::get('settings/activity', [ActivityController::class, 'index'])->name('settings.activity');
+        Route::get('settings/activity.csv', [ActivityController::class, 'export'])->name('settings.activity.csv');
         Route::get('settings/whatsapp-preview', [SettingsController::class, 'whatsappPreview'])->name('settings.whatsapp-preview');
 
         Route::post('settings/users', [UserController::class, 'store'])->name('settings.users.store');

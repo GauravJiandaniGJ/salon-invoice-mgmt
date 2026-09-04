@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Activity;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Service;
@@ -30,6 +31,14 @@ class InvoiceService
         }
 
         $this->pdf->render($invoice);
+
+        Activity::log(
+            'invoice.created',
+            'Bill for ₹'.number_format((float) $invoice->total).' · '.$invoice->customer->name,
+            $invoice,
+            null,
+            $invoice->invoice_number,
+        );
 
         return $invoice->fresh(['customer', 'items', 'staffMember', 'user']);
     }
@@ -149,6 +158,8 @@ class InvoiceService
 
         Log::info('Invoice edited', ['invoice' => $invoice->invoice_number, 'by' => $user->id, 'total' => (float) $invoice->total]);
 
+        Activity::log('invoice.edited', 'Bill updated, total now ₹'.number_format((float) $invoice->total), $invoice, null, $invoice->invoice_number);
+
         return $invoice->fresh(['customer', 'items', 'staffMember', 'user']);
     }
 
@@ -171,6 +182,8 @@ class InvoiceService
         $this->pdf->render($invoice);
 
         Log::info('Invoice voided', ['invoice' => $invoice->invoice_number, 'by' => $by->id, 'reason' => $reason]);
+
+        Activity::log('invoice.voided', 'Voided: '.$reason, $invoice, ['total' => (float) $invoice->total], $invoice->invoice_number);
     }
 
     /**

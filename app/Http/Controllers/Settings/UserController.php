@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\StoreUserRequest;
 use App\Http\Requests\Settings\UpdateUserRequest;
+use App\Models\Activity;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 
@@ -12,7 +13,9 @@ class UserController extends Controller
 {
     public function store(StoreUserRequest $request): RedirectResponse
     {
-        User::create([...$request->validated(), 'is_active' => true]);
+        $user = User::create([...$request->validated(), 'is_active' => true]);
+
+        Activity::log('user.created', ucfirst($user->role), $user, null, $user->name);
 
         return back()->with('success', 'User added.');
     }
@@ -44,6 +47,8 @@ class UserController extends Controller
         }
 
         $user->update($data);
+
+        Activity::log('user.updated', $user->is_active ? 'Account updated' : 'Account deactivated', $user, null, $user->name);
 
         return back()->with('success', isset($data['password']) ? 'Password reset.' : 'User updated.');
     }
