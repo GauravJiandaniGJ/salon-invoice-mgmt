@@ -99,6 +99,23 @@ docker compose exec app php artisan salon:go-live \
 Afterwards the salon should sign in, change both passwords under Settings → Users,
 upload their logo, and scan the WhatsApp Web QR on the reception laptop.
 
+### Starting completely fresh
+
+`FreshSalonSeeder` wipes the app back to two brand-new logins and nothing but the
+service menu in `database/data/salon_services.csv`:
+
+```bash
+docker compose exec app php artisan db:seed --class=FreshSalonSeeder --force
+```
+
+- Logins: `owner@wowsalon.com` and `staff@wowsalon.com`, both with the password
+  `WowSalon@2026` (override with `SALON_PASSWORD` in `.env`).
+- It deletes every user, invoice, customer, expense, staff member, stored PDF,
+  activity row and service — including the older handover logins — then imports
+  the CSV: 207 services in 14 categories. Settings are kept.
+- To change the menu, edit the CSV (`category,gender,group,service,price,up_to,active`;
+  `gender` is `Women`, `Men` or `Unisex`) and run the seeder again.
+
 ## 4. Backups
 
 The scheduler container runs `backup:run --only-db` nightly at 02:00 IST and a weekly full backup (SQLite file + invoices + uploads). Backups are kept 30 days on the `app_storage` volume; set the `SPACES_*` variables and `BACKUP_SPACES_ENABLED=true` to copy them to DigitalOcean Spaces or any S3-compatible bucket.

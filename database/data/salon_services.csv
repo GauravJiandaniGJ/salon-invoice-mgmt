@@ -1,0 +1,208 @@
+category,gender,group,service,price,up_to,active
+Facials,Unisex,Clean Up,Clean & Clear Clean Up (30 mins),700,,true
+Facials,Unisex,Clean Up,Quick Glow Mask,500,,true
+Facials,Unisex,Clean Up,Youth Brightening / Rubber Mask,1000,,true
+Facials,Unisex,Clean Up,Collagen Mask,1500,,true
+Facials,Unisex,Basic Facial,Perfect Balance Facial (40 mins – All Skin Types),1000,,true
+Facials,Unisex,Basic Facial,Anti Tan Facial (45 mins – All Skin Types Except Sensitive & Acne Skin),1400,,true
+Facials,Unisex,Basic Facial,Oxyblast Facial (45 mins – All Skin Types),1600,,true
+Facials,Unisex,Basic Facial,Glovite Facial (45 mins – All Skin Types Except Sensitive & Acne Skin),1750,,true
+Facials,Unisex,Basic Facial,Sensi Glow Facial (60 mins – Sensitive Skin Only),1800,,true
+Facials,Unisex,Basic Facial,Signature Facial (60 mins – All Skin Types),2000,,true
+Facials,Unisex,Premium Facials,Episyl Facial (Pro Matte / Pro Hydra / Pro Merge),2500,,true
+Facials,Unisex,Premium Facials,Power Brightening Facial (70 mins – All Skin Types),2800,,true
+Facials,Unisex,Premium Facials,Ultra Relaxing Facial,3000,,true
+Facials,Unisex,Premium Facials,Anti Aging Facial (70 mins – Dry & Mature Skin),3000,,true
+Facials,Unisex,Premium Facials,Premium Gensyl Facial – Walnut-Giner / Papaya Marshmallow,3500,,true
+Facials,Unisex,Premium Facials,Thalgo Facial,3850,,true
+Facials,Unisex,Premium Facials,Facial for Bride/Groom (90 mins – All Skin Types),4000,,true
+Facials,Unisex,Premium Facials,Dermasyl – Blanch Facial,4500,,true
+Nail Care,Unisex,Nail Paint & Extensions,Gel Nail Paint – Hands,800,,true
+Nail Care,Unisex,Nail Paint & Extensions,Gel Nail Paint – Feet,600,,true
+Nail Care,Unisex,Nail Paint & Extensions,Permanent Gel Extension,2500,,true
+Nail Care,Unisex,Nail Paint & Extensions,Temporary Extension – Hands,1000,,true
+Nail Care,Unisex,Nail Art,Nail Art per Finger (with Color),60,,true
+Nail Care,Unisex,Nail Art,Advanced Nail Art per Finger (Glitter/Sticker),80,,true
+Nail Care,Unisex,Nail Art,Advanced Nail Art per Finger (Stones/Accessories),100,500,true
+Nail Care,Unisex,Removal,Extension Removal – Gel,800,,true
+Nail Care,Unisex,Removal,Extension Removal – Acrylic,1000,,true
+Nail Care,Unisex,Removal,Gel Nail Paint Removal,150,,true
+Hands & Feet Care,Unisex,Basic Services,Cut & File Hands/Feet,100,,true
+Hands & Feet Care,Unisex,Basic Services,"Cut, File & Paint Hands/Feet",200,,true
+Hands & Feet Care,Unisex,Basic Services,Regular Manicure,550,,true
+Hands & Feet Care,Unisex,Basic Services,Regular Pedicure,600,,true
+Hands & Feet Care,Unisex,Basic Services,Cocktail Manicure,650,,true
+Hands & Feet Care,Unisex,Basic Services,Cocktail Pedicure,750,,true
+Hands & Feet Care,Unisex,Advance Services,Relaxing Manicure,800,,true
+Hands & Feet Care,Unisex,Advance Services,Relaxing Pedicure,1000,,true
+Hands & Feet Care,Unisex,Advance Services,Crystal Spa Manicure,1400,,true
+Hands & Feet Care,Unisex,Advance Services,Crystal Spa Pedicure,1800,,true
+Hands & Feet Care,Unisex,Advance Services,Premium AVL Manicure,2250,,true
+Hands & Feet Care,Unisex,Advance Services,Premium AVL Pedicure,2650,,true
+Hands & Feet Care,Unisex,Advance Services,Reflexology,600,,true
+Hands & Feet Care,Unisex,Advance Services,Heel Peel Treatment,2000,,true
+Makeup – Women,Women,Bride & Bridesmaids,"Engagement / Baby Shower / Mehendi / Sangeet Makeup, Hairstyle & Draping",4000,,true
+Makeup – Women,Women,Bride & Bridesmaids,Wedding Makeup with Styling & Draping,8000,,true
+Makeup – Women,Women,Bride & Bridesmaids,Reception Makeup with Styling & Draping,6000,,true
+Makeup – Women,Women,Party & Hairstyle,Party Makeup,1000,,true
+Makeup – Women,Women,Party & Hairstyle,Party Makeup with Styling & Draping,1800,,true
+Makeup – Women,Women,Party & Hairstyle,Open Hairstyle,800,,true
+Makeup – Women,Women,Party & Hairstyle,Bun / Updo,1200,,true
+Makeup – Men,Men,Groom Makeup,Groom Makeup – Wedding / Reception,1000,,true
+Makeup – Men,Men,Groom Makeup,Party Makeup for Men,500,,true
+Basic Skin Care – Women,Women,Regular Wax,Underarms,40,,true
+Basic Skin Care – Women,Women,Regular Wax,Full Arms (W-UA),200,,true
+Basic Skin Care – Women,Women,Regular Wax,Half Arms,150,,true
+Basic Skin Care – Women,Women,Regular Wax,Full Legs,450,,true
+Basic Skin Care – Women,Women,Regular Wax,Half Legs,300,,true
+Basic Skin Care – Women,Women,Regular Wax,Full Front / Back,500,,true
+Basic Skin Care – Women,Women,Regular Wax,Half Front / Back,300,,true
+Basic Skin Care – Women,Women,Regular Wax,Stomach / Chest,250,,true
+Basic Skin Care – Women,Women,Regular Wax,Full Body (without Brazilian),2000,,true
+Basic Skin Care – Women,Women,Liposoluble Wax,Underarms,80,,true
+Basic Skin Care – Women,Women,Liposoluble Wax,Full Arms (W-UA),300,,true
+Basic Skin Care – Women,Women,Liposoluble Wax,Half Arms,200,,true
+Basic Skin Care – Women,Women,Liposoluble Wax,Full Legs,500,,true
+Basic Skin Care – Women,Women,Liposoluble Wax,Half Legs,400,,true
+Basic Skin Care – Women,Women,Liposoluble Wax,Full Front / Back,600,,true
+Basic Skin Care – Women,Women,Liposoluble Wax,Half Front / Back,400,,true
+Basic Skin Care – Women,Women,Liposoluble Wax,Stomach / Chest,400,,true
+Basic Skin Care – Women,Women,Liposoluble Wax,Behind,500,,true
+Basic Skin Care – Women,Women,Liposoluble Wax,Brazilian,1000,,true
+Basic Skin Care – Women,Women,Liposoluble Wax,Full Body (without Brazilian),2500,,true
+Basic Skin Care – Women,Women,Liposoluble Wax,Full Body (with Brazilian),3000,,true
+Basic Skin Care – Men,Men,Liposoluble Wax,Underarms,200,,true
+Basic Skin Care – Men,Men,Liposoluble Wax,Full Arms (W-UA),1000,,true
+Basic Skin Care – Men,Men,Liposoluble Wax,Half Arms,750,,true
+Basic Skin Care – Men,Men,Liposoluble Wax,Full Legs,1500,,true
+Basic Skin Care – Men,Men,Liposoluble Wax,Half Legs,1000,,true
+Basic Skin Care – Men,Men,Liposoluble Wax,Full Front / Back,1500,,true
+Basic Skin Care – Men,Men,Liposoluble Wax,Half Front / Back,800,,true
+Basic Skin Care – Men,Men,Liposoluble Wax,Stomach / Chest,1000,,true
+Basic Skin Care – Women,Women,Threading,Eyebrows,60,,true
+Basic Skin Care – Women,Women,Threading,Upper Lips,30,,true
+Basic Skin Care – Women,Women,Threading,Lower Lip,30,,true
+Basic Skin Care – Women,Women,Threading,Sidelocks,60,,true
+Basic Skin Care – Women,Women,Threading,Cheeks,80,,true
+Basic Skin Care – Women,Women,Threading,Chin,40,,true
+Basic Skin Care – Women,Women,Threading,Forehead,30,,true
+Basic Skin Care – Women,Women,Threading,Jawline,80,,true
+Basic Skin Care – Women,Women,Threading,Full Face,250,,true
+Basic Skin Care – Women,Women,Threading,Earlobes,50,,true
+Basic Skin Care – Women,Women,Threading,Nose,30,,true
+Basic Skin Care – Women,Women,Peel Off Wax,Eyebrows,100,,true
+Basic Skin Care – Women,Women,Peel Off Wax,Upper Lips,50,,true
+Basic Skin Care – Women,Women,Peel Off Wax,Lower Lip,50,,true
+Basic Skin Care – Women,Women,Peel Off Wax,Sidelocks,100,,true
+Basic Skin Care – Women,Women,Peel Off Wax,Cheeks,150,,true
+Basic Skin Care – Women,Women,Peel Off Wax,Chin,70,,true
+Basic Skin Care – Women,Women,Peel Off Wax,Forehead,70,,true
+Basic Skin Care – Women,Women,Peel Off Wax,Jawline,100,,true
+Basic Skin Care – Women,Women,Peel Off Wax,Full Face,350,,true
+Basic Skin Care – Women,Women,Peel Off Wax,Earlobes,80,,true
+Basic Skin Care – Women,Women,Peel Off Wax,Nose,50,,true
+Basic Skin Care – Women,Women,O3+ D-Tan / Bleach,Full Face & Neck,400,,true
+Basic Skin Care – Women,Women,O3+ D-Tan / Bleach,Neck,150,,true
+Basic Skin Care – Women,Women,O3+ D-Tan / Bleach,Underarms,200,,true
+Basic Skin Care – Women,Women,O3+ D-Tan / Bleach,Full Arms,800,,true
+Basic Skin Care – Women,Women,O3+ D-Tan / Bleach,Half Arms,600,,true
+Basic Skin Care – Women,Women,O3+ D-Tan / Bleach,Full Legs,1000,,true
+Basic Skin Care – Women,Women,O3+ D-Tan / Bleach,Half Legs,800,,true
+Basic Skin Care – Women,Women,O3+ D-Tan / Bleach,Full Front / Back,1000,,true
+Basic Skin Care – Women,Women,O3+ D-Tan / Bleach,Half Front / Back,800,,true
+Basic Skin Care – Women,Women,O3+ D-Tan / Bleach,Stomach,500,,true
+Basic Skin Care – Women,Women,O3+ D-Tan / Bleach,Full Body,2250,,true
+Texture Services – Women,Women,Keratin,Upto Neck,2500,,true
+Texture Services – Women,Women,Keratin,Upto Shoulder,3500,,true
+Texture Services – Women,Women,Keratin,Below Shoulder,4500,,true
+Texture Services – Women,Women,Keratin,Upto Waist,5500,,true
+Texture Services – Women,Women,QOD / Botox – Upto Neck,QOD,3000,,true
+Texture Services – Women,Women,QOD / Botox – Upto Neck,Botox,4000,,true
+Texture Services – Women,Women,QOD / Botox – Upto Shoulder,QOD,4000,,true
+Texture Services – Women,Women,QOD / Botox – Upto Shoulder,Botox,5000,,true
+Texture Services – Women,Women,QOD / Botox – Below Shoulder,QOD,5000,,true
+Texture Services – Women,Women,QOD / Botox – Below Shoulder,Botox,6000,,true
+Texture Services – Women,Women,QOD / Botox – Upto Waist,QOD,6250,,true
+Texture Services – Women,Women,QOD / Botox – Upto Waist,Botox,7000,,true
+Texture Services – Women,Women,Oleo Shape Shine – Upto Neck,Straight,2500,,true
+Texture Services – Women,Women,Oleo Shape Shine – Upto Neck,Bond,3000,,true
+Texture Services – Women,Women,Oleo Shape Shine – Upto Shoulder,Straight,3000,,true
+Texture Services – Women,Women,Oleo Shape Shine – Upto Shoulder,Bond,3500,,true
+Texture Services – Women,Women,Oleo Shape Shine – Below Shoulder,Straight,4500,,true
+Texture Services – Women,Women,Oleo Shape Shine – Below Shoulder,Bond,5500,,true
+Texture Services – Women,Women,Oleo Shape Shine – Upto Waist,Straight,5500,,true
+Texture Services – Women,Women,Oleo Shape Shine – Upto Waist,Bond,6500,,true
+Texture Services – Women,Women,Oleo Shape Shine – Regrowth (<4 inch) / Crown,Straight,3000,,true
+Texture Services – Women,Women,Oleo Shape Shine – Regrowth (<4 inch) / Crown,Bond,4000,,true
+Color Services – Women,Women,Basic Touch Up (2 inches),Basic,1150,,true
+Color Services – Women,Women,Basic Touch Up (2 inches),Ammonia Free,1400,,true
+Color Services – Women,Women,Basic Touch Up (4 inches),Basic,1400,,true
+Color Services – Women,Women,Basic Touch Up (4 inches),Ammonia Free,1800,,true
+Color Services – Women,Women,Global Color / Highlights – Upto Neck,Basic,1650,,true
+Color Services – Women,Women,Global Color / Highlights – Upto Neck,Ammonia Free,2000,,true
+Color Services – Women,Women,Global Color / Highlights – Upto Shoulder,Basic,2500,,true
+Color Services – Women,Women,Global Color / Highlights – Upto Shoulder,Ammonia Free,3000,,true
+Color Services – Women,Women,Global Color / Highlights – Below Shoulder,Basic,3000,,true
+Color Services – Women,Women,Global Color / Highlights – Below Shoulder,Ammonia Free,3500,,true
+Color Services – Women,Women,Global Color / Highlights – Upto Waist,Basic,3500,,true
+Color Services – Women,Women,Global Color / Highlights – Upto Waist,Ammonia Free,4000,,true
+Color Services – Women,Women,Balayage / Ombre – Upto Neck,Basic,3000,,true
+Color Services – Women,Women,Balayage / Ombre – Upto Neck,Ammonia Free,3500,,true
+Color Services – Women,Women,Balayage / Ombre – Upto Shoulder,Basic,4000,,true
+Color Services – Women,Women,Balayage / Ombre – Upto Shoulder,Ammonia Free,4500,,true
+Color Services – Women,Women,Balayage / Ombre – Below Shoulder,Basic,5000,,true
+Color Services – Women,Women,Balayage / Ombre – Below Shoulder,Ammonia Free,6500,,true
+Color Services – Women,Women,Balayage / Ombre – Upto Waist,Basic,7000,,true
+Color Services – Women,Women,Balayage / Ombre – Upto Waist,Ammonia Free,7500,,true
+Color Services – Women,Women,Color Streak,Basic,300,,true
+Color Services – Women,Women,Color Streak,Ammonia Free,350,,true
+Color Services – Women,Women,Pre Lightening,Basic,2000,,true
+Color Services – Women,Women,Pre Lightening,Ammonia Free,2000,,true
+Hair Treatments – Women,Women,Scalp Treatment,Dandruff Treatment / Dry Scalp,1250,,true
+Hair Treatments – Women,Women,Olaplex,Upto Shoulder,2500,,true
+Hair Treatments – Women,Women,Olaplex,Below Shoulder,2800,,true
+Hair Treatments – Women,Women,Olaplex,Upto Waist,3000,,true
+Hair Treatments – Women,Women,Olaplex,Upto Shoulder – DD,3000,,true
+Hair Treatments – Women,Women,Olaplex,Below Shoulder – DD,3300,,true
+Hair Treatments – Women,Women,Olaplex,Upto Waist – DD,3500,,true
+Hair Treatments – Women,Women,Dryness Control Treatment,Upto Shoulder,1500,,true
+Hair Treatments – Women,Women,Dryness Control Treatment,Below Shoulder,1750,,true
+Hair Treatments – Women,Women,Dryness Control Treatment,Upto Waist,2250,,true
+Hair Treatments – Women,Women,Color Protect Treatment,Upto Shoulder,800,,true
+Hair Treatments – Women,Women,Color Protect Treatment,Below Shoulder,1000,,true
+Hair Treatments – Women,Women,Color Protect Treatment,Upto Waist,1250,,true
+Cut & Style – Women,Women,Haircut,Female Haircut,500,,true
+Cut & Style – Women,Women,Haircut,Fringe Cut,150,,true
+Cut & Style – Women,Women,Haircut,Girls Haircut (Upto 12 Years),350,,true
+Cut & Style – Women,Women,Hair Wash,Upto Shoulder,200,,true
+Cut & Style – Women,Women,Hair Wash,Below Shoulder,300,,true
+Cut & Style – Women,Women,Hair Wash,Upto Waist,400,,true
+Cut & Style – Women,Women,Blow Dry,Upto Shoulder,200,,true
+Cut & Style – Women,Women,Blow Dry,Below Shoulder,350,,true
+Cut & Style – Women,Women,Blow Dry,Upto Waist,450,,true
+Cut & Style – Women,Women,Blow Dry with Wash,Upto Shoulder,400,,true
+Cut & Style – Women,Women,Blow Dry with Wash,Below Shoulder,500,,true
+Cut & Style – Women,Women,Blow Dry with Wash,Upto Waist,600,,true
+Hair Treatments – Men,Men,Hair & Scalp Treatment,Head Massage,200,,true
+Hair Treatments – Men,Men,Hair & Scalp Treatment,Head Massage with Wash,250,,true
+Hair Treatments – Men,Men,Hair & Scalp Treatment,Premium Head Massage,300,,true
+Hair Treatments – Men,Men,Hair & Scalp Treatment,Premium Head Massage with Wash,350,,true
+Hair Treatments – Men,Men,Hair & Scalp Treatment,Hair Spa,650,,true
+Hair Treatments – Men,Men,Hair & Scalp Treatment,Olaplex Upto Neck,2000,,true
+Hair Treatments – Men,Men,Hair & Scalp Treatment,Olaplex Upto Neck – DD,2500,,true
+Hair Treatments – Men,Men,Hair & Scalp Treatment,Dryness Control Treatment,1250,,true
+Hair Treatments – Men,Men,Hair & Scalp Treatment,Color Protect Treatment,900,,true
+Hair Treatments – Men,Men,Hair & Scalp Treatment,Dandruff Treatment / Dry Scalp,800,,true
+Hair Treatments – Men,Men,Hair & Scalp Treatment,Scalp Detox,400,,true
+Cut & Style – Men,Men,Cut & Style,Haircut – Men,225,,true
+Cut & Style – Men,Men,Cut & Style,Haircut – Boys/Kids,175,,true
+Cut & Style – Men,Men,Cut & Style,Shave,150,,true
+Cut & Style – Men,Men,Cut & Style,Beard Crafting,175,,true
+Cut & Style – Men,Men,Cut & Style,Hair Wash with Hairstyle,150,,true
+Cut & Style – Men,Men,Cut & Style,Hair Style,100,,true
+Color Services – Men,Men,Hair Color,Basic,900,,true
+Color Services – Men,Men,Hair Color,Ammonia Free,1100,,true
+Color Services – Men,Men,Beard Color,Basic,250,,true
+Color Services – Men,Men,Beard Color,Ammonia Free,350,,true
+Color Services – Men,Men,Sidelock / Moustache,Basic,150,,true
+Color Services – Men,Men,Sidelock / Moustache,Ammonia Free,200,,true
