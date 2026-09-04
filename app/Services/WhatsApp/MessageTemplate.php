@@ -10,7 +10,7 @@ class MessageTemplate
 {
     public const PLACEHOLDERS = [
         '{greeting}', '{customer_name}', '{salon_name}', '{invoice_number}',
-        '{total}', '{invoice_link}', '{date}', '{items}', '{powered_by}',
+        '{total}', '{invoice_link}', '{date}', '{items}',
     ];
 
     public function render(string $template, Invoice $invoice): string
@@ -29,7 +29,27 @@ class MessageTemplate
             '{powered_by}' => self::poweredBy(),
         ];
 
-        return trim(strtr($template, $replacements));
+        return self::withSignature(trim(strtr($template, $replacements)));
+    }
+
+    /**
+     * The technology-partner line is always appended, never taken from the editable
+     * template, so it cannot be removed or altered from Settings.
+     */
+    public static function withSignature(string $message): string
+    {
+        $signature = self::poweredBy();
+
+        // Drop any "powered by ..." line the owner typed, so the credit cannot be
+        // duplicated, reworded or reassigned to someone else.
+        $lines = array_values(array_filter(
+            preg_split('/\R/', $message) ?: [],
+            fn (string $line) => ! preg_match('/^\s*[_*]*\s*powered\s+by\b/i', $line),
+        ));
+
+        $body = rtrim(implode("\n", $lines));
+
+        return $body."\n_".$signature.'_';
     }
 
     /** "Powered by TodoIT · todoitservices.com" — technology partner line for messages. */

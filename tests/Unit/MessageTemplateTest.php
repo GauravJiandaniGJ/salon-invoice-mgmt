@@ -35,7 +35,11 @@ test('renders every placeholder', function () {
         $invoice
     );
 
-    expect($out)->toBe('Good morning Priya! Wow Salon WS-0003 ₹1,40,000 https://wowsalon.example/i/Abcdefghij 2 Sep 2026 [Item 1, Item 2, Item 3 +2 more]');
+    // The partner credit is appended automatically on its own line.
+    expect($out)->toBe(
+        'Good morning Priya! Wow Salon WS-0003 ₹1,40,000 https://wowsalon.example/i/Abcdefghij 2 Sep 2026 [Item 1, Item 2, Item 3 +2 more]'
+        ."\n_".MessageTemplate::poweredBy().'_'
+    );
 });
 
 test('default template keeps newlines, stays short and carries partner branding', function () {
@@ -52,8 +56,7 @@ test('default template keeps newlines, stays short and carries partner branding'
 });
 
 test('powered_by placeholder uses the config label and host', function () {
-    expect(MessageTemplate::poweredBy())->toBe('Powered by TodoIT · todoitservices.com')
-        ->and(MessageTemplate::PLACEHOLDERS)->toContain('{powered_by}');
+    expect(MessageTemplate::poweredBy())->toBe('Powered by TodoIT · todoitservices.com');
 });
 
 test('greeting follows the IST hour', function () {
@@ -87,4 +90,23 @@ test('items summary caps at three', function () {
     expect(MessageTemplate::itemsSummary(['A']))->toBe('A')
         ->and(MessageTemplate::itemsSummary(['A', 'B', 'C']))->toBe('A, B, C')
         ->and(MessageTemplate::itemsSummary(['A', 'B', 'C', 'D', 'E']))->toBe('A, B, C +2 more');
+});
+
+test('the technology partner credit cannot be removed from the template', function () {
+    $invoice = Invoice::factory()
+        ->for(Customer::factory()->create(['name' => 'Asha']))
+        ->create(['invoice_number' => 'WS-0009', 'total' => 500]);
+
+    $render = fn (string $template) => app(MessageTemplate::class)->render($template, $invoice);
+    $signature = '_'.MessageTemplate::poweredBy().'_';
+
+    // Removed entirely, replaced with a competitor, or duplicated — the credit still stands exactly once.
+    expect($render('Hi {customer_name}'))->toEndWith($signature)
+        ->and($render("Hi {customer_name}\n_Powered by SomeoneElse_"))->toEndWith($signature)
+        ->and($render("Hi {customer_name}\n_Powered by SomeoneElse_"))->not->toContain('SomeoneElse')
+        ->and(substr_count($render("Hi\nPowered by TodoIT · todoitservices.com"), 'TodoIT'))->toBe(1);
+});
+
+test('the credit is not advertised as an editable placeholder', function () {
+    expect(MessageTemplate::PLACEHOLDERS)->not->toContain('{powered_by}');
 });

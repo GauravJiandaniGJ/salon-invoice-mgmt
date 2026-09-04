@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\UpdateSettingsRequest;
+use App\Models\Activity;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
@@ -49,6 +50,8 @@ class SettingsController extends Controller
             Setting::set($key, $value);
         }
 
+        Activity::log('settings.updated', implode(', ', array_keys($request->validated())).' updated');
+
         return back()->with('success', 'Settings saved.');
     }
 
@@ -61,6 +64,8 @@ class SettingsController extends Controller
         $old = Setting::get('logo_path');
         $path = $request->file('logo')->store('logos', 'public');
         Setting::set('logo_path', $path);
+
+        Activity::log('settings.updated', 'Logo uploaded');
 
         if ($old && $old !== $path) {
             Storage::disk('public')->delete($old);

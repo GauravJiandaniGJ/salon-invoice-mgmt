@@ -334,6 +334,10 @@ const renameStaff = (s: SettingsStaffRow) => {
                     <p class="mb-4 text-sm text-muted-foreground">
                         This text is pre-filled when you press “Send on WhatsApp”. Keep it short — under 400 characters reads best on a phone.
                     </p>
+                    <p class="mt-1 text-xs text-muted-foreground">
+                        Every message ends with “Powered by TodoIT · todoitservices.com”. That line is added automatically and is not part of the
+                        template.
+                    </p>
                     <div class="grid gap-4 md:grid-cols-2">
                         <div class="grid gap-2">
                             <Label for="whatsapp_template">Template</Label>
@@ -435,6 +439,9 @@ const renameStaff = (s: SettingsStaffRow) => {
                     <div>
                         <h2 class="text-base font-semibold">Users</h2>
                         <p class="text-sm text-muted-foreground">People who can log in. Owners manage everything; staff can bill and add expenses.</p>
+                        <p class="mt-1 text-sm">
+                            <Link href="/settings/activity" class="text-primary hover:underline">View activity log →</Link>
+                        </p>
                     </div>
                     <Button size="sm" @click="showAddUser = !showAddUser"><Plus /> Add user</Button>
                 </header>

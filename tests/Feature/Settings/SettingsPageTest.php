@@ -31,7 +31,8 @@ test('owner sees settings props', function () {
             ->where('settings.brand_color', config('salon.defaults.brand_color'))
             ->where('settings.whatsapp_driver', 'wame')
             ->where('settings.whatsapp_cloud_token_set', false)
-            ->where('whatsapp_placeholders', fn ($p) => collect($p)->contains('{powered_by}'))
+            // {powered_by} is deliberately absent: the partner credit is appended at render time.
+            ->where('whatsapp_placeholders', fn ($p) => collect($p)->contains('{customer_name}') && ! collect($p)->contains('{powered_by}'))
             ->has('users', 1)
             ->where('users.0.role', 'owner')
             ->has('staff_members', 1)
