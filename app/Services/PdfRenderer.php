@@ -63,6 +63,74 @@ class PdfRenderer
         return Pdf::loadView($view, $data + ['salon' => self::salonDetails()])->setPaper('a4', 'portrait')->output();
     }
 
+    /**
+     * A small base64 PNG for embedding in PDFs.
+     *
+     * The logo is inlined into every invoice, so a full-resolution file would add
+     * ~1 MB per bill (≈22 GB a year at 60 bills a day). We downscale to print size
+     * and cache the result next to the source.
+     */
+    protected static function embeddableLogo(string $path): ?string
+    {
+        if (! is_file($path)) {
+            return null;
+        }
+
+        $cache = storage_path('app/private/logo-print-'.substr(md5($path.filemtime($path)), 0, 12).'.png');
+
+        if (! is_file($cache)) {
+            $bytes = self::downscalePng($path, 170);
+
+            if ($bytes === null) {
+                return 'data:image/png;base64,'.base64_encode((string) file_get_contents($path));
+            }
+
+            @mkdir(dirname($cache), 0775, true);
+            file_put_contents($cache, $bytes);
+        }
+
+        return 'data:image/png;base64,'.base64_encode((string) file_get_contents($cache));
+    }
+
+    /** Resize an image to $width px wide, preserving transparency. Null when GD cannot read it. */
+    protected static function downscalePng(string $path, int $width): ?string
+    {
+        if (! function_exists('imagecreatefromstring')) {
+            return null;
+        }
+
+        $source = @imagecreatefromstring((string) file_get_contents($path));
+
+        if ($source === false) {
+            return null;
+        }
+
+        $w = imagesx($source);
+        $h = imagesy($source);
+
+        if ($w <= $width) {
+            imagedestroy($source);
+
+            return (string) file_get_contents($path);
+        }
+
+        $height = (int) round($h * $width / $w);
+        $canvas = imagecreatetruecolor($width, $height);
+        imagealphablending($canvas, false);
+        imagesavealpha($canvas, true);
+        imagefill($canvas, 0, 0, imagecolorallocatealpha($canvas, 0, 0, 0, 127));
+        imagecopyresampled($canvas, $source, 0, 0, 0, 0, $width, $height, $w, $h);
+
+        ob_start();
+        imagepng($canvas, null, 9);
+        $bytes = (string) ob_get_clean();
+
+        imagedestroy($source);
+        imagedestroy($canvas);
+
+        return $bytes;
+    }
+
     /** "WowSalon-WS-0001.pdf" */
     public static function filename(Invoice $invoice): string
     {
@@ -84,12 +152,11 @@ class PdfRenderer
 
         if ($logoPath !== '' && Storage::disk('public')->exists($logoPath)) {
             $logoUrl = asset('storage/'.$logoPath);
-            $mime = Storage::disk('public')->mimeType($logoPath) ?: 'image/png';
-            $logoSrc = 'data:'.$mime.';base64,'.base64_encode(Storage::disk('public')->get($logoPath));
-        } elseif (is_file($default = public_path('brand/wow-logo-transparent.png'))) {
+            $logoSrc = self::embeddableLogo(Storage::disk('public')->path($logoPath));
+        } elseif (is_file($default = public_path('brand/wow-logo-print.png'))) {
             // Bundled salon logo until the owner uploads one in Settings.
             $logoUrl = asset('brand/wow-logo-transparent.png');
-            $logoSrc = 'data:image/png;base64,'.base64_encode((string) file_get_contents($default));
+            $logoSrc = self::embeddableLogo($default);
         }
 
         return [

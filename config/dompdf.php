@@ -110,7 +110,7 @@ return [
         /**
          * Whether to enable font subsetting or not.
          */
-        'enable_font_subsetting' => false,
+        'enable_font_subsetting' => true, // embed only used glyphs: ~900 KB -> ~40 KB per invoice
 
         /**
          * The PDF rendering backend to use
