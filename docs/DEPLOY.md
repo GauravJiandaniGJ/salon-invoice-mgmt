@@ -73,6 +73,32 @@ Until `DEPLOY_ENABLED` is set, the workflow only builds and pushes the image. Yo
 
 **Rollback:** `APP_IMAGE=ghcr.io/gauravjiandanigj/salon-invoice-mgmt:<sha> docker compose up -d` on the server.
 
+
+## Handing the app to a salon (go-live)
+
+One command clears demo data, seeds the full service catalog and creates the two
+logins. Run it once, then send the salon the email and password it prints.
+
+```bash
+docker compose exec app php artisan salon:go-live \
+  --owner-email="owner@theirsalon.com" --owner-name="Owner Name" \
+  --staff-email="reception@theirsalon.com" --staff-name="Reception" \
+  --salon-name="Wow Salon" --phone="9876543210" \
+  --address="Shop 4, MG Road, Surat" \
+  --app-url="https://wowsalon.todoitservices.com" \
+  --barbers="Raj:10,Priya:12.5,Shubham:8"
+```
+
+- Omit `--password` and a strong one is generated and printed.
+- `--barbers` takes `Name:commission%` pairs; the percentage is optional.
+- It deletes every invoice, customer, expense, stored PDF and activity row, then
+  restarts invoice numbering at `WS-0001`. Add `--keep-data` to keep them.
+- Add `--force` to skip the confirmation prompt.
+- Safe to run twice; running it again just resets the passwords.
+
+Afterwards the salon should sign in, change both passwords under Settings → Users,
+upload their logo, and scan the WhatsApp Web QR on the reception laptop.
+
 ## 4. Backups
 
 The scheduler container runs `backup:run --only-db` nightly at 02:00 IST and a weekly full backup (SQLite file + invoices + uploads). Backups are kept 30 days on the `app_storage` volume; set the `SPACES_*` variables and `BACKUP_SPACES_ENABLED=true` to copy them to DigitalOcean Spaces or any S3-compatible bucket.
